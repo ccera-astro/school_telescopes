@@ -76,6 +76,7 @@
 		
 		var baseline_state = false
 		var baseline = [];
+		var peak = [];
 
 		var plot = $.plot("#Continuum", [ zeroFilled() ], {
 			series: {
@@ -203,6 +204,8 @@
 					tolabel = "Frequency (MHz)";
 				}
 			}
+			var xaxis = [];
+			var y2axis = [];
 			for (var i = start; i < end; i += step) {
 				if (baseline_state == true) {
 					v = data2[ndx] - baseline[ndx]
@@ -210,9 +213,10 @@
 				else {
 					v = data2[ndx];
 				}
+				y2axis.push(v);
 				if (doppler != true) {
+					xaxis.push(i/1000000.0);
 					res2.push([i/1000000.0, v]);
-					console.log("Doing non-doppler");
 			    }
 			    else {
 					var dv;
@@ -220,12 +224,37 @@
 					dv = i-frequency;
 					dv /= frequency;
 					dv *= 299792.000;
+					xaxis.push(dv);
 					res2.push([dv, v]);
-					console.log("Doing doppler");
 				}
 				ndx++;
 			}
-			plot2.setData([res2]);
+			
+			if (peak.length != data2.length) {
+				peak = y2axis;
+			}
+			else
+			{
+				for (var i = 0; i < peak.length; i++) {
+					if (y2axis[i] > peak[i]) {
+						peak[i] = y2axis[i];
+					}
+				}
+			}
+			
+			if ($("#peakHold:checked").length > 0) {
+				var peaky = [];
+				
+				for (var i = 0; i < peak.length; i++) {
+					peaky.push([xaxis[i],peak[i]]);
+				}
+				plot2.setData([res2,peaky]);
+			}
+			else
+			{
+				peak = y2axis;
+				plot2.setData([res2]);
+			}
 
 			// Since the axes don't change, we don't need to call plot.setupGrid()
 			
@@ -293,8 +322,9 @@
 	</div>
 	
 	<div id="Spectral" style="width:950px;height:300px"></div>
-	<p>Apply Baselining<input id="enableBaseline" type="checkbox"></input>
+	<p>Apply Baseline Subtraction<input id="enableBaseline" type="checkbox"></input>
 	Show Doppler<input id="showDoppler" type="checkbox"></input>
+	Peak Hold<input id="peakHold" type="checkbox"></input>
 	</p>
 	
 	<hr>
