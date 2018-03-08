@@ -93,7 +93,12 @@
     <key>variable</key>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Probably best to just leave this as-is.
+
+For much-wider bandwidth, upping to
+  4096 or 8192 could be considered, but for
+  our target Odroid platform, that may be a
+  non-starter.</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -128,7 +133,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 300)</value>
+      <value>(640, 100)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -155,7 +160,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(840, 276)</value>
+      <value>(1080, 124)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -167,7 +172,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>school_helper.log(probe_result,longitude,latitude,lstore,rstore,expname,freq,samp_rate)</value>
+      <value>school_helper.log(probe_result,longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha)</value>
     </param>
   </block>
   <block>
@@ -194,7 +199,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(840, 96)</value>
+      <value>(936, 96)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -237,7 +242,101 @@
     </param>
     <param>
       <key>value</key>
-      <value>int(6.0e6)</value>
+      <value>int(srate)</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(568, 664)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>alpha</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Alpha value for TP integrator</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0.3</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(240, 752)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>bbgain</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Baseband gain</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>10</value>
     </param>
   </block>
   <block>
@@ -260,7 +359,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(352, 372)</value>
+      <value>(552, 228)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -354,7 +453,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(432, 116)</value>
+      <value>(440, 84)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -401,7 +500,54 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 552)</value>
+      <value>(440, 576)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>device</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Device string</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>airspy=0,pack=1</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(32, 664)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -479,7 +625,8 @@
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Performance improved slightly by not doing
+the shift operation here.</value>
     </param>
     <param>
       <key>affinity</key>
@@ -499,7 +646,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(400, 216)</value>
+      <value>(312, 248)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -550,7 +697,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 464)</value>
+      <value>(32, 576)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -597,7 +744,54 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(288, 464)</value>
+      <value>(136, 752)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>ifgain</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>IF Gain</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>15</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(304, 576)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -644,7 +838,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(144, 464)</value>
+      <value>(160, 576)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -691,7 +885,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(176, 552)</value>
+      <value>(192, 664)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -723,6 +917,84 @@
     </param>
   </block>
   <block>
+    <key>note</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>What happens here is that once per second,
+  school_helper.log() is called with a bunch
+  of parameters, including the FFT vector.
+
+Said vector has already been integrated
+fairly heavily, and contains the FFT
+magnitude data in *linear* form.
+
+The conversion to 10*log10() form is done
+   inside the logging function.
+
+The logging function also computes the total
+  power across the bandwidth, from linear-form
+  FFT magnitudes.
+
+Log files are created, as well as .JSON snapshot
+  files.</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(864, 228)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>note_0</value>
+    </param>
+    <param>
+      <key>note</key>
+      <value></value>
+    </param>
+  </block>
+  <block>
+    <key>note</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>******* Command-line parameters here  ****</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(40, 484)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>note_1</value>
+    </param>
+    <param>
+      <key>note</key>
+      <value></value>
+    </param>
+  </block>
+  <block>
     <key>osmosdr_source</key>
     <param>
       <key>alias</key>
@@ -734,7 +1006,7 @@
     </param>
     <param>
       <key>bb_gain0</key>
-      <value>10</value>
+      <value>bbgain</value>
     </param>
     <param>
       <key>bw0</key>
@@ -750,7 +1022,7 @@
     </param>
     <param>
       <key>freq0</key>
-      <value>950e6</value>
+      <value>freq</value>
     </param>
     <param>
       <key>gain_mode0</key>
@@ -758,7 +1030,7 @@
     </param>
     <param>
       <key>if_gain0</key>
-      <value>10</value>
+      <value>ifgain</value>
     </param>
     <param>
       <key>iq_balance_mode0</key>
@@ -766,7 +1038,7 @@
     </param>
     <param>
       <key>gain0</key>
-      <value>20</value>
+      <value>rfgain</value>
     </param>
     <param>
       <key>ant10</key>
@@ -2018,7 +2290,7 @@
     </param>
     <param>
       <key>args</key>
-      <value>airspy=0,pack=1</value>
+      <value>device</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -2026,7 +2298,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(128, 100)</value>
+      <value>(192, 20)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2145,7 +2417,54 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 552)</value>
+      <value>(32, 752)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>rfgain</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>RF Gain</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>20</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(376, 664)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2216,9 +2535,13 @@ def cur_sidereal(longitude):
     return (sidt)
     
 count = 0
-def log(fft,longitude,latitude,local,remote,expname,freq,bw):
+curr_det = -99.00
+def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha):
     global then
     global count
+    global curr_det
+    
+    beta = 1.0-alpha
     
     #first shift the fft output
     lfft = len(fft)
@@ -2231,6 +2554,10 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     newfft = numpy.divide (newfft, [lfft]*lfft)
     
     tpower = numpy.sum(newfft)
+    if (curr_det &lt; -50.0):
+        curr_det = tpower
+    
+    curr_det = (alpha*tpower) + (beta*curr_det)
     
     newfft = numpy.add(newfft,[1.0e-10]*lfft)
     newfft = numpy.log10(newfft)
@@ -2271,35 +2598,32 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
             slogbuf += ","
     slogbuf += "\n"
        
-    now = time.time()
-    swritten = False
     if (local != "" and local != None):
         if (os.path.exists(local)):
-            tfp = open (os.path.join(local,tfn), "a")
-            tfp.write (tlogbuf)
-            tfp.close()
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(local,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
             
-            if (now-then &gt;= 30):
+            if ((count % 30) == 0):
                 sfp = open(os.path.join(local,sfn), "a")
                 sfp.write (slogbuf)
                 sfp.close()
                 swritten = True
     
     if (remote != "" and remote != None):
-        if (os.path.exists(remote)):
-            tfp = open (os.path.join(remote,tfn), "a")
-            tfp.write (tlogbuf)
-            tfp.close()
+        if (os.path.exists(remote)):          
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(remote,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
             
-            if (now-then &gt;= 30):
+            if ((count % 30) == 0):
                 sfp = open(os.path.join(remote,sfn), "a")
                 sfp.write (slogbuf)
                 sfp.close()
                 swritten = True
     
-    if (swritten == True):
-        then = now
-            
     #
     # Handle json file for total power
     #
@@ -2378,7 +2702,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(840, 204)</value>
+      <value>(936, 204)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2393,7 +2717,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(frate*10)</value>
+      <value>1.0/(frate*20)</value>
     </param>
     <param>
       <key>alias</key>
@@ -2413,7 +2737,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 356)</value>
+      <value>(656, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2438,6 +2762,53 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     <param>
       <key>vlen</key>
       <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(384, 752)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>srate</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Sample rate</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>6.0e6</value>
     </param>
   </block>
   <connection>

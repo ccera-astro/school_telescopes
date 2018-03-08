@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: School Telescope V1
-# Generated: Wed Mar  7 18:39:15 2018
+# Generated: Wed Mar  7 23:57:28 2018
 ##################################################
 
 from gnuradio import blocks
@@ -23,7 +23,7 @@ import time
 
 class school_telescope_v1(gr.top_block):
 
-    def __init__(self, expname="TESTING", freq=1420.4058e6, latitude=44.9, longitude=-76.03, lstore="/mnt/data/astro_data", rstore=''):
+    def __init__(self, expname="TESTING", freq=1420.4058e6, latitude=44.9, longitude=-76.03, lstore="/mnt/data/astro_data", rstore='', alpha=0.3, device='airspy=0,pack=1', rfgain=20, ifgain=15, bbgain=10, srate=6.0e6):
         gr.top_block.__init__(self, "School Telescope V1")
 
         ##################################################
@@ -35,21 +35,27 @@ class school_telescope_v1(gr.top_block):
         self.longitude = longitude
         self.lstore = lstore
         self.rstore = rstore
+        self.alpha = alpha
+        self.device = device
+        self.rfgain = rfgain
+        self.ifgain = ifgain
+        self.bbgain = bbgain
+        self.srate = srate
 
         ##################################################
         # Variables
         ##################################################
         self.fftsize = fftsize = 2048
-        self.samp_rate = samp_rate = int(6.0e6)
+        self.samp_rate = samp_rate = int(srate)
         self.probe_result = probe_result = [0.1]*fftsize
-        self.log_status = log_status = school_helper.log(probe_result,longitude,latitude,lstore,rstore,expname,freq,samp_rate)
+        self.log_status = log_status = school_helper.log(probe_result,longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha)
         self.frate = frate = int(samp_rate/fftsize)
 
         ##################################################
         # Blocks
         ##################################################
         self.fft_probe = blocks.probe_signal_vf(fftsize)
-        self.single_pole_iir_filter_xx_0 = filter.single_pole_iir_filter_ff(1.0/(frate*10), fftsize)
+        self.single_pole_iir_filter_xx_0 = filter.single_pole_iir_filter_ff(1.0/(frate*20), fftsize)
 
         def _probe_result_probe():
             while True:
@@ -63,16 +69,16 @@ class school_telescope_v1(gr.top_block):
         _probe_result_thread.daemon = True
         _probe_result_thread.start()
 
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'airspy=0,pack=1' )
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + device )
         self.osmosdr_source_0.set_sample_rate(samp_rate)
-        self.osmosdr_source_0.set_center_freq(950e6, 0)
+        self.osmosdr_source_0.set_center_freq(freq, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
         self.osmosdr_source_0.set_dc_offset_mode(0, 0)
         self.osmosdr_source_0.set_iq_balance_mode(0, 0)
         self.osmosdr_source_0.set_gain_mode(False, 0)
-        self.osmosdr_source_0.set_gain(20, 0)
-        self.osmosdr_source_0.set_if_gain(10, 0)
-        self.osmosdr_source_0.set_bb_gain(10, 0)
+        self.osmosdr_source_0.set_gain(rfgain, 0)
+        self.osmosdr_source_0.set_if_gain(ifgain, 0)
+        self.osmosdr_source_0.set_bb_gain(bbgain, 0)
         self.osmosdr_source_0.set_antenna('', 0)
         self.osmosdr_source_0.set_bandwidth(0, 0)
 
@@ -98,42 +104,84 @@ class school_telescope_v1(gr.top_block):
 
     def set_expname(self, expname):
         self.expname = expname
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_freq(self):
         return self.freq
 
     def set_freq(self, freq):
         self.freq = freq
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.osmosdr_source_0.set_center_freq(self.freq, 0)
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_latitude(self):
         return self.latitude
 
     def set_latitude(self, latitude):
         self.latitude = latitude
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_longitude(self):
         return self.longitude
 
     def set_longitude(self, longitude):
         self.longitude = longitude
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_lstore(self):
         return self.lstore
 
     def set_lstore(self, lstore):
         self.lstore = lstore
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_rstore(self):
         return self.rstore
 
     def set_rstore(self, rstore):
         self.rstore = rstore
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
+
+    def get_alpha(self):
+        return self.alpha
+
+    def set_alpha(self, alpha):
+        self.alpha = alpha
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
+
+    def get_device(self):
+        return self.device
+
+    def set_device(self, device):
+        self.device = device
+
+    def get_rfgain(self):
+        return self.rfgain
+
+    def set_rfgain(self, rfgain):
+        self.rfgain = rfgain
+        self.osmosdr_source_0.set_gain(self.rfgain, 0)
+
+    def get_ifgain(self):
+        return self.ifgain
+
+    def set_ifgain(self, ifgain):
+        self.ifgain = ifgain
+        self.osmosdr_source_0.set_if_gain(self.ifgain, 0)
+
+    def get_bbgain(self):
+        return self.bbgain
+
+    def set_bbgain(self, bbgain):
+        self.bbgain = bbgain
+        self.osmosdr_source_0.set_bb_gain(self.bbgain, 0)
+
+    def get_srate(self):
+        return self.srate
+
+    def set_srate(self, srate):
+        self.srate = srate
+        self.set_samp_rate(int(self.srate))
 
     def get_fftsize(self):
         return self.fftsize
@@ -150,14 +198,14 @@ class school_telescope_v1(gr.top_block):
         self.samp_rate = samp_rate
         self.set_frate(int(self.samp_rate/self.fftsize))
         self.osmosdr_source_0.set_sample_rate(self.samp_rate)
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_probe_result(self):
         return self.probe_result
 
     def set_probe_result(self, probe_result):
         self.probe_result = probe_result
-        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate))
+        self.set_log_status(school_helper.log(self.probe_result,self.longitude,self.latitude,self.lstore,self.rstore,self.expname,self.freq,self.samp_rate,self.alpha))
 
     def get_log_status(self):
         return self.log_status
@@ -170,7 +218,7 @@ class school_telescope_v1(gr.top_block):
 
     def set_frate(self, frate):
         self.frate = frate
-        self.single_pole_iir_filter_xx_0.set_taps(1.0/(self.frate*10))
+        self.single_pole_iir_filter_xx_0.set_taps(1.0/(self.frate*20))
         self.blocks_keep_one_in_n_0.set_n(self.frate*2)
 
 
@@ -194,6 +242,24 @@ def argument_parser():
     parser.add_option(
         "", "--rstore", dest="rstore", type="string", default='',
         help="Set Remote Storage Location [default=%default]")
+    parser.add_option(
+        "", "--alpha", dest="alpha", type="eng_float", default=eng_notation.num_to_str(0.3),
+        help="Set Alpha value for TP integrator [default=%default]")
+    parser.add_option(
+        "", "--device", dest="device", type="string", default='airspy=0,pack=1',
+        help="Set Device string [default=%default]")
+    parser.add_option(
+        "", "--rfgain", dest="rfgain", type="eng_float", default=eng_notation.num_to_str(20),
+        help="Set RF Gain [default=%default]")
+    parser.add_option(
+        "", "--ifgain", dest="ifgain", type="eng_float", default=eng_notation.num_to_str(15),
+        help="Set IF Gain [default=%default]")
+    parser.add_option(
+        "", "--bbgain", dest="bbgain", type="eng_float", default=eng_notation.num_to_str(10),
+        help="Set Baseband gain [default=%default]")
+    parser.add_option(
+        "", "--srate", dest="srate", type="eng_float", default=eng_notation.num_to_str(6.0e6),
+        help="Set Sample rate [default=%default]")
     return parser
 
 
@@ -201,7 +267,7 @@ def main(top_block_cls=school_telescope_v1, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(expname=options.expname, freq=options.freq, latitude=options.latitude, longitude=options.longitude, lstore=options.lstore, rstore=options.rstore)
+    tb = top_block_cls(expname=options.expname, freq=options.freq, latitude=options.latitude, longitude=options.longitude, lstore=options.lstore, rstore=options.rstore, alpha=options.alpha, device=options.device, rfgain=options.rfgain, ifgain=options.ifgain, bbgain=options.bbgain, srate=options.srate)
     tb.start()
     try:
         raw_input('Press Enter to quit: ')

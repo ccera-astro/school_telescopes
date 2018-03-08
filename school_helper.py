@@ -30,9 +30,13 @@ def cur_sidereal(longitude):
     return (sidt)
     
 count = 0
-def log(fft,longitude,latitude,local,remote,expname,freq,bw):
+curr_det = -99.00
+def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha):
     global then
     global count
+    global curr_det
+    
+    beta = 1.0-alpha
     
     #first shift the fft output
     lfft = len(fft)
@@ -45,6 +49,10 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
     newfft = numpy.divide (newfft, [lfft]*lfft)
     
     tpower = numpy.sum(newfft)
+    if (curr_det < -50.0):
+        curr_det = tpower
+    
+    curr_det = (alpha*tpower) + (beta*curr_det)
     
     newfft = numpy.add(newfft,[1.0e-10]*lfft)
     newfft = numpy.log10(newfft)
@@ -85,35 +93,32 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw):
             slogbuf += ","
     slogbuf += "\n"
        
-    now = time.time()
-    swritten = False
     if (local != "" and local != None):
         if (os.path.exists(local)):
-            tfp = open (os.path.join(local,tfn), "a")
-            tfp.write (tlogbuf)
-            tfp.close()
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(local,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
             
-            if (now-then >= 30):
+            if ((count % 30) == 0):
                 sfp = open(os.path.join(local,sfn), "a")
                 sfp.write (slogbuf)
                 sfp.close()
                 swritten = True
     
     if (remote != "" and remote != None):
-        if (os.path.exists(remote)):
-            tfp = open (os.path.join(remote,tfn), "a")
-            tfp.write (tlogbuf)
-            tfp.close()
+        if (os.path.exists(remote)):          
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(remote,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
             
-            if (now-then >= 30):
+            if ((count % 30) == 0):
                 sfp = open(os.path.join(remote,sfn), "a")
                 sfp.write (slogbuf)
                 sfp.close()
                 swritten = True
     
-    if (swritten == True):
-        then = now
-            
     #
     # Handle json file for total power
     #
