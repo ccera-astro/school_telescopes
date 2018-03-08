@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Real Time Astronomy Data</title>
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="jquery.flot.axislabels.js"></script>
+	<script type="text/javascript">
+
+	$(function() {
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+        HOUR = 3600
+        UPDATE = 2
+		var data = [],
+			totalPoints = HOUR/UPDATE;
+		var data2 = [];
+		
+		var frequency = 0.0;
+		var bandwidth = 0.0;
+		var fftsize = 2048;
+		var dec = -90.0;
+		var lmst = "00:00:00";
+		var expname = "TESTING";
+		var latitude = -90.0;
+		var longitude = -180.0;
+		var updated = "";
+
+
+		// Set up the control widget
+
+		var updateInterval = UPDATE*1000;
+		
+		function zeroFilled() {
+			var res = [];
+			for (var i = 0; i < totalPoints; ++i) {
+				data.push(0.0);
+				res.push([i*(updateInterval/1000.0), data[i]]);
+			}
+			return res;
+		}
+		
+		function zeroSpectraFilled() {
+			var res = [];
+			for (var i = 0; i < fftsize; ++i) {
+				data2.push(-100.0);
+				res.push([i, data2[i]]);
+			}
+			return res;
+		}
+
+        var scaling = 1;
+        var offset = 0;
+		$("#scaling").val(scaling).change(function () {
+			var v = $(this).val();
+			if (v && !isNaN(+v)) {
+				scaling = +v;
+				if (scaling < 1) {
+					scaling = 1;
+				} else if (scaling > 100000) {
+					scaling = scaling;
+				}
+				$(this).val("" + scaling);
+			}
+		});
+		
+		$("#offset").val(offset).change(function () {
+			var v = $(this).val();
+			offset = v;
+			$(this).val("" + offset);
+		});
+		
+		
+		var baseline_state = false
+		var baseline = [];
+
+		var plot = $.plot("#Continuum", [ zeroFilled() ], {
+			series: {
+				shadowSize: 0,	// Drawing is faster without shadows
+				lines: {lineWidth: 1}
+			},
+			colors: ["blue", "red", "green", "purple"],
+			axisLabels : {
+				show: true
+			},
+			      xaxes: [{
+            axisLabel: 'LMST Offset(Seconds)',
+        }],
+            yaxes: [{
+				axisLabel: 'Detector',
+				axisLabelPadding: 25
+				}],
+			xaxis: {
+				show: true
+			},
+			yaxis : {
+				min: 0,
+				max: 1.0
+			},
+			grid: {
+				backgroundColor : {colors : ["ivory", "Khaki"]},
+				}
+		});
+
+		var plot2 = $.plot("#Spectral", [ zeroSpectraFilled() ], {
+			series: {
+				shadowSize: 0,	// Drawing is faster without shadows
+				lines: {lineWidth: 1}
+			},
+			colors: ["blue", "red", "green", "purple"],
+			axisLabels : {
+				show: true
+			},
+			      xaxes: [{
+            axisLabel: 'Frequency (MHz)',
+        }],
+            yaxes: [{
+				axisLabel: 'Rel. Power(dB)',
+				}],
+			xaxis: {
+				show: true
+			},
+			yaxis : {
+				min: -80,
+				max: -40
+			},
+			grid: {
+				backgroundColor : {colors : ["ivory", "Khaki"]},
+				}
+		});
+		
+		function onFileData(thing) {
+			data.unshift((thing.value*scaling)-offset);
+			data.pop();
+			expname = thing.expname;
+			dec = thing.dec;
+			lmst = thing.lmst;
+			latitude = thing.latitude;
+			longitude = thing.longitude;
+			updated = thing.updated;
+			$("#PageTitle").html("<h3>" + "Experiment: " + expname + " DEC: " + dec + " LMST: " + lmst + "</h3>");
+			$("#Subtitle").html("<h4>" + "Latitude: " + latitude + " Longitude: " + longitude + " Updated: " + updated+"</h4>");
+			
+		}
+
+        function onSpecFileData(thing) {
+			data2 = thing.values;
+			frequency = thing.frequency;
+			bandwidth = thing.bandwidth;
+			fftsize = thing.fftsize;
+			if ($("#enableBaseline:checked").length > 0) {
+				if (baseline_state == false) {
+					baseline_state = true;
+					baseline = data2;
+					plot2.getOptions().yaxes[0].min = -5;
+					plot2.getOptions().yaxes[0].max = 5;
+					plot2.setupGrid();
+					plot2.draw();
+				}
+			}
+			else {
+				baseline_state = false;
+				baseline = [];
+				plot2.getOptions().yaxes[0].min = -80;
+				plot2.getOptions().yaxes[0].max = -40;
+				plot2.setupGrid();
+				plot2.draw();
+			}
+		}
+		
+		var doppler = false;
+		function update() {
+				
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i*(updateInterval/1000.0), data[i]]);
+			}
+			plot.setData([res]);
+			
+			var res2 = [];
+			var step  = bandwidth/fftsize;
+			var start = frequency - (bandwidth/2);
+			var end = frequency + (bandwidth/2);
+			var ndx = 0;
+			var v = 0;
+			var labelchange = false;
+			var tolabel = "Frequency (MHz)";
+			
+			if ($("#showDoppler:checked").length > 0) {
+				if (doppler == false) {
+					labelchange = true;
+					tolabel = "Doppler Velocity (km/sec)";
+					doppler = true;
+				}
+			}
+			else {
+				if (doppler == true) {
+					doppler = false;
+					labelchange = true;
+					tolabel = "Frequency (MHz)";
+				}
+			}
+			for (var i = start; i < end; i += step) {
+				if (baseline_state == true) {
+					v = data2[ndx] - baseline[ndx]
+				}
+				else {
+					v = data2[ndx];
+				}
+				if (doppler != true) {
+					res2.push([i/1000000.0, v]);
+					console.log("Doing non-doppler");
+			    }
+			    else {
+					var dv;
+					
+					dv = i-frequency;
+					dv /= frequency;
+					dv *= 299792.000;
+					res2.push([dv, v]);
+					console.log("Doing doppler");
+				}
+				ndx++;
+			}
+			plot2.setData([res2]);
+
+			// Since the axes don't change, we don't need to call plot.setupGrid()
+			
+			if (labelchange == true) {
+				plot2.getOptions().xaxes[0].axisLabel = tolabel;
+				plot2.setupGrid();
+			}
+
+			plot.draw();
+			plot2.draw();
+			
+			setTimeout(update, updateInterval);
+			$.ajax(
+			    {url: "astro_data/tpower.json",
+					type: "GET",
+				dataType: "json",
+				beforeSend: function(xhr){
+					if (xhr.overrideMimeType)
+					{
+					  xhr.overrideMimeType("application/json");
+					}
+				 },
+				 success: onFileData}
+				 );
+			$.ajax(
+			    {url: "astro_data/spectral.json",
+					type: "GET",
+				dataType: "json",
+				beforeSend: function(xhr){
+					if (xhr.overrideMimeType)
+					{
+					  xhr.overrideMimeType("application/json");
+					}
+				 },
+				 success: onSpecFileData}
+				 );
+		}
+
+		update();
+
+	});
+
+	</script>
+</head>
+<body bgcolor="lightgray">
+
+    <div id="PageTitle">
+		<h3>Experiment</h3>
+    </div>
+    <div id="Subtitle">
+		<h4>Subs</h4>
+    </div>
+	<div id="header">
+		<h3>Continuum Data</h3>
+	</div>
+
+	<div id="Continuum" style="width:950px;height:300px"></div>
+    <p>
+		Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
+		Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
+	</p>
+	
+	<div id="header2">
+		<h3>Spectral Data</h3>
+	</div>
+	
+	<div id="Spectral" style="width:950px;height:300px"></div>
+	<p><label><input id="enableBaseline" type="checkbox"></input>Apply Baseline</label>
+	Show Doppler<input id="showDoppler" type="checkbox"></input>
+	</p>
+	
+	<hr>
+	<p><small>Flot: Copyright 2007-2014 IOLA and Ole Laursen</small></p>
+</body></html>
