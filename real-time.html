@@ -14,7 +14,7 @@
 		// be fetched from a server
 
         HOUR = 3600
-        UPDATE = 2
+        UPDATE = 3
 		var data = [],
 			totalPoints = HOUR/UPDATE;
 		var data2 = [];
@@ -77,6 +77,8 @@
 		var baseline_state = false
 		var baseline = [];
 		var peak = [];
+		
+		var doppler = false;
 
 		var plot = $.plot("#Continuum", [ zeroFilled() ], {
 			series: {
@@ -103,6 +105,7 @@
 			},
 			grid: {
 				backgroundColor : {colors : ["ivory", "Khaki"]},
+				hoverable: true
 				}
 		});
 
@@ -130,7 +133,25 @@
 			},
 			grid: {
 				backgroundColor : {colors : ["ivory", "Khaki"]},
+				hoverable: true
 				}
+		});
+		
+		$("#Continuum").bind("plothover", function (event, pos, item) {
+				var str = "Time " + pos.x.toFixed(2) + " Value " + pos.y.toFixed(2) + ")";
+				$("#ContinuumHover").text(str);
+		});
+
+		$("#Spectral").bind("plothover", function (event, pos, item) {
+			var stype;
+			if (doppler == true) {
+				stype = "km/s";
+			}
+			else {
+				stype = "MHz";
+			}
+			var str = "(" + pos.x.toFixed(2) + stype + " " + pos.y.toFixed(2) + "dB)";
+			$("#SpectralHover").text(str);
 		});
 		
 		function onFileData(thing) {
@@ -172,7 +193,6 @@
 			}
 		}
 		
-		var doppler = false;
 		function update() {
 				
 			var res = [];
@@ -312,6 +332,9 @@
 	</div>
 
 	<div id="Continuum" style="width:950px;height:300px"></div>
+	<p>
+	<h4 id="ContinuumHover">POS</h4>
+	</p>
     <p>
 		Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
 		Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
@@ -322,6 +345,9 @@
 	</div>
 	
 	<div id="Spectral" style="width:950px;height:300px"></div>
+	<p>
+		<h4 id="SpectralHover">POS</h4>
+	</p>
 	<p>Apply Baseline Subtraction<input id="enableBaseline" type="checkbox"></input>
 	Show Doppler<input id="showDoppler" type="checkbox"></input>
 	Peak Hold<input id="peakHold" type="checkbox"></input>
