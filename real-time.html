@@ -138,7 +138,7 @@
 		});
 		
 		$("#Continuum").bind("plothover", function (event, pos, item) {
-				var str = "Time " + pos.x.toFixed(2) + " Value " + pos.y.toFixed(2) + ")";
+				var str = "(" + pos.x.toFixed(2) + "sec" + " " + pos.y.toFixed(2) + "units)";
 				$("#ContinuumHover").text(str);
 		});
 
