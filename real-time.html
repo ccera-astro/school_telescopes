@@ -9,10 +9,6 @@
 	<script type="text/javascript">
 
 	$(function() {
-
-		// We use an inline data source in the example, usually data would
-		// be fetched from a server
-
         HOUR = 3600
         UPDATE = 3
 		var data = [],
@@ -28,9 +24,6 @@
 		var latitude = -90.0;
 		var longitude = -180.0;
 		var updated = "";
-
-
-		// Set up the control widget
 
 		var updateInterval = UPDATE*1000;
 		
@@ -226,7 +219,7 @@
 			}
 			var xaxis = [];
 			var y2axis = [];
-			for (var i = start; i < end; i += step) {
+			for (var i = start; i <= end; i += step) {
 				if (baseline_state == true) {
 					v = data2[ndx] - baseline[ndx]
 				}
