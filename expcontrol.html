@@ -1,5 +1,5 @@
 <!--
-   fooey.html
+   expcontrol.html
    
    Copyright 2018 Marcus D. Leech <mleech@localhost.localdomain>
    
@@ -26,7 +26,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>untitled</title>
+	<title>Radio Astronomy Control Panel</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name="generator" content="Geany 1.24.1" />
 </head>
@@ -34,21 +34,28 @@
 <body>
  <form action="/start.html" method="get">
 	 <h3>Start a New Experiment</h3>
-  Sample Rate <input type="radio" name="srate" value="3.0" checked>3 Msps
-  <input type="radio" name="srate" value="6.0">6 Msps<br>
-  Experiment Type<br>
+	 <h4>Installed radio: LimeSDR</h4>
+Sample Rate
+  <input type="radio" name="srate" value="1.0" checked>1 Msps
+  <input type="radio" name="srate" value="2.0">2 Msps
+  <input type="radio" name="srate" value="4.0">4 Msps
+  <input type="radio" name="srate" value="6.0">6 Msps
+  <input type="radio" name="srate" value="8.0">8 Msps
+  <input type="radio" name="srate" value="10.0">10 Msps<br>
+Experiment Type<br>
   <input type="radio" name="etype" value="radiometer" checked>Single Channel FFT Radiometer<br>
   <input type="radio" name="etype" value="differential">Dual Channel Differential FFT Radiometer<br>
   <input type="radio" name="etype" value="interferometer">Dual Channel FX Interferometer<br>
   Frequency: <input type="text" name="freq" required value="1420.4058e6">
   RF Gain: <input type="text" name="rfgain"required value="20"><br>
   Experiment Name: <input type="text" name="expname" required maxlength=20><br>
+  Remote Logging Share: <input type="text" name="remote" maxlength=256><br>
   
   <input type="submit" value="Start">
 </form>
 <hr>
 <form action="/stop.html" method="get">
-Stop Currently Running Experiment
+<h3>Stop Currently Running Experiment</h3>
 <input type="submit" value="Stop">
 </form> 
 	
