@@ -67,6 +67,17 @@
         
         var updateInterval = UPDATE*1000;
         
+		 /*
+		 * Need to make a record of the Spectral xaxis tic values
+		 */
+		var xaxis = [];
+
+		/*
+		 * Need to make a record of the (possibly baselined)
+		 *  y2axis (Spectral) values
+		 */
+		var y2axis = [];
+        
         function zeroFilled() {
             var res = [];
             for (var i = 0; i < totalPoints; ++i) {
@@ -93,11 +104,11 @@
             var minv;
             var maxv;
             
-            minv = Math.min(...contData)*0.9;
-            maxv = Math.max(...contData)*1.2;
+            minv = Math.min.apply(null, contData);
+            maxv = Math.max.apply(null, contData);
             
-            plot.getOptions().yaxes[0].min = minv;
-            plot.getOptions().yaxes[0].max = maxv;
+            plot.getOptions().yaxes[0].min = minv*0.9;
+            plot.getOptions().yaxes[0].max = maxv*1.2;
             plot.setupGrid();
             plot.draw();
         });
@@ -114,17 +125,34 @@
             var minv;
             var maxv;
             
-            minv = Math.min(...specData)*0.9;
-            maxv = Math.max(...specData)*1.2;
+            minv = Math.min.apply(null, y2axis);
+            maxv = Math.max.apply(null, y2axis);
             smartscaling = true;
-            plot2.getOptions().yaxes[0].min = minv;
-            plot2.getOptions().yaxes[0].max = maxv;
+            console.log("smartScale2: min " + minv + " max " + maxv);
+            if (baseline_state == false) {
+				plot2.getOptions().yaxes[0].min = minv-2.5;
+				plot2.getOptions().yaxes[0].max = maxv+2.5;
+			}
+			else {
+				plot2.getOptions().yaxes[0].min = minv-0.25;
+				plot2.getOptions().yaxes[0].max = maxv+0.25;
+			}
             plot2.setupGrid();
             plot2.draw();
         });
         
         $("#smartScale2Reset").click(function() {
             smartscaling = false;
+            if (baseline_state == false) {
+				plot2.getOptions().yaxes[0].min = -80;
+				plot2.getOptions().yaxes[0].max = -40;
+			}
+			else {
+				plot2.getOptions().yaxes[0].min = -4;
+				plot2.getOptions().yaxes[0].max = 4;
+			}
+			plot2.setupGrid();
+			plot2.draw();
         });
         
         $("#showDoppler").change (function() {
@@ -303,7 +331,7 @@
          * For Spectral data
          */
         function onSpecFileData(thing) {
-            specData = thing.values;
+            specData = thing.values.slice();
             frequency = thing.frequency;
             bandwidth = thing.bandwidth;
             fftsize = thing.fftsize;
@@ -344,17 +372,8 @@
             var end = frequency + (bandwidth/2);
             var v = 0;
 
-            /*
-             * Need to make a record of the xaxis tic values
-             */
-            var xaxis = [];
-            
-            /*
-             * Need to make a record of the (possibly baselined)
-             *  y2axis (Spectral) values
-             */
-            var y2axis = [];
-            
+			y2axis = [];
+			xaxis = [];
             for (var i = 0; i < specData.length; ++i) {
                 var x = 0;
                 
@@ -409,11 +428,10 @@
              * peak is, like contData/specData, a persistent variable, since
              *  it has to record peak values over time.
              */
-            if (peak.length != y2axis.length) {
+            if (peak.length != y2axis.length && (y2axis.length > 10)) {
                 peak = y2axis.slice();
             }
-            else
-            {
+            else {
                 /*
                  * Check for new peak value at each position.
                  */
@@ -430,6 +448,7 @@
              */
             if (peakholdmode == true) {
                 var peaky = [];
+                
                 
                 /*
                  * Build up our 2nd dataset
