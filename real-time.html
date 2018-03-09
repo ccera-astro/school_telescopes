@@ -67,9 +67,10 @@
 		});
 		
 		
-		var baseline_state = false
+		var baseline_state = false;
 		var baseline = [];
 		var peak = [];
+		var smartscaling = false;
 		
 		var doppler = false;
 
@@ -148,7 +149,7 @@
 		});
 		
 		function onFileData(thing) {
-			data.unshift((thing.value*scaling)-offset);
+			data.unshift(thing.value);
 			data.pop();
 			expname = thing.expname;
 			dec = thing.dec;
@@ -166,31 +167,14 @@
 			frequency = thing.frequency;
 			bandwidth = thing.bandwidth;
 			fftsize = thing.fftsize;
-			if ($("#enableBaseline:checked").length > 0) {
-				if (baseline_state == false) {
-					baseline_state = true;
-					baseline = data2.slice();
-					plot2.getOptions().yaxes[0].min = -5;
-					plot2.getOptions().yaxes[0].max = 5;
-					plot2.setupGrid();
-					plot2.draw();
-				}
-			}
-			else {
-				baseline_state = false;
-				baseline = [];
-				plot2.getOptions().yaxes[0].min = -80;
-				plot2.getOptions().yaxes[0].max = -40;
-				plot2.setupGrid();
-				plot2.draw();
-			}
 		}
 		
+		plot2label = "Frequency (MHz)";
 		function update() {
 				
 			var res = [];
 			for (var i = 0; i < data.length; ++i) {
-				res.push([i*(updateInterval/1000.0), data[i]]);
+				res.push([i*(updateInterval/1000.0), (data[i]*scaling)-offset]);
 			}
 			plot.setData([res]);
 			
@@ -200,23 +184,7 @@
 			var end = frequency + (bandwidth/2);
 			var ndx = 0;
 			var v = 0;
-			var labelchange = false;
-			var tolabel = "Frequency (MHz)";
-			
-			if ($("#showDoppler:checked").length > 0) {
-				if (doppler == false) {
-					labelchange = true;
-					tolabel = "Doppler Velocity (km/sec)";
-					doppler = true;
-				}
-			}
-			else {
-				if (doppler == true) {
-					doppler = false;
-					labelchange = true;
-					tolabel = "Frequency (MHz)";
-				}
-			}
+
 			var xaxis = [];
 			var y2axis = [];
 			for (var i = 0; i < data2.length; ++i) {
@@ -248,7 +216,6 @@
 			
 			if (peak.length != y2axis.length) {
 				peak = y2axis.slice();
-				console.log("Reiniting peak...hmmmmm");
 			}
 			else
 			{
@@ -273,12 +240,8 @@
 				plot2.setData([res2]);
 			}
 
-			// Since the axes don't change, we don't need to call plot.setupGrid()
-			
-			if (labelchange == true) {
-				plot2.getOptions().xaxes[0].axisLabel = tolabel;
-				plot2.setupGrid();
-			}
+			plot2.getOptions().xaxes[0].axisLabel = plot2label;
+			plot2.setupGrid();
 
 			plot.draw();
 			plot2.draw();
@@ -310,13 +273,96 @@
 				 );
 		}
 
+        $("#smartScale").click(function() {
+
+			var minv;
+			var maxv;
+			
+			minv = Math.min(...data)*0.9;
+			maxv = Math.max(...data)*1.2;
+			
+			plot.getOptions().yaxes[0].min = minv;
+			plot.getOptions().yaxes[0].max = maxv;
+			plot.setupGrid();
+			plot.draw();
+		});
+		
+		$("#smartScaleReset").click(function() {
+			plot.getOptions().yaxes[0].min = 0.0;
+			plot.getOptions().yaxes[0].max = 1.0;
+			plot.setupGrid();
+			plot.draw();
+		});
+		
+	   $("#smartScale2").click(function() {
+
+			var minv;
+			var maxv;
+			
+			minv = Math.min(...data2)*0.9;
+			maxv = Math.max(...data2)*1.2;
+			smarscaling = true;
+			plot2.getOptions().yaxes[0].min = minv;
+			plot2.getOptions().yaxes[0].max = maxv;
+			plot2.setupGrid();
+			plot2.draw();
+		});
+		
+		$("#smartScale2Reset").click(function() {
+			smartscaling = false;
+		});
+		
+		$("#showDoppler").change (function() {
+			if ($(this).is(":checked")) {
+				doppler = true
+				plot2label = "Doppler Velocity (km/sec)";
+			}
+			else {
+				doppler = false
+				plot2label = "Frequency (MHz)";
+			}
+		});
+		
+		$("#peakHold").change (function() {
+			if ($(this).is(":checked")) {
+			}
+			else {
+			}
+		});
+		
+		$("#enableBaseline").change (function() {
+			if ($(this).is(":checked")) {
+				if (baseline_state == false) {
+					baseline_state = true;
+					baseline = data2.slice();
+					if (smartscaling == false) {
+						plot2.getOptions().yaxes[0].min = -5;
+						plot2.getOptions().yaxes[0].max = 5;
+						plot2.setupGrid();
+						plot2.draw();
+					}
+				}
+			}
+			else {
+				baseline_state = false;
+				baseline = [];
+					if (smartscaling == false) {
+					plot2.getOptions().yaxes[0].min = -80;
+					plot2.getOptions().yaxes[0].max = -40;
+					plot2.setupGrid();
+					plot2.draw();
+				}
+			}
+		});
+			
 		update();
+		
 
 	});
 
 	</script>
 </head>
-<body bgcolor="lightgray">
+<body bgcolor="LightGrey">
 
     <div id="PageTitle">
 		<h3>Experiment</h3>
@@ -329,12 +375,14 @@
 	</div>
 
 	<div id="Continuum" style="width:950px;height:300px"></div>
-	<p>
+
 	<h4 id="ContinuumHover">POS</h4>
-	</p>
+
     <p>
 		Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
 		Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
+		<button id="smartScale" type="button">Smart Scale</button>
+		<button id="smartScaleReset" type="button">Smart Scale Reset</button>
 	</p>
 	
 	<div id="header2">
@@ -342,12 +390,15 @@
 	</div>
 	
 	<div id="Spectral" style="width:950px;height:300px"></div>
-	<p>
+
 		<h4 id="SpectralHover">POS</h4>
-	</p>
-	<p>Apply Baseline Subtraction<input id="enableBaseline" type="checkbox"></input>
-	Show Doppler<input id="showDoppler" type="checkbox"></input>
-	Peak Hold<input id="peakHold" type="checkbox"></input>
+
+	<p>
+		Apply Baseline Subtraction<input id="enableBaseline" type="checkbox">
+	Show Doppler<input id="showDoppler" type="checkbox">
+	Peak Hold<input id="peakHold" type="checkbox">
+	<button type="button" id="smartScale2">Smart Scale</button>
+	<button type="button" id="smartScale2Reset">Reset Smart Scale</button>
 	</p>
 	
 	<hr>
