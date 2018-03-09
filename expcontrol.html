@@ -1,0 +1,57 @@
+<!--
+   fooey.html
+   
+   Copyright 2018 Marcus D. Leech <mleech@localhost.localdomain>
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.
+   
+   
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 1.24.1" />
+</head>
+
+<body>
+ <form action="/start.html" method="get">
+	 <h3>Start a New Experiment</h3>
+  Sample Rate <input type="radio" name="srate" value="3.0" checked>3 Msps
+  <input type="radio" name="srate" value="6.0">6 Msps<br>
+  Experiment Type<br>
+  <input type="radio" name="etype" value="radiometer" checked>Single Channel FFT Radiometer<br>
+  <input type="radio" name="etype" value="differential">Dual Channel Differential FFT Radiometer<br>
+  <input type="radio" name="etype" value="interferometer">Dual Channel FX Interferometer<br>
+  Frequency: <input type="text" name="freq" required value="1420.4058e6">
+  RF Gain: <input type="text" name="rfgain"required value="20"><br>
+  Experiment Name: <input type="text" name="expname" required maxlength=20><br>
+  
+  <input type="submit" value="Start">
+</form>
+<hr>
+<form action="/stop.html" method="get">
+Stop Currently Running Experiment
+<input type="submit" value="Stop">
+</form> 
+	
+</body>
+
+</html>
