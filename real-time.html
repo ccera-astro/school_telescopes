@@ -169,7 +169,7 @@
 			if ($("#enableBaseline:checked").length > 0) {
 				if (baseline_state == false) {
 					baseline_state = true;
-					baseline = data2;
+					baseline = data2.slice();
 					plot2.getOptions().yaxes[0].min = -5;
 					plot2.getOptions().yaxes[0].max = 5;
 					plot2.setupGrid();
@@ -219,7 +219,8 @@
 			}
 			var xaxis = [];
 			var y2axis = [];
-			for (var i = start; i <= end; i += step) {
+			for (var i = 0; i < data2.length; ++i) {
+				var x = 0;
 				if (baseline_state == true) {
 					v = data2[ndx] - baseline[ndx]
 				}
@@ -227,14 +228,16 @@
 					v = data2[ndx];
 				}
 				y2axis.push(v);
+
+				x = start+(i*step);
 				if (doppler != true) {
-					xaxis.push(i/1000000.0);
-					res2.push([i/1000000.0, v]);
+					xaxis.push(x/1000000.0);
+					res2.push([x/1000000.0, v]);
 			    }
 			    else {
 					var dv;
 					
-					dv = i-frequency;
+					dv = x-frequency;
 					dv /= frequency;
 					dv *= 299792.000;
 					xaxis.push(dv);
@@ -243,8 +246,9 @@
 				ndx++;
 			}
 			
-			if (peak.length != data2.length) {
-				peak = y2axis;
+			if (peak.length != y2axis.length) {
+				peak = y2axis.slice();
+				console.log("Reiniting peak...hmmmmm");
 			}
 			else
 			{
@@ -265,7 +269,7 @@
 			}
 			else
 			{
-				peak = y2axis;
+				peak = y2axis.slice();
 				plot2.setData([res2]);
 			}
 
