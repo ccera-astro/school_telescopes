@@ -1,406 +1,551 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Real Time Astronomy Data</title>
-	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
-	<script language="javascript" type="text/javascript" src="jquery.js"></script>
-	<script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
-	<script language="javascript" type="text/javascript" src="jquery.flot.axislabels.js"></script>
-	<script type="text/javascript">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Real Time Radio Astronomy Data</title>
+    <script language="javascript" type="text/javascript" src="jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery.flot.axislabels.js"></script>
+    <script type="text/javascript">
 
-	$(function() {
-        HOUR = 3600
-        UPDATE = 3
-		var data = [],
-			totalPoints = HOUR/UPDATE;
-		var data2 = [];
-		
-		var frequency = 0.0;
-		var bandwidth = 0.0;
-		var fftsize = 2048;
-		var dec = -90.0;
-		var lmst = "00:00:00";
-		var expname = "TESTING";
-		var latitude = -90.0;
-		var longitude = -180.0;
-		var updated = "";
+    $(function() {
+        var HOUR = 3600;
+        var UPDATE = 3;
+        var C = 299792.0;  // Speed of light in the void...
+        
+        var contData = [];  // The continuum data
+        var totalPoints = HOUR/UPDATE;  //number of Continuum points
+        var scaling = 1;  // Scaling for continuum data
+        var offset = 0;   // Offset for continuum data
+        
+        /*
+         * These can (and will) get updated during AJAX data loads
+         */
+        var frequency = 0.0;
+        var bandwidth = 0.0;
+        var fftsize = 2048;
+        var dec = -90.0;
+        var lmst = "00:00:00";
+        var expname = "TESTING";
+        var latitude = -90.0;
+        var longitude = -180.0;
+        var updated = "";
+        
+        var specData = [];  // The spectral data
+        
+        /*
+         * Place to record current baseline values
+         *  and remember current baselining-state
+         *  for spectral data.
+         */
+        var baseline_state = false;
+        var baseline = [];
+        
+        /*
+         * Peak-hold buffer for spectral data
+         */
+        var peak = [];
+        
+        /*
+         * Smart scaling control flag for spectral data
+         */
+        var smartscaling = false;
+        
+        /*
+         * Doppler-based X axis tics for spectral plot
+         */
+        var doppler = false;
+        
+        /*
+         * Spectral plot X axis label
+         */
+        var specXlabel = "Frequency (MHz)";
+        
+        /*
+         * Peak hold mode state
+         */
+        var peakholdmode = false;
+        
+        var updateInterval = UPDATE*1000;
+        
+        function zeroFilled() {
+            var res = [];
+            for (var i = 0; i < totalPoints; ++i) {
+                contData.push(0.0);
+                res.push([i*(updateInterval/1000.0), contData[i]]);
+            }
+            return res;
+        }
+        
+        function zeroSpectraFilled() {
+            var res = [];
+            for (var i = 0; i < fftsize; ++i) {
+                specData.push(-100.0);
+                res.push([i, specData[i]]);
+            }
+            return res;
+        }
 
-		var updateInterval = UPDATE*1000;
-		
-		function zeroFilled() {
-			var res = [];
-			for (var i = 0; i < totalPoints; ++i) {
-				data.push(0.0);
-				res.push([i*(updateInterval/1000.0), data[i]]);
-			}
-			return res;
-		}
-		
-		function zeroSpectraFilled() {
-			var res = [];
-			for (var i = 0; i < fftsize; ++i) {
-				data2.push(-100.0);
-				res.push([i, data2[i]]);
-			}
-			return res;
-		}
+        /*
+         * A number of on-click/on-change functions
+         */
+        $("#smartScale").click(function() {
 
-        var scaling = 1;
-        var offset = 0;
-		$("#scaling").val(scaling).change(function () {
-			var v = $(this).val();
-			if (v && !isNaN(+v)) {
-				scaling = +v;
-				if (scaling < 1) {
-					scaling = 1;
-				} else if (scaling > 100000) {
-					scaling = scaling;
-				}
-				$(this).val("" + scaling);
-			}
-		});
-		
-		$("#offset").val(offset).change(function () {
-			var v = $(this).val();
-			offset = v;
-			$(this).val("" + offset);
-		});
-		
-		
-		var baseline_state = false;
-		var baseline = [];
-		var peak = [];
-		var smartscaling = false;
-		
-		var doppler = false;
+            var minv;
+            var maxv;
+            
+            minv = Math.min(...contData)*0.9;
+            maxv = Math.max(...contData)*1.2;
+            
+            plot.getOptions().yaxes[0].min = minv;
+            plot.getOptions().yaxes[0].max = maxv;
+            plot.setupGrid();
+            plot.draw();
+        });
+        
+        $("#smartScaleReset").click(function() {
+            plot.getOptions().yaxes[0].min = 0.0;
+            plot.getOptions().yaxes[0].max = 1.0;
+            plot.setupGrid();
+            plot.draw();
+        });
+        
+       $("#smartScale2").click(function() {
 
-		var plot = $.plot("#Continuum", [ zeroFilled() ], {
-			series: {
-				shadowSize: 0,	// Drawing is faster without shadows
-				lines: {lineWidth: 1}
-			},
-			colors: ["blue", "red", "green", "purple"],
-			axisLabels : {
-				show: true
-			},
-			      xaxes: [{
+            var minv;
+            var maxv;
+            
+            minv = Math.min(...specData)*0.9;
+            maxv = Math.max(...specData)*1.2;
+            smartscaling = true;
+            plot2.getOptions().yaxes[0].min = minv;
+            plot2.getOptions().yaxes[0].max = maxv;
+            plot2.setupGrid();
+            plot2.draw();
+        });
+        
+        $("#smartScale2Reset").click(function() {
+            smartscaling = false;
+        });
+        
+        $("#showDoppler").change (function() {
+            if ($(this).is(":checked")) {
+                doppler = true
+                specXlabel = "Doppler Velocity (km/sec)";
+            }
+            else {
+                doppler = false
+                specXlabel = "Frequency (MHz)";
+            }
+            plot2.getOptions().xaxes[0].axisLabel = specXlabel;
+            plot2.setupGrid();
+            plot2.draw();
+        });
+        
+        $("#peakHold").change (function() {
+            if ($(this).is(":checked")) {
+                peakholdmode = true;
+            }
+            else {
+                peakholdmode = false;
+            }
+        });
+        
+        $("#enableBaseline").change (function() {
+            if ($(this).is(":checked")) {
+                if (baseline_state == false) {
+                    baseline_state = true;
+                    baseline = specData.slice();
+                    if (smartscaling == false) {
+                        plot2.getOptions().yaxes[0].min = -5;
+                        plot2.getOptions().yaxes[0].max = 5;
+                        plot2.setupGrid();
+                        plot2.draw();
+                    }
+                }
+            }
+            else {
+                baseline_state = false;
+                baseline = [];
+                    if (smartscaling == false) {
+                    plot2.getOptions().yaxes[0].min = -80;
+                    plot2.getOptions().yaxes[0].max = -40;
+                    plot2.setupGrid();
+                    plot2.draw();
+                }
+            }
+        });
+        
+        $("#scaling").val(scaling).change(function () {
+            var v = $(this).val();
+            if (v && !isNaN(+v)) {
+                scaling = +v;
+                if (scaling < 1) {
+                    scaling = 1;
+                } else if (scaling > 100000) {
+                    scaling = scaling;
+                }
+                $(this).val("" + scaling);
+            }
+        });
+        
+        $("#offset").val(offset).change(function () {
+            var v = $(this).val();
+            offset = v;
+            $(this).val("" + offset);
+        });
+        
+        
+        /*
+         * The continuum Flot plot object
+         */
+        var plot = $.plot("#Continuum", [ zeroFilled() ], {
+            series: {
+                shadowSize: 0,  // Drawing is faster without shadows
+                lines: {lineWidth: 1}
+            },
+            colors: ["blue", "red", "green", "purple"],
+            axisLabels : {
+                show: true
+            },
+                  xaxes: [{
             axisLabel: 'LMST Offset(Seconds)',
         }],
             yaxes: [{
-				axisLabel: 'Detector',
-				axisLabelPadding: 25
-				}],
-			xaxis: {
-				show: true
-			},
-			yaxis : {
-				min: 0,
-				max: 1.0
-			},
-			grid: {
-				backgroundColor : {colors : ["ivory", "Khaki"]},
-				hoverable: true
-				}
-		});
+                axisLabel: 'Detector',
+                axisLabelPadding: 25
+                }],
+            xaxis: {
+                show: true
+            },
+            yaxis : {
+                min: 0,
+                max: 1.0
+            },
+            grid: {
+                backgroundColor : {colors : ["ivory", "Khaki"]},
+                hoverable: true
+                }
+        });
 
-		var plot2 = $.plot("#Spectral", [ zeroSpectraFilled() ], {
-			series: {
-				shadowSize: 0,	// Drawing is faster without shadows
-				lines: {lineWidth: 1}
-			},
-			colors: ["blue", "red", "green", "purple"],
-			axisLabels : {
-				show: true
-			},
-			      xaxes: [{
+        /*
+         * The spectral Flot plot object
+         */
+        var plot2 = $.plot("#Spectral", [ zeroSpectraFilled() ], {
+            series: {
+                shadowSize: 0,
+                lines: {lineWidth: 1}
+            },
+            colors: ["blue", "red", "green", "purple"],
+            axisLabels : {
+                show: true
+            },
+                  xaxes: [{
             axisLabel: 'Frequency (MHz)',
         }],
             yaxes: [{
-				axisLabel: 'Rel. Power(dB)',
-				}],
-			xaxis: {
-				show: true
-			},
-			yaxis : {
-				min: -80,
-				max: -40
-			},
-			grid: {
-				backgroundColor : {colors : ["ivory", "Khaki"]},
-				hoverable: true
-				}
-		});
-		
-		$("#Continuum").bind("plothover", function (event, pos, item) {
-				var str = "(" + pos.x.toFixed(2) + "sec" + " " + pos.y.toFixed(2) + "units)";
-				$("#ContinuumHover").text(str);
-		});
+                axisLabel: 'Rel. Power(dB)',
+                }],
+            xaxis: {
+                show: true
+            },
+            yaxis : {
+                min: -80,
+                max: -40
+            },
+            grid: {
+                backgroundColor : {colors : ["ivory", "Khaki"]},
+                hoverable: true
+                }
+        });
+        
+        /*
+         * Hover functions for both Continuum and Spectral plots.
+         */
+        $("#Continuum").bind("plothover", function (event, pos, item) {
+                var str = "(" + pos.x.toFixed(2) + "sec" + " " + pos.y.toFixed(2) + "units)";
+                $("#ContinuumHover").text(str);
+        });
 
-		$("#Spectral").bind("plothover", function (event, pos, item) {
-			var stype;
-			if (doppler == true) {
-				stype = "km/s";
-			}
-			else {
-				stype = "MHz";
-			}
-			var str = "(" + pos.x.toFixed(2) + stype + " " + pos.y.toFixed(2) + "dB)";
-			$("#SpectralHover").text(str);
-		});
-		
-		function onFileData(thing) {
-			data.unshift(thing.value);
-			data.pop();
-			expname = thing.expname;
-			dec = thing.dec;
-			lmst = thing.lmst;
-			latitude = thing.latitude;
-			longitude = thing.longitude;
-			updated = thing.updated;
-			$("#PageTitle").html("<h3>" + "Experiment: " + expname + " DEC: " + dec + " LMST: " + lmst + "</h3>");
-			$("#Subtitle").html("<h4>" + "Latitude: " + latitude + " Longitude: " + longitude + " Updated: " + updated+"</h4>");
-			
-		}
+        $("#Spectral").bind("plothover", function (event, pos, item) {
+            var stype;
+            if (doppler == true) {
+                stype = "km/s";
+            }
+            else {
+                stype = "MHz";
+            }
+            var str = "(" + pos.x.toFixed(2) + stype + " " + pos.y.toFixed(2) + "dB)";
+            $("#SpectralHover").text(str);
+        });
+        
+        /*
+         * event functions for AJAX
+         */
+         
+        /*
+         * First for the Continuum data
+         */
+        function onFileData(thing) {
+            contData.unshift(thing.value);
+            contData.pop();
+            expname = thing.expname;
+            dec = thing.dec;
+            lmst = thing.lmst;
+            latitude = thing.latitude;
+            longitude = thing.longitude;
+            updated = thing.updated;
+            $("#PageTitle").html("<h3>" + "Experiment: " + expname + " DEC: " + dec + " LMST: " + lmst + "</h3>");
+            $("#Subtitle").html("<h4>" + "Latitude: " + latitude + " Longitude: " + longitude + " Updated: " + updated+"</h4>");
+            
+        }
 
+        /*
+         * For Spectral data
+         */
         function onSpecFileData(thing) {
-			data2 = thing.values;
-			frequency = thing.frequency;
-			bandwidth = thing.bandwidth;
-			fftsize = thing.fftsize;
-		}
-		
-		plot2label = "Frequency (MHz)";
-		function update() {
-				
-			var res = [];
-			for (var i = 0; i < data.length; ++i) {
-				res.push([i*(updateInterval/1000.0), (data[i]*scaling)-offset]);
-			}
-			plot.setData([res]);
-			
-			var res2 = [];
-			var step  = bandwidth/fftsize;
-			var start = frequency - (bandwidth/2);
-			var end = frequency + (bandwidth/2);
-			var ndx = 0;
-			var v = 0;
+            specData = thing.values;
+            frequency = thing.frequency;
+            bandwidth = thing.bandwidth;
+            fftsize = thing.fftsize;
+        }
+        
+        /*
+         * This function is called to do plot updates every interval seconds
+         */
+        function update() {
+            
+            /*
+             * First the Continuum data
+             *
+             * Fairly simple--apply scaling and offset and plot
+             */
+            var res = [];
+            for (var i = 0; i < contData.length; ++i) {
+                res.push([i*(updateInterval/1000.0), (contData[i]*scaling)-offset]);
+            }
+            plot.setData([res]);
+            
+            
+            /*
+             * Then the Spectral data
+             * More complicated.  Have to deal with:
+             *
+             *   o Baseline subtraction
+             *   o Doppler mode
+             */
+            var res2 = [];
+            
+            /*
+             * Fundamental parameters relating to frequency, so we can
+             *  set tics on X axis appropriately.
+             */
+            var step  = bandwidth/fftsize;
+            var start = frequency - (bandwidth/2);
+            var end = frequency + (bandwidth/2);
+            var v = 0;
 
-			var xaxis = [];
-			var y2axis = [];
-			for (var i = 0; i < data2.length; ++i) {
-				var x = 0;
-				if (baseline_state == true) {
-					v = data2[ndx] - baseline[ndx]
-				}
-				else {
-					v = data2[ndx];
-				}
-				y2axis.push(v);
+            /*
+             * Need to make a record of the xaxis tic values
+             */
+            var xaxis = [];
+            
+            /*
+             * Need to make a record of the (possibly baselined)
+             *  y2axis (Spectral) values
+             */
+            var y2axis = [];
+            
+            for (var i = 0; i < specData.length; ++i) {
+                var x = 0;
+                
+                /*
+                 * Deal with baselined data
+                 */
+                if (baseline_state == true) {
+                    v = specData[i] - baseline[i]
+                }
+                else {
+                    v = specData[i];
+                }
+                y2axis.push(v);
 
-				x = start+(i*step);
-				if (doppler != true) {
-					xaxis.push(x/1000000.0);
-					res2.push([x/1000000.0, v]);
-			    }
-			    else {
-					var dv;
-					
-					dv = x-frequency;
-					dv /= frequency;
-					dv *= 299792.000;
-					xaxis.push(dv);
-					res2.push([dv, v]);
-				}
-				ndx++;
-			}
-			
-			if (peak.length != y2axis.length) {
-				peak = y2axis.slice();
-			}
-			else
-			{
-				for (var i = 0; i < peak.length; i++) {
-					if (y2axis[i] > peak[i]) {
-						peak[i] = y2axis[i];
-					}
-				}
-			}
-			
-			if ($("#peakHold:checked").length > 0) {
-				var peaky = [];
-				
-				for (var i = 0; i < peak.length; i++) {
-					peaky.push([xaxis[i],peak[i]]);
-				}
-				plot2.setData([res2,peaky]);
-			}
-			else
-			{
-				peak = y2axis.slice();
-				plot2.setData([res2]);
-			}
+                /*
+                 * Current x-axis value
+                 */
+                x = start+(i*step);
+                
+                /*
+                 * If doing just regular frequency...
+                 */
+                if (doppler != true) {
+                    
+                    /*
+                     * xaxis record in MHz
+                     */
+                    xaxis.push(x/1000000.0);
+                    res2.push([x/1000000.0, v]);
+                }
+                /*
+                 * Doing doppler tics (km/sec)
+                 */
+                else {
+                    var dv;
+                    
+                    /*
+                     * x contains current frequency value
+                     */
+                    dv = x-frequency; // frequency offset from Fc
+                    dv /= frequency; // as fraction of Fc
+                    dv *= C  // Scaled to C in km/sec
+                    
+                    xaxis.push(dv);
+                    res2.push([dv, v]);
+                }
+            }
+            
+            /*
+             * data length changed, reset our peak recorder
+             *
+             * peak is, like contData/specData, a persistent variable, since
+             *  it has to record peak values over time.
+             */
+            if (peak.length != y2axis.length) {
+                peak = y2axis.slice();
+            }
+            else
+            {
+                /*
+                 * Check for new peak value at each position.
+                 */
+                for (var i = 0; i < peak.length; i++) {
+                    if (y2axis[i] > peak[i]) {
+                        peak[i] = y2axis[i];
+                    }
+                }
+            }
+            
+            /*
+             * If we're using peak hold mode, we need to create a 2nd
+             *  dataset containing the peak-hold values.
+             */
+            if (peakholdmode == true) {
+                var peaky = [];
+                
+                /*
+                 * Build up our 2nd dataset
+                 */
+                for (var i = 0; i < peak.length; i++) {
+                    peaky.push([xaxis[i],peak[i]]);
+                }
+                /*
+                 * Call the plotter
+                 */
+                plot2.setData([res2,peaky]);
+            }
+            /*
+             * Just plot 'res2' -- no peak hold dataset
+             */
+            else
+            {
+                peak = y2axis.slice();
+                plot2.setData([res2]);
+            }
 
-			plot2.getOptions().xaxes[0].axisLabel = plot2label;
-			plot2.setupGrid();
+            /*
+             * The label for the spectral plot X axis may have changed
+             *   reset the grid on each plot.
+             */
+            plot2.getOptions().xaxes[0].axisLabel = specXlabel;
+            plot2.setupGrid();
 
-			plot.draw();
-			plot2.draw();
-			
-			setTimeout(update, updateInterval);
-			$.ajax(
-			    {url: "astro_data/tpower.json",
-					type: "GET",
-				dataType: "json",
-				beforeSend: function(xhr){
-					if (xhr.overrideMimeType)
-					{
-					  xhr.overrideMimeType("application/json");
-					}
-				 },
-				 success: onFileData}
-				 );
-			$.ajax(
-			    {url: "astro_data/spectral.json",
-					type: "GET",
-				dataType: "json",
-				beforeSend: function(xhr){
-					if (xhr.overrideMimeType)
-					{
-					  xhr.overrideMimeType("application/json");
-					}
-				 },
-				 success: onSpecFileData}
-				 );
-		}
+            /*
+             * Finally draw the plots
+             */
+            plot.draw();
+            plot2.draw();
+            
+            /*
+             * Schedule some AJAX data retrievals
+             */
+            $.ajax(
+                {url: "astro_data/tpower.json",
+                    type: "GET",
+                dataType: "json",
+                beforeSend: function(xhr){
+                    if (xhr.overrideMimeType)
+                    {
+                      xhr.overrideMimeType("application/json");
+                    }
+                 },
+                 success: onFileData}
+                 );
+            $.ajax(
+                {url: "astro_data/spectral.json",
+                    type: "GET",
+                dataType: "json",
+                beforeSend: function(xhr){
+                    if (xhr.overrideMimeType)
+                    {
+                      xhr.overrideMimeType("application/json");
+                    }
+                 },
+                 success: onSpecFileData}
+                 );
+            
+            /*
+             * Reschedule ourselves...
+             */  
+            setTimeout(update, updateInterval);
+        }
 
-        $("#smartScale").click(function() {
 
-			var minv;
-			var maxv;
-			
-			minv = Math.min(...data)*0.9;
-			maxv = Math.max(...data)*1.2;
-			
-			plot.getOptions().yaxes[0].min = minv;
-			plot.getOptions().yaxes[0].max = maxv;
-			plot.setupGrid();
-			plot.draw();
-		});
-		
-		$("#smartScaleReset").click(function() {
-			plot.getOptions().yaxes[0].min = 0.0;
-			plot.getOptions().yaxes[0].max = 1.0;
-			plot.setupGrid();
-			plot.draw();
-		});
-		
-	   $("#smartScale2").click(function() {
+            
+        update();
+        
 
-			var minv;
-			var maxv;
-			
-			minv = Math.min(...data2)*0.9;
-			maxv = Math.max(...data2)*1.2;
-			smarscaling = true;
-			plot2.getOptions().yaxes[0].min = minv;
-			plot2.getOptions().yaxes[0].max = maxv;
-			plot2.setupGrid();
-			plot2.draw();
-		});
-		
-		$("#smartScale2Reset").click(function() {
-			smartscaling = false;
-		});
-		
-		$("#showDoppler").change (function() {
-			if ($(this).is(":checked")) {
-				doppler = true
-				plot2label = "Doppler Velocity (km/sec)";
-			}
-			else {
-				doppler = false
-				plot2label = "Frequency (MHz)";
-			}
-		});
-		
-		$("#peakHold").change (function() {
-			if ($(this).is(":checked")) {
-			}
-			else {
-			}
-		});
-		
-		$("#enableBaseline").change (function() {
-			if ($(this).is(":checked")) {
-				if (baseline_state == false) {
-					baseline_state = true;
-					baseline = data2.slice();
-					if (smartscaling == false) {
-						plot2.getOptions().yaxes[0].min = -5;
-						plot2.getOptions().yaxes[0].max = 5;
-						plot2.setupGrid();
-						plot2.draw();
-					}
-				}
-			}
-			else {
-				baseline_state = false;
-				baseline = [];
-					if (smartscaling == false) {
-					plot2.getOptions().yaxes[0].min = -80;
-					plot2.getOptions().yaxes[0].max = -40;
-					plot2.setupGrid();
-					plot2.draw();
-				}
-			}
-		});
-			
-		update();
-		
+    });
 
-	});
-
-	</script>
+    </script>
 </head>
 <body bgcolor="LightGrey">
 
     <div id="PageTitle">
-		<h3>Experiment</h3>
+        <h3>Experiment</h3>
     </div>
     <div id="Subtitle">
-		<h4>Subs</h4>
+        <h4>Subs</h4>
     </div>
-	<div id="header">
-		<h3>Continuum Data</h3>
-	</div>
+    <div id="header">
+        <h3>Continuum Data</h3>
+    </div>
 
-	<div id="Continuum" style="width:950px;height:300px"></div>
+    <div id="Continuum" style="width:950px;height:300px"></div>
 
-	<h4 id="ContinuumHover">POS</h4>
+    <h4 id="ContinuumHover">POS</h4>
 
     <p>
-		Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
-		Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
-		<button id="smartScale" type="button">Smart Scale</button>
-		<button id="smartScaleReset" type="button">Smart Scale Reset</button>
-	</p>
-	
-	<div id="header2">
-		<h3>Spectral Data</h3>
-	</div>
-	
-	<div id="Spectral" style="width:950px;height:300px"></div>
+        Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
+        Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
+        <button id="smartScale" type="button">Smart Scale</button>
+        <button id="smartScaleReset" type="button">Smart Scale Reset</button>
+    </p>
+    
+    <div id="header2">
+        <h3>Spectral Data</h3>
+    </div>
+    
+    <div id="Spectral" style="width:950px;height:300px"></div>
 
-		<h4 id="SpectralHover">POS</h4>
+        <h4 id="SpectralHover">POS</h4>
 
-	<p>
-		Apply Baseline Subtraction<input id="enableBaseline" type="checkbox">
-	Show Doppler<input id="showDoppler" type="checkbox">
-	Peak Hold<input id="peakHold" type="checkbox">
-	<button type="button" id="smartScale2">Smart Scale</button>
-	<button type="button" id="smartScale2Reset">Reset Smart Scale</button>
-	</p>
-	
-	<hr>
-	<p><small>Flot: Copyright 2007-2014 IOLA and Ole Laursen</small></p>
+    <p>
+        Apply Baseline Subtraction<input id="enableBaseline" type="checkbox">
+    Show Doppler<input id="showDoppler" type="checkbox">
+    Peak Hold<input id="peakHold" type="checkbox">
+    <button type="button" id="smartScale2">Smart Scale</button>
+    <button type="button" id="smartScale2Reset">Reset Smart Scale</button>
+    </p>
+    
+    <hr>
+    <p><small>Flot: Copyright 2007-2014 IOLA and Ole Laursen</small></p>
 </body></html>
