@@ -31,7 +31,7 @@ def cur_sidereal(longitude):
     
 count = 0
 curr_det = -99.00
-def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha):
+def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     global then
     global count
     global curr_det
@@ -65,14 +65,8 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha):
     
     tfn = expname + "-" + dprefix + "-tp.csv"
     sfn = expname + "-" + dprefix + "-spec.csv"
-    
+  
     #
-    #
-    # PLACEHOLDER!!!!!!
-    #
-    #
-    declination = latitude
-
     # Form the buffer we're going to log to files
     #
 
@@ -166,16 +160,17 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha):
     #
     # Roughly once a minute, handle old-data removal
     #
-    if ((count % 30) == 0):
-        ltp = time.gmtime((time.time()-DAY*WEEK))
-        dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
-        
-        tfn = expname + "-" + dprefix + "-tp.csv"
-        sfn = expname + "-" + dprefix + "-spec.csv"
-        if (os.path.exists(tfn)):
-            os.remove(tfn)
-        if (os.path.exists(sfn)):
-            os.remove(sfn)
+    if ((count % 60) == 0):
+        start = int(time.time()) - ((DAY*WEEK)*2)
+        for tday in range(start,start+(DAY*WEEK),DAY):
+            ltp = time.gmtime(tday)
+            dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
+            tfn = expname + "-" + dprefix + "-tp.csv"
+            sfn = expname + "-" + dprefix + "-spec.csv"
+            if (os.path.exists(tfn)):
+                os.remove(tfn)
+            if (os.path.exists(sfn)):
+                os.remove(sfn)
         
     count += 1
     return True

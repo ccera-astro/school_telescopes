@@ -14,7 +14,7 @@
 		// be fetched from a server
 
         HOUR = 3600
-        UPDATE = 2
+        UPDATE = 3
 		var data = [],
 			totalPoints = HOUR/UPDATE;
 		var data2 = [];
@@ -76,6 +76,9 @@
 		
 		var baseline_state = false
 		var baseline = [];
+		var peak = [];
+		
+		var doppler = false;
 
 		var plot = $.plot("#Continuum", [ zeroFilled() ], {
 			series: {
@@ -102,6 +105,7 @@
 			},
 			grid: {
 				backgroundColor : {colors : ["ivory", "Khaki"]},
+				hoverable: true
 				}
 		});
 
@@ -129,7 +133,25 @@
 			},
 			grid: {
 				backgroundColor : {colors : ["ivory", "Khaki"]},
+				hoverable: true
 				}
+		});
+		
+		$("#Continuum").bind("plothover", function (event, pos, item) {
+				var str = "(" + pos.x.toFixed(2) + "sec" + " " + pos.y.toFixed(2) + "units)";
+				$("#ContinuumHover").text(str);
+		});
+
+		$("#Spectral").bind("plothover", function (event, pos, item) {
+			var stype;
+			if (doppler == true) {
+				stype = "km/s";
+			}
+			else {
+				stype = "MHz";
+			}
+			var str = "(" + pos.x.toFixed(2) + stype + " " + pos.y.toFixed(2) + "dB)";
+			$("#SpectralHover").text(str);
 		});
 		
 		function onFileData(thing) {
@@ -171,7 +193,6 @@
 			}
 		}
 		
-		var doppler = false;
 		function update() {
 				
 			var res = [];
@@ -203,6 +224,8 @@
 					tolabel = "Frequency (MHz)";
 				}
 			}
+			var xaxis = [];
+			var y2axis = [];
 			for (var i = start; i < end; i += step) {
 				if (baseline_state == true) {
 					v = data2[ndx] - baseline[ndx]
@@ -210,9 +233,10 @@
 				else {
 					v = data2[ndx];
 				}
+				y2axis.push(v);
 				if (doppler != true) {
+					xaxis.push(i/1000000.0);
 					res2.push([i/1000000.0, v]);
-					console.log("Doing non-doppler");
 			    }
 			    else {
 					var dv;
@@ -220,12 +244,37 @@
 					dv = i-frequency;
 					dv /= frequency;
 					dv *= 299792.000;
+					xaxis.push(dv);
 					res2.push([dv, v]);
-					console.log("Doing doppler");
 				}
 				ndx++;
 			}
-			plot2.setData([res2]);
+			
+			if (peak.length != data2.length) {
+				peak = y2axis;
+			}
+			else
+			{
+				for (var i = 0; i < peak.length; i++) {
+					if (y2axis[i] > peak[i]) {
+						peak[i] = y2axis[i];
+					}
+				}
+			}
+			
+			if ($("#peakHold:checked").length > 0) {
+				var peaky = [];
+				
+				for (var i = 0; i < peak.length; i++) {
+					peaky.push([xaxis[i],peak[i]]);
+				}
+				plot2.setData([res2,peaky]);
+			}
+			else
+			{
+				peak = y2axis;
+				plot2.setData([res2]);
+			}
 
 			// Since the axes don't change, we don't need to call plot.setupGrid()
 			
@@ -283,6 +332,9 @@
 	</div>
 
 	<div id="Continuum" style="width:950px;height:300px"></div>
+	<p>
+	<h4 id="ContinuumHover">POS</h4>
+	</p>
     <p>
 		Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
 		Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
@@ -293,8 +345,12 @@
 	</div>
 	
 	<div id="Spectral" style="width:950px;height:300px"></div>
-	<p>Apply Baselining<input id="enableBaseline" type="checkbox"></input>
+	<p>
+		<h4 id="SpectralHover">POS</h4>
+	</p>
+	<p>Apply Baseline Subtraction<input id="enableBaseline" type="checkbox"></input>
 	Show Doppler<input id="showDoppler" type="checkbox"></input>
+	Peak Hold<input id="peakHold" type="checkbox"></input>
 	</p>
 	
 	<hr>
