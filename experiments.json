@@ -1,0 +1,59 @@
+{
+	"myhw" : "School1",
+    "hwtypes" :
+    {
+        "School1" :
+        {
+            "Radiometer" : {"device" : "airpsy=0,pack=1", "rates" : [3.6], "freqs" : [25e6,1600e6],
+                "command" : "radiometer.py", "rfgain" : 25, "ifgain" : 15, "bbgain" : 15,
+                "local" : "/mnt/data/astro_data"}
+        },
+        "School2" :
+        {
+            "Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1", "rates" : [1,2,3,4,5,6,7,8], 
+                "freqs" : [10e6,3.8e9],
+                "command" : "radiometer.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"},
+                
+            "Differential" : {"device" : "soapy=0,device=limesdr,nchan=2", "rates" : [1,2,3,4,5,6,7,8],
+                "freqs" : [10e6,3.8e9],
+                "command" : "differential.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"},
+            
+            "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2", "rates" : [1,2,3,4,5,6,7,8],
+                "freqs" : [10e6,3.8e9],
+                "command" : "interferometer.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"}
+        },
+        "Hobby1" :
+        {
+            "Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1", "rates" : [1,2,3,4,5,6,7,8],
+                "freqs" : [10e6,3.8e9],
+                "command" : "radiometer.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"},
+                
+            "Differential" : {"device" : "soapy=0,device=limesdr,nchan=2", "rates" : [1,2,3,4,5,6,7,8],
+                "freqs" : [10e6,3.8e9],
+                "command" : "differential.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"},
+            
+            "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2", "rates" : [1,2,3,4,5,6,7,8],
+                "freqs" : [10e6,3.8e9],
+                "command" : "interferometer.py", "rfgain" : 35, "ifgain" : 5, "bbgain" : 5, 
+                "antenna" : "LNAW", "local" : "/mnt/data/astro_data"}
+        },
+        "Econo1" : 
+        {
+			"Radiometer" : {"device" : "rtl=SKY", "rates" : [1.0,2.0,2.5],
+                "freqs" : [25e6,1.5e9],
+                "command" : "radiometer.py", "rfgain" : 30, "ifgain" : 20, "bbgain" : 15, 
+                "local" : "/mnt/data/astro_data"},
+                
+            "Differential" : {"device" : "rtl=SKY rtl=REF", "rates" : [1.0,2.0,2.5],
+                "freqs" : [25e6,1.5e9],
+                "command" : "differential.py", "rfgain" : 30, "ifgain" : 20, "bbgain" : 15, 
+                "local" : "/mnt/data/astro_data"}
+        }
+    }
+}
+        
