@@ -19,7 +19,7 @@
                 3.0 : "srate3", 4.0 : "srate4", 6.0 : "srate6", 8.0 : "srate8", 10.0 : "srate10"}
                 
             key1 = hjson.myhw;
-            $("#radioType").text("Installed Receiver(s): "+hjson.hwtypes[key1].hwname);
+            $("#radioType").text("Installed Receiver(s): "+hjson.hwtypes[key1].hwname + " @" + window.location.origin);
             
             /*
              * Adjust available experiment types
