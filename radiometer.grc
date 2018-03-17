@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.11'?>
+<?grc format='1' created='3.7.12'?>
 <flow_graph>
   <timestamp>Sat Feb 24 14:26:55 2018</timestamp>
   <block>
     <key>options</key>
     <param>
       <key>author</key>
-      <value></value>
+      <value>Marcus Leech, CCERA</value>
     </param>
     <param>
       <key>window_size</key>
@@ -22,7 +22,7 @@
     </param>
     <param>
       <key>description</key>
-      <value></value>
+      <value>A FFT-based radiometer/spectrometer</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -46,7 +46,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>school_telescope_v1</value>
+      <value>radiometer</value>
     </param>
     <param>
       <key>max_nouts</key>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
-      <value></value>
+      <value>FFT Radiometer</value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -272,6 +280,10 @@ For much-wider bandwidth, upping to
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -313,6 +325,10 @@ For much-wider bandwidth, upping to
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
@@ -503,6 +519,10 @@ For much-wider bandwidth, upping to
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -546,6 +566,10 @@ For much-wider bandwidth, upping to
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>string</value>
     </param>
@@ -587,6 +611,10 @@ For much-wider bandwidth, upping to
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
@@ -735,6 +763,10 @@ the shift operation here.</value>
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -776,6 +808,10 @@ the shift operation here.</value>
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
@@ -821,6 +857,10 @@ the shift operation here.</value>
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -864,6 +904,10 @@ the shift operation here.</value>
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -905,6 +949,10 @@ the shift operation here.</value>
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
@@ -2435,6 +2483,10 @@ Log files are created, as well as .JSON snapshot
       <value></value>
     </param>
     <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
       <key>type</key>
       <value>eng_float</value>
     </param>
@@ -2476,6 +2528,10 @@ Log files are created, as well as .JSON snapshot
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
@@ -2783,6 +2839,10 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <param>
       <key>short_id</key>
       <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
     </param>
     <param>
       <key>type</key>
