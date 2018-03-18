@@ -72,7 +72,7 @@
                 "command" : "radiometer.py"},
                 
             "Differential" : {"device" : "uhd=0,type=b200,nchan=2,num_recv_frames=256",
-                "command" : "differential.py"},
+                "command" : "radiometer.py"},
             
             "Interferometer" : {"device" : "uhd=0,type=b200,nchan=2,num_recv_frames=256",
                 "command" : "interferometer.py"}
@@ -91,7 +91,7 @@
                 "command" : "radiometer.py"},
                 
             "Differential" : {"device" : "rtl=SKY rtl=REF",
-                "command" : "differential.py"}
+                "command" : "radiometer.py"}
         }
     }
 }
