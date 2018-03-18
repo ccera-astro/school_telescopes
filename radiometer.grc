@@ -10,7 +10,7 @@
     </param>
     <param>
       <key>window_size</key>
-      <value></value>
+      <value>1800,1800</value>
     </param>
     <param>
       <key>category</key>
@@ -66,7 +66,7 @@
     </param>
     <param>
       <key>run_options</key>
-      <value>prompt</value>
+      <value>run</value>
     </param>
     <param>
       <key>run</key>
@@ -106,7 +106,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 236)</value>
+      <value>(24, 428)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -133,7 +133,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 100)</value>
+      <value>(1096, 164)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -160,7 +160,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1080, 124)</value>
+      <value>(1416, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -172,7 +172,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>school_helper.log(probe_result,longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination)</value>
+      <value>radiometer_helper.log([probe_result,probe_result1],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination)</value>
     </param>
   </block>
   <block>
@@ -199,7 +199,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 96)</value>
+      <value>(1272, 96)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -208,6 +208,49 @@ For much-wider bandwidth, upping to
     <param>
       <key>id</key>
       <value>probe_result</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>[0.1]*fftsize</value>
+    </param>
+    <param>
+      <key>poll_rate</key>
+      <value>1.0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_function_probe</key>
+    <param>
+      <key>block_id</key>
+      <value>fft_probe1</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>function_args</key>
+      <value></value>
+    </param>
+    <param>
+      <key>function_name</key>
+      <value>level</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1272, 184)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>probe_result1</value>
     </param>
     <param>
       <key>value</key>
@@ -230,7 +273,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 160)</value>
+      <value>(24, 356)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -243,6 +286,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>value</key>
       <value>int(srate)</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(688, 888)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>abw</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Analog Bandwidth</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>5.0e6</value>
     </param>
   </block>
   <block>
@@ -290,6 +380,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>value</key>
       <value>0.3</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(536, 888)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>antenna</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Antenna Selector</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value></value>
     </param>
   </block>
   <block>
@@ -359,7 +496,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(552, 228)</value>
+      <value>(712, 44)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -368,6 +505,49 @@ For much-wider bandwidth, upping to
     <param>
       <key>id</key>
       <value>blocks_complex_to_mag_squared_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_complex_to_mag_squared</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(720, 308)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_complex_to_mag_squared_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -402,7 +582,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 36)</value>
+      <value>(1120, 36)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -411,6 +591,57 @@ For much-wider bandwidth, upping to
     <param>
       <key>id</key>
       <value>blocks_keep_one_in_n_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>n</key>
+      <value>frate*2</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_keep_one_in_n</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1120, 300)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_keep_one_in_n_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -453,7 +684,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(440, 84)</value>
+      <value>(528, 132)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -462,6 +693,57 @@ For much-wider bandwidth, upping to
     <param>
       <key>id</key>
       <value>blocks_stream_to_vector_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>num_items</key>
+      <value>fftsize</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_stream_to_vector</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(528, 188)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_stream_to_vector_0_0</value>
     </param>
     <param>
       <key>type</key>
@@ -575,7 +857,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>airspy=0,pack=1</value>
+      <value>airspy=0,pack=1 file=/dev/zero,rate=10.0e6</value>
     </param>
   </block>
   <block>
@@ -645,7 +927,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 44)</value>
+      <value>(1360, 44)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -654,6 +936,45 @@ For much-wider bandwidth, upping to
     <param>
       <key>id</key>
       <value>fft_probe</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_probe_signal_vx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1328, 308)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fft_probe1</value>
     </param>
     <param>
       <key>type</key>
@@ -693,7 +1014,7 @@ the shift operation here.</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(312, 248)</value>
+      <value>(704, 128)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -702,6 +1023,69 @@ the shift operation here.</value>
     <param>
       <key>id</key>
       <value>fft_vxx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>nthreads</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>shift</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>window</key>
+      <value>window.blackmanharris(fftsize)</value>
+    </param>
+  </block>
+  <block>
+    <key>fft_vxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>fft_size</key>
+      <value>fftsize</value>
+    </param>
+    <param>
+      <key>forward</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(432, 312)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fft_vxx_0_0</value>
     </param>
     <param>
       <key>type</key>
@@ -972,10 +1356,10 @@ the shift operation here.</value>
     <param>
       <key>comment</key>
       <value>What happens here is that once per second,
-  school_helper.log() is called with a bunch
-  of parameters, including the FFT vector.
+  radiometer_helper.log() is called with a bunch
+  of parameters, including the FFT vectors.
 
-Said vector has already been integrated
+Said vectors have already been integrated
 fairly heavily, and contains the FFT
 magnitude data in *linear* form.
 
@@ -995,7 +1379,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(864, 228)</value>
+      <value>(1496, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1042,6 +1426,40 @@ Log files are created, as well as .JSON snapshot
     </param>
   </block>
   <block>
+    <key>note</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>This FG ALWAYS runs as a DIFFERENTIAL 
+radiometer.  In the case of a single receiver
+we use the /dev/zero file as a source of 
+virtual zero-valued samples.</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(400, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>note_2</value>
+    </param>
+    <param>
+      <key>note</key>
+      <value></value>
+    </param>
+  </block>
+  <block>
     <key>osmosdr_source</key>
     <param>
       <key>alias</key>
@@ -1049,7 +1467,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>ant0</key>
-      <value></value>
+      <value>antenna</value>
     </param>
     <param>
       <key>bb_gain0</key>
@@ -1057,7 +1475,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>bw0</key>
-      <value>0</value>
+      <value>abw</value>
     </param>
     <param>
       <key>dc_offset_mode0</key>
@@ -1489,15 +1907,15 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>ant1</key>
-      <value></value>
+      <value>antenna</value>
     </param>
     <param>
       <key>bb_gain1</key>
-      <value>20</value>
+      <value>bbgain</value>
     </param>
     <param>
       <key>bw1</key>
-      <value>0</value>
+      <value>abw</value>
     </param>
     <param>
       <key>dc_offset_mode1</key>
@@ -1509,7 +1927,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>freq1</key>
-      <value>100e6</value>
+      <value>freq</value>
     </param>
     <param>
       <key>gain_mode1</key>
@@ -1517,7 +1935,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>if_gain1</key>
-      <value>20</value>
+      <value>ifgain</value>
     </param>
     <param>
       <key>iq_balance_mode1</key>
@@ -1525,7 +1943,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>gain1</key>
-      <value>10</value>
+      <value>rfgain</value>
     </param>
     <param>
       <key>ant20</key>
@@ -2345,7 +2763,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(192, 20)</value>
+      <value>(200, 8)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2429,7 +2847,7 @@ Log files are created, as well as .JSON snapshot
     </param>
     <param>
       <key>nchan</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>num_mboards</key>
@@ -2446,6 +2864,265 @@ Log files are created, as well as .JSON snapshot
     <param>
       <key>sync</key>
       <value></value>
+    </param>
+  </block>
+  <block>
+    <key>epy_module</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>source_code</key>
+      <value># this module will be imported in the into your flowgraph
+import os
+import ephem
+import json
+import math
+import numpy
+import time
+
+
+then = time.time()
+
+def cur_sidereal(longitude):
+    longstr = "%02d" % int(longitude)
+    longstr = longstr + ":"
+    longitude = abs(longitude)
+    frac = longitude - int(longitude)
+    frac *= 60
+    mins = int(frac)
+    longstr += "%02d" % mins
+    longstr += ":00"
+    x = ephem.Observer()
+    x.date = ephem.now()
+    x.long = longstr
+    jdate = ephem.julian_date(x)
+    tokens=str(x.sidereal_time()).split(":")
+    hours=int(tokens[0])
+    minutes=int(tokens[1])
+    seconds=int(float(tokens[2]))
+    sidt = "%02d,%02d,%02d" % (hours, minutes, seconds)
+    return (sidt)
+    
+count = 0
+curr_det = -99.00
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
+    global then
+    global count
+    global curr_det
+    
+    #
+    # Protect against getting called too often
+    #
+    if ((time.time() - then) &lt; 1.0):
+        return False
+    else:
+        then = time.now()
+    
+    beta = 1.0-alpha
+    
+    sums = []
+    sffts = []
+    for fft in ffts:
+        
+        #first shift the fft output
+        lfft = len(fft)
+        newfft = fft[lfft/2:lfft]
+        newfft += fft[0:lfft/2]
+        
+        #
+        # Scale by FFT size
+        #
+        newfft = numpy.divide (newfft, [lfft]*lfft)
+        sffts.append(newfft)
+    
+    #
+    # Handle differencing of the two FFT arrays
+    #
+    if (len(ffts) == 1):
+        sfft = sffts[0]
+    else:
+        sfft = numpy.subtract(sffts[0], sffts[1])
+    
+    #
+    # Total power is the sum of the (possibly differenced) linear-form
+    #   FFT magnitude output
+    # I THINK THIS IS THE MOST NUMERICALLY-CORRECT APPROACH.  BUT I
+    #   COULD BE WILDLY WRONG.
+    #
+    tpower = numpy.sum(sfft)
+    
+    #
+    # Smooth total power estimate with single-pole IIR filter
+    #
+    #
+    if (curr_det &lt; -50.0):
+        curr_det = tpower
+
+    curr_det = (alpha*tpower) + (beta*curr_det)
+    
+    #
+    # Scale into dB scale for logging
+    #
+    sfft = numpy.add(sfft,[1.0e-15]*lfft)
+    sfft = numpy.log10(sfft)
+    sfft = numpy.multiply (sfft, [10.0]*lfft)
+        
+   
+    ltp = time.gmtime()
+    sidt = cur_sidereal (longitude)
+    
+    dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
+    
+    tfn = expname + "-" + dprefix + "-tp.csv"
+    sfn = expname + "-" + dprefix + "-spec.csv"
+  
+    #
+    # Form the buffer we're going to log to files
+    #
+    
+    #
+    # Total (or differential) power first
+    #
+    tlogbuf = "%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
+    tlogbuf += "%s," % sidt
+    tlogbuf += "%9.4f," % (freq/1.0e6)
+    tlogbuf += "%5.2f," % declination
+    tlogbuf += "%e\n" % curr_det
+    
+    
+    #
+    # Then spectral
+    #
+    slogbuf = "%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
+    slogbuf += "%s," % sidt
+    slogbuf += "%9.4f," % (freq/1.0e6)
+    slogbuf += "%5.2f," % declination
+
+    #
+    # Spectral data--possibly differenced
+    #
+    for i in range(0,len(sfft)):
+        slogbuf += "%5.2f" % sfft[i]
+        if (i &lt; len(sfft)-1):
+            slogbuf += ","
+    slogbuf += "\n"
+       
+    if (local != "" and local != None):
+        if (os.path.exists(local)):
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(local,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
+            
+            if ((count % 30) == 0):
+                sfp = open(os.path.join(local,sfn), "a")
+                sfp.write (slogbuf)
+                sfp.close()
+                swritten = True
+    
+    if (remote != "" and remote != None):
+        if (os.path.exists(remote)):          
+            if ((count % 5) == 0):
+                tfp = open (os.path.join(remote,tfn), "a")
+                tfp.write (tlogbuf)
+                tfp.close()
+            
+            if ((count % 30) == 0):
+                sfp = open(os.path.join(remote,sfn), "a")
+                sfp.write (slogbuf)
+                sfp.close()
+                swritten = True
+    
+    #
+    # Handle json file for total power
+    #
+    ltp = time.gmtime()
+    
+    lupdate = "%04d%02d%02d-%02d:%02d:%02d" % (ltp.tm_year, ltp.tm_mon,
+        ltp.tm_mday, ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
+    
+    js = {"value" : tpower, "expname" : expname, "lmst" : sidt.replace(",", ":"), "dec" : declination,
+        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate}
+    jstring = json.dumps(js, indent=4)
+    
+    try:
+        jfp = open(os.path.join(local,"tpower.json"), "w")
+        jfp.write(jstring+"\n")
+        jfp.close()
+    except:
+        pass
+    
+    
+    #
+    # Handle json file for spectral
+    #
+    
+    if ((count % 2) == 0):
+        js = {"values" : list(sfft), "frequency" : freq, "bandwidth" : bw, "fftsize" : lfft}
+        jstring = json.dumps(js, indent=4)
+        
+        try:
+            jfp = open(os.path.join(local,"spectral.json"), "w")
+            jfp.write(jstring+"\n")
+            jfp.close()
+        except:
+            pass
+    
+    
+    
+    #
+    #
+    # Handle old data
+    #
+    DAY=86400
+    WEEK=7
+    
+    #
+    # Roughly once a minute, handle old-data removal
+    #
+    if ((count % 60) == 0):
+        start = int(time.time()) - ((DAY*WEEK)*2)
+        for tday in range(start,start+(DAY*WEEK),DAY):
+            ltp = time.gmtime(tday)
+            dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
+            tfn = expname + "-" + dprefix + "-tp.csv"
+            sfn = expname + "-" + dprefix + "-spec.csv"
+            if (os.path.exists(tfn)):
+                os.remove(tfn)
+            if (os.path.exists(sfn)):
+                os.remove(sfn)
+        
+    count += 1
+    return True
+    
+    
+    
+    
+    
+    
+</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>A bunch of helper code--mostly logging</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1528, 28)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>radiometer_helper</value>
     </param>
   </block>
   <block>
@@ -2543,200 +3220,22 @@ Log files are created, as well as .JSON snapshot
     </param>
   </block>
   <block>
-    <key>epy_module</key>
+    <key>single_pole_iir_filter_xx</key>
+    <param>
+      <key>alpha</key>
+      <value>1.0/(frate*20)</value>
+    </param>
     <param>
       <key>alias</key>
       <value></value>
     </param>
     <param>
-      <key>source_code</key>
-      <value># this module will be imported in the into your flowgraph
-import os
-import ephem
-import json
-import math
-import numpy
-import time
-
-
-then = time.time()
-
-def cur_sidereal(longitude):
-    longstr = "%02d" % int(longitude)
-    longstr = longstr + ":"
-    longitude = abs(longitude)
-    frac = longitude - int(longitude)
-    frac *= 60
-    mins = int(frac)
-    longstr += "%02d" % mins
-    longstr += ":00"
-    x = ephem.Observer()
-    x.date = ephem.now()
-    x.long = longstr
-    jdate = ephem.julian_date(x)
-    tokens=str(x.sidereal_time()).split(":")
-    hours=int(tokens[0])
-    minutes=int(tokens[1])
-    seconds=int(float(tokens[2]))
-    sidt = "%02d,%02d,%02d" % (hours, minutes, seconds)
-    return (sidt)
-    
-count = 0
-curr_det = -99.00
-def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
-    global then
-    global count
-    global curr_det
-    
-    beta = 1.0-alpha
-    
-    #first shift the fft output
-    lfft = len(fft)
-    newfft = fft[lfft/2:lfft]
-    newfft += fft[0:lfft/2]
-    
-    #
-    # Scale by FFT size
-    #
-    newfft = numpy.divide (newfft, [lfft]*lfft)
-    
-    tpower = numpy.sum(newfft)
-    if (curr_det &lt; -50.0):
-        curr_det = tpower
-    
-    curr_det = (alpha*tpower) + (beta*curr_det)
-    
-    newfft = numpy.add(newfft,[1.0e-10]*lfft)
-    newfft = numpy.log10(newfft)
-    newfft = numpy.multiply (newfft, [10.0]*lfft)
-    
-    ltp = time.gmtime()
-    sidt = cur_sidereal (longitude)
-    
-    dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
-    
-    tfn = expname + "-" + dprefix + "-tp.csv"
-    sfn = expname + "-" + dprefix + "-spec.csv"
-  
-    #
-    # Form the buffer we're going to log to files
-    #
-
-    tlogbuf = "%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
-    tlogbuf += "%s," % sidt
-    tlogbuf += "%9.4f," % (freq/1.0e6)
-    tlogbuf += "%5.2f," % declination
-    tlogbuf += "%e\n" % tpower
-    
-    
-    slogbuf = "%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
-    slogbuf += "%s," % sidt
-    slogbuf += "%9.4f," % (freq/1.0e6)
-    slogbuf += "%5.2f," % declination
-    for i in range(0,len(newfft)):
-        slogbuf += "%5.2f" % newfft[i]
-        if (i &lt; len(newfft)-1):
-            slogbuf += ","
-    slogbuf += "\n"
-       
-    if (local != "" and local != None):
-        if (os.path.exists(local)):
-            if ((count % 5) == 0):
-                tfp = open (os.path.join(local,tfn), "a")
-                tfp.write (tlogbuf)
-                tfp.close()
-            
-            if ((count % 30) == 0):
-                sfp = open(os.path.join(local,sfn), "a")
-                sfp.write (slogbuf)
-                sfp.close()
-                swritten = True
-    
-    if (remote != "" and remote != None):
-        if (os.path.exists(remote)):          
-            if ((count % 5) == 0):
-                tfp = open (os.path.join(remote,tfn), "a")
-                tfp.write (tlogbuf)
-                tfp.close()
-            
-            if ((count % 30) == 0):
-                sfp = open(os.path.join(remote,sfn), "a")
-                sfp.write (slogbuf)
-                sfp.close()
-                swritten = True
-    
-    #
-    # Handle json file for total power
-    #
-    ltp = time.gmtime()
-    
-    lupdate = "%04d%02d%02d-%02d:%02d:%02d" % (ltp.tm_year, ltp.tm_mon,
-        ltp.tm_mday, ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
-    
-    js = {"value" : tpower, "expname" : expname, "lmst" : sidt.replace(",", ":"), "dec" : declination,
-        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate}
-    jstring = json.dumps(js, indent=4)
-    
-    try:
-        jfp = open(os.path.join(local,"tpower.json"), "w")
-        jfp.write(jstring+"\n")
-        jfp.close()
-    except:
-        pass
-    
-    
-    #
-    # Handle json file for spectral
-    #
-    
-    if ((count % 2) == 0):
-        js = {"values" : list(newfft), "frequency" : freq, "bandwidth" : bw, "fftsize" : lfft}
-        jstring = json.dumps(js, indent=4)
-        
-        try:
-            jfp = open(os.path.join(local,"spectral.json"), "w")
-            jfp.write(jstring+"\n")
-            jfp.close()
-        except:
-            pass
-    
-    
-    
-    #
-    #
-    # Handle old data
-    #
-    DAY=86400
-    WEEK=7
-    
-    #
-    # Roughly once a minute, handle old-data removal
-    #
-    if ((count % 60) == 0):
-        start = int(time.time()) - ((DAY*WEEK)*2)
-        for tday in range(start,start+(DAY*WEEK),DAY):
-            ltp = time.gmtime(tday)
-            dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
-            tfn = expname + "-" + dprefix + "-tp.csv"
-            sfn = expname + "-" + dprefix + "-spec.csv"
-            if (os.path.exists(tfn)):
-                os.remove(tfn)
-            if (os.path.exists(sfn)):
-                os.remove(sfn)
-        
-    count += 1
-    return True
-    
-    
-    
-    
-    
-    
-</value>
+      <key>comment</key>
+      <value></value>
     </param>
     <param>
-      <key>comment</key>
-      <value>A bunch of helper code--mostly logging</value>
+      <key>affinity</key>
+      <value></value>
     </param>
     <param>
       <key>_enabled</key>
@@ -2744,7 +3243,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 204)</value>
+      <value>(904, 36)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2752,7 +3251,23 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     </param>
     <param>
       <key>id</key>
-      <value>school_helper</value>
+      <value>single_pole_iir_filter_xx_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fftsize</value>
     </param>
   </block>
   <block>
@@ -2779,7 +3294,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(656, 316)</value>
+      <value>(904, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2787,7 +3302,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     </param>
     <param>
       <key>id</key>
-      <value>single_pole_iir_filter_xx_0</value>
+      <value>single_pole_iir_filter_xx_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -2822,7 +3337,7 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(408, 900)</value>
+      <value>(408, 888)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2860,8 +3375,20 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_complex_to_mag_squared_0_0</source_block_id>
+    <sink_block_id>single_pole_iir_filter_xx_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_keep_one_in_n_0</source_block_id>
     <sink_block_id>fft_probe</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_keep_one_in_n_0_0</source_block_id>
+    <sink_block_id>fft_probe1</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2872,8 +3399,20 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_stream_to_vector_0_0</source_block_id>
+    <sink_block_id>fft_vxx_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>fft_vxx_0</source_block_id>
     <sink_block_id>blocks_complex_to_mag_squared_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>fft_vxx_0_0</source_block_id>
+    <sink_block_id>blocks_complex_to_mag_squared_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2884,8 +3423,20 @@ def log(fft,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>osmosdr_source_0</source_block_id>
+    <sink_block_id>blocks_stream_to_vector_0_0</sink_block_id>
+    <source_key>1</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>single_pole_iir_filter_xx_0</source_block_id>
     <sink_block_id>blocks_keep_one_in_n_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>single_pole_iir_filter_xx_0_0</source_block_id>
+    <sink_block_id>blocks_keep_one_in_n_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
