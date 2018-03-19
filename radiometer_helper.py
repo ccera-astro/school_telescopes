@@ -42,7 +42,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     if ((time.time() - then) < 1.0):
         return False
     else:
-        then = time.now()
+        then = time.time()
     
     beta = 1.0-alpha
     
