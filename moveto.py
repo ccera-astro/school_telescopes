@@ -19,7 +19,7 @@ buf=bytearray(64)
 
 sernums = []
 serh = serial.Serial (sys.argv[1], 38400, timeout=0)
-time.sleep(1.0)
+
 serh.write("GO\r")
 junk=serh.read(100)
 latitude=float(sys.argv[3])
@@ -46,6 +46,7 @@ wait=10
 then=time.time()
 count = 0
 done=False
+current_rate=None
 while done==False:
     for dind in range(0,len(devs)):
         buf[0] = 0x00
@@ -66,26 +67,49 @@ while done==False:
             avgangs[dind] = ang
         
         avgangs[dind] = (ang*alpha) + (avgangs[dind]*beta)
+        lastang = avgangs[0]
         
         if ((count % 5) == 0):
             print "Serial: %d angle %f" % (sernums[dind], avgangs[dind])
         now = time.time()
         if (now-then >= 5):
             count += 1
-            if (count > (15*10)):
-                print "Timed out waiting for motion"
+            if ((count % 30) == 0):
+                if (abs(lastang-avgangs[0]) < 0.15):
+                    print "No apparent motion!"
+                    serh.write("B25\r")
+                    serh.read(100)
+                    done=True
+                    break
+                else:
+                    lastang = avgangs[0]
+                    
+            if (count > (600)):
+                print "Timed out waiting for motion to complete"
                 serh.write("B25\r");
                 serh.read(100)
                 done=True
                 break
-            foo =  desired - avgangs[0]
-            if (abs(foo) > 0.2):
+            foo = desired - avgangs[0]
+            if (abs(foo) > 5):
+                desired_rate = "50%"
+            elif (abs(foo) > 0.5):
+                desired_rate = "25%"
+            else:
+				desired_rate = "12%"
+            if (abs(foo) > 0.1):
                 if (foo < 0):
-                    serh.write("F30%\r")
-                    junk = serh.read(100);
+                    if (current_rate != desired_rate):
+                        serh.write("F"+desired_rate+"\r")
+                        print "Rate change to F%s" % desired_rate
+                        junk = serh.read(100)
+                        current_rate = desired_rate
                 else:
-                    serh.write("R30%\r")
-                    junk = serh.read(100)
+                    if (current_rate != desired_rate):
+                        serh.write("R"+desired_rate+"\r")
+                        print "Rate change to R%s" % desired_rate
+                        junk = serh.read(100)
+                        current_rate = desired_rate
             else:
                 serh.write("B25\r")
                 done=True
