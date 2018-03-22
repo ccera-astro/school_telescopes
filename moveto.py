@@ -19,8 +19,8 @@ buf=bytearray(64)
 
 sernums = []
 serh = serial.Serial (sys.argv[1], 38400, timeout=0)
-serh.write("C,0,0,0,0\r")
-serh.write("O,0,0,0\r")
+time.sleep(1.0)
+serh.write("GO\r")
 junk=serh.read(100)
 latitude=float(sys.argv[3])
 desired=float(sys.argv[2]) + (90.0-latitude)
@@ -39,7 +39,7 @@ for d in devs:
     ser = struct.unpack(">i", b)
     sernums.append(ser[0])
     
-alpha=0.1
+alpha=0.2
 beta=1.0-alpha
 avgangs=[-90000.0]*len(devs)
 wait=10
@@ -67,32 +67,29 @@ while done==False:
         
         avgangs[dind] = (ang*alpha) + (avgangs[dind]*beta)
         
-        print "Serial: %d angle %f" % (sernums[dind], avgangs[dind])
+        if ((count % 5) == 0):
+            print "Serial: %d angle %f" % (sernums[dind], avgangs[dind])
         now = time.time()
         if (now-then >= 5):
             count += 1
-            if (count > (15*4)):
+            if (count > (15*10)):
                 print "Timed out waiting for motion"
-                serh.write("O,0,0,0\r");
+                serh.write("B25\r");
                 serh.read(100)
                 done=True
                 break
-            foo = avgangs[0] - desired
+            foo =  desired - avgangs[0]
             if (abs(foo) > 0.2):
                 if (foo < 0):
-                    serh.write("PO,A,4,0\r")
-                    serh.write("PO,A,5,1\r")
+                    serh.write("F30%\r")
                     junk = serh.read(100);
                 else:
-                    serh.write("PO\,A,5,0\r")
-                    serh.write("PO,A,4,1\r")
+                    serh.write("R30%\r")
                     junk = serh.read(100)
             else:
-                serh.write("PO,A,4,0\r")
-                serh.write("PO,A,5,0\r")
-                serh.write("O,0,0,0\r")
+                serh.write("B25\r")
                 done=True
                 break
                 
-        time.sleep(0.25)
+        time.sleep(0.1)
         
