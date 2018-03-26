@@ -33,7 +33,7 @@
                 "command" : "radiometer.py"},
             
             "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2",
-                "command" : "interferometer.py"}
+                "command" : "radiometer.py"}
         },
         "Hobby1" :
         {
@@ -54,7 +54,7 @@
                 "command" : "radiometer.py"},
             
             "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2",
-                "command" : "interferometer.py"}
+                "command" : "radiometer.py"}
         },
         "Hobby-Premium" :
         {
@@ -75,7 +75,7 @@
                 "command" : "radiometer.py"},
             
             "Interferometer" : {"device" : "uhd=0,type=b200,nchan=2,num_recv_frames=256",
-                "command" : "interferometer.py"}
+                "command" : "radiometer.py"}
         },
         "Econo1" : 
         {
