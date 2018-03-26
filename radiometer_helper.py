@@ -33,6 +33,7 @@ count = 0
 curr_diff = -99.00
 curr_sky = -99.00
 curr_ref = -99.00
+curr_corr = -99.00
 
 
 def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
@@ -41,6 +42,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     global curr_diff
     global curr_sky
     global curr_ref
+    global curr_corr
     
     #
     # Protect against getting called too often
@@ -90,9 +92,15 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     
     if (len(ffts) > 1):
         refpower = numpy.sum(sffts[1])
-        if (curr_ref < 50.0):
+        if (curr_ref < -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
+    
+    if(len(ffts) > 1):
+        corrpower = numpy.sum(sffts[2])
+        if (curr_corr < 50.0):
+            curr_corr = corrpower
+        curr_corr = (alpha*corrpower) + (beta*curr_corr)
     
     #
     # Smooth total power estimate with single-pole IIR filter
@@ -104,7 +112,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     curr_diff = (alpha*tpower) + (beta*curr_diff)
     
     db_ffts = []
-    for ufft in [sfft,sffts[0],sffts[1]]:
+    for ufft in [sfft,sffts[0],sffts[1],sffts[2]]:
         #
         # Scale into dB scale for logging
         #
@@ -112,7 +120,6 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         scaled_fft = numpy.log10(scaled_fft)
         scaled_fft = numpy.multiply (scaled_fft, [10.0]*lfft)
         db_ffts.append(scaled_fft)
-        
         
    
     ltp = time.gmtime()
@@ -133,10 +140,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     tlogbuf += "%s," % sidt
     tlogbuf += "%9.4f," % (freq/1.0e6)
     tlogbuf += "%5.2f," % declination
-    tlogbuf += "%e,%e,%e\n" % (curr_diff,curr_sky,curr_ref)
+    tlogbuf += "%e,%e,%e,%e\n" % (curr_diff,curr_sky,curr_ref,curr_corr)
     
     
-    fft_labels = ["Diff", "Sky", "Ref"]
+    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real"]
     slogbufs = []
     for db_fft in db_ffts:
         #
@@ -203,7 +210,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         ltp.tm_mday, ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
     
     js = {"values" : [curr_diff,curr_sky,curr_ref], "expname" : expname, "lmst" : sidt.replace(",", ":"), "dec" : declination,
-        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate, "labels" : ["Diff", "Sky", "Ref"]}
+        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate, "labels" : ["Diff", "Sky", "Ref", "Corr-Real"]}
     jstring = json.dumps(js, indent=4)
     
     try:
@@ -222,7 +229,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         js = {"frequency" : freq, "bandwidth" : bw, "fftsize" : lfft,
             fft_labels[0] : list(db_ffts[0]),
             fft_labels[1] : list(db_ffts[1]),
-            fft_labels[2] : list(db_ffts[2])}
+            fft_labels[2] : list(db_ffts[2]),
+            fft_labels[3] : list(db_ffts[3])}
         jstring = json.dumps(js, indent=4)
         
         try:
