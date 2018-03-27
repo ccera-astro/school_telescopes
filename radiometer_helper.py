@@ -33,7 +33,8 @@ count = 0
 curr_diff = -99.00
 curr_sky = -99.00
 curr_ref = -99.00
-curr_corr = -99.00
+curr_corr_real = -99.00
+curr_corr_imag = -99.00
 
 
 def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
@@ -42,7 +43,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     global curr_diff
     global curr_sky
     global curr_ref
-    global curr_corr
+    global curr_corr_real
+    global curr_corr_imag
     
     #
     # Protect against getting called too often
@@ -85,22 +87,34 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     #
     tpower = numpy.sum(sfft)
     
+    #
+    # Sky
+    #
     skypower = numpy.sum(sffts[0])
     if (curr_sky < -50.0):
         curr_sky = skypower
     curr_sky = (alpha*skypower) + (beta*curr_sky)
     
+    #
+    # Ref
+    #
     if (len(ffts) > 1):
         refpower = numpy.sum(sffts[1])
         if (curr_ref < -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
     
+    #
+    # Correlation
+    #
     if(len(ffts) > 1):
-        corrpower = numpy.sum(sffts[2])
-        if (curr_corr < 50.0):
-            curr_corr = corrpower
-        curr_corr = (alpha*corrpower) + (beta*curr_corr)
+        corrpower_real = numpy.sum(sffts[2])
+        corrpower_imag = numpy.sum(sffts[3])
+        if (curr_corr_real < 50.0):
+            curr_corr_real = corrpower_real
+            curr_corr_imag = corrpower_imag
+        curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
+        curr_corr_imag = (alpha*corrpower_imag) + (beta*curr_corr_imag)
     
     #
     # Smooth total power estimate with single-pole IIR filter
@@ -112,7 +126,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     curr_diff = (alpha*tpower) + (beta*curr_diff)
     
     db_ffts = []
-    for ufft in [sfft,sffts[0],sffts[1],sffts[2]]:
+    for ufft in [sfft]+sffts:
         #
         # Scale into dB scale for logging
         #
@@ -140,10 +154,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     tlogbuf += "%s," % sidt
     tlogbuf += "%9.4f," % (freq/1.0e6)
     tlogbuf += "%5.2f," % declination
-    tlogbuf += "%e,%e,%e,%e\n" % (curr_diff,curr_sky,curr_ref,curr_corr)
+    tlogbuf += "%e,%e,%e,%e,%e\n" % (curr_diff,curr_sky,curr_ref,curr_corr_real,curr_corr_imag)
     
     
-    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real"]
+    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]
     slogbufs = []
     for db_fft in db_ffts:
         #
@@ -210,7 +224,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         ltp.tm_mday, ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
     
     js = {"values" : [curr_diff,curr_sky,curr_ref], "expname" : expname, "lmst" : sidt.replace(",", ":"), "dec" : declination,
-        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate, "labels" : ["Diff", "Sky", "Ref", "Corr-Real"]}
+        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate, "labels" : ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]}
     jstring = json.dumps(js, indent=4)
     
     try:
@@ -225,12 +239,13 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Handle json file for spectral
     #
     
-    if ((count % 5) == 0):
+    if ((count % 10) == 0):
         js = {"frequency" : freq, "bandwidth" : bw, "fftsize" : lfft,
             fft_labels[0] : list(db_ffts[0]),
             fft_labels[1] : list(db_ffts[1]),
             fft_labels[2] : list(db_ffts[2]),
-            fft_labels[3] : list(db_ffts[3])}
+            fft_labels[3] : list(db_ffts[3]),
+            fft_labels[4] : list(db_ffts[4])}
         jstring = json.dumps(js, indent=4)
         
         try:
