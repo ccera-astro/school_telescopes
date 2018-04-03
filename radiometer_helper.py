@@ -45,6 +45,11 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     global curr_ref
     global curr_corr_real
     global curr_corr_imag
+    SKY = 0
+    REF = 1
+    CORR_REAL = 2
+    CORR_IMAG = 3
+    
     
     #
     # Protect against getting called too often
@@ -75,9 +80,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Handle differencing of the two FFT arrays
     #
     if (len(ffts) == 1):
-        sfft = sffts[0]
+        sfft = sffts[SKY]
     else:
-        sfft = numpy.subtract(sffts[0], sffts[1])
+        sfft = numpy.subtract(sffts[SKY], sffts[REF])
+        sfft = numpy.absolute(sfft)
     
     #
     # Total power is the sum of the (possibly differenced) linear-form
@@ -90,7 +96,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     #
     # Sky
     #
-    skypower = numpy.sum(sffts[0])
+    skypower = numpy.sum(sffts[SKY])
     if (curr_sky < -50.0):
         curr_sky = skypower
     curr_sky = (alpha*skypower) + (beta*curr_sky)
@@ -99,7 +105,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Ref
     #
     if (len(ffts) > 1):
-        refpower = numpy.sum(sffts[1])
+        refpower = numpy.sum(sffts[REF])
         if (curr_ref < -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
@@ -108,8 +114,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Correlation
     #
     if(len(ffts) > 1):
-        corrpower_real = numpy.sum(sffts[2])
-        corrpower_imag = numpy.sum(sffts[3])
+        corrpower_real = numpy.sum(sffts[CORR_REAL])
+        corrpower_imag = numpy.sum(sffts[CORR_IMAG])
         if (curr_corr_real < 50.0):
             curr_corr_real = corrpower_real
             curr_corr_imag = corrpower_imag
@@ -125,14 +131,19 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
 
     curr_diff = (alpha*tpower) + (beta*curr_diff)
     
+    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]
     db_ffts = []
+    lndx = 0
     for ufft in [sfft]+sffts:
         #
         # Scale into dB scale for logging
         #
         scaled_fft = numpy.add(ufft,[1.0e-15]*lfft)
-        scaled_fft = numpy.log10(scaled_fft)
-        scaled_fft = numpy.multiply (scaled_fft, [10.0]*lfft)
+        fftype = fft_labels[lndx]
+        lndx = lndx+1
+        if not ("Corr-" in fftype):
+            scaled_fft = numpy.log10(scaled_fft)
+            scaled_fft = numpy.multiply (scaled_fft, [10.0]*lfft)
         db_ffts.append(scaled_fft)
         
    
@@ -157,8 +168,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     tlogbuf += "%e,%e,%e,%e,%e\n" % (curr_diff,curr_sky,curr_ref,curr_corr_real,curr_corr_imag)
     
     
-    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]
     slogbufs = []
+    lndx = 0
     for db_fft in db_ffts:
         #
         # Then spectral
@@ -170,9 +181,14 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
 
         #
         # Spectral data--possibly differenced
-        #
-        for i in range(0,len(sfft)):
-            slogbuf += "%5.2f" % sfft[i]
+        fftype = fft_labels[lndx]
+        lndx = lndx + 1
+        for i in range(0,len(db_fft)):
+            if not ("Corr-" in fftype):
+                slogbuf += "%6.1f" % db_fft[i]
+            else:
+                slogbuf += "%e" % db_fft[i]
+                
             if (i < len(sfft)-1):
                 slogbuf += ","
         slogbuf += "\n"
