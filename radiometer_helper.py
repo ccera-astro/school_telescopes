@@ -178,6 +178,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         slogbuf += "%s," % sidt
         slogbuf += "%9.4f," % (freq/1.0e6)
         slogbuf += "%5.2f," % declination
+        slogbuf += "%5.2f," % (bw/1.0e6)
 
         #
         # Spectral data--possibly differenced
@@ -185,7 +186,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         lndx = lndx + 1
         for i in range(0,len(db_fft)):
             if not ("Corr-" in fftype):
-                slogbuf += "%6.1f" % db_fft[i]
+                slogbuf += "%7.3f" % db_fft[i]
             else:
                 slogbuf += "%e" % db_fft[i]
                 
