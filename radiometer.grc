@@ -3422,7 +3422,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 30) == 0):
+            if ((count % 45) == 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -3440,7 +3440,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 30) == 0):
+            if ((count % 45) == 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -3475,7 +3475,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Handle json file for spectral
     #
     
-    if ((count % 10) == 0):
+    if ((count % 5) == 0):
         js = {"frequency" : freq, "bandwidth" : bw, "fftsize" : lfft,
             fft_labels[0] : list(db_ffts[0]),
             fft_labels[1] : list(db_ffts[1]),
@@ -3800,7 +3800,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/60</value>
+      <value>1.0/120</value>
     </param>
     <param>
       <key>alias</key>

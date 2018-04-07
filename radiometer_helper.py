@@ -203,7 +203,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 30) == 0):
+            if ((count % 45) == 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -221,7 +221,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 30) == 0):
+            if ((count % 45) == 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -256,7 +256,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     # Handle json file for spectral
     #
     
-    if ((count % 10) == 0):
+    if ((count % 5) == 0):
         js = {"frequency" : freq, "bandwidth" : bw, "fftsize" : lfft,
             fft_labels[0] : list(db_ffts[0]),
             fft_labels[1] : list(db_ffts[1]),
