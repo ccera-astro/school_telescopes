@@ -116,7 +116,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     if(len(ffts) > 1):
         corrpower_real = numpy.sum(sffts[CORR_REAL])
         corrpower_imag = numpy.sum(sffts[CORR_IMAG])
-        if (curr_corr_real < 50.0):
+        if (curr_corr_real < -50.0):
             curr_corr_real = corrpower_real
             curr_corr_imag = corrpower_imag
         curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
