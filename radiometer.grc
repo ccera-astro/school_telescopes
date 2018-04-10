@@ -187,7 +187,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1096, 164)</value>
+      <value>(968, 164)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -253,7 +253,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1480, 472)</value>
+      <value>(1488, 488)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -832,7 +832,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(744, 376)</value>
+      <value>(704, 424)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1834,7 +1834,7 @@ virtual zero-valued samples.</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1248, 596)</value>
+      <value>(1184, 612)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1847,6 +1847,42 @@ virtual zero-valued samples.</value>
     <param>
       <key>note</key>
       <value>Cheap DC Block</value>
+    </param>
+  </block>
+  <block>
+    <key>note</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>A simple single-lag correlator across the two FFT
+outputs.  Fed to a DC-block.
+
+This is further processed in the logger, providing
+  further integration, and total-power calculations
+  across all the FFT bins.</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(568, 508)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>note_4</value>
+    </param>
+    <param>
+      <key>note</key>
+      <value></value>
     </param>
   </block>
   <block>
@@ -3871,7 +3907,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(976, 380)</value>
+      <value>(944, 412)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3922,7 +3958,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 484)</value>
+      <value>(1056, 548)</value>
     </param>
     <param>
       <key>_rotation</key>
