@@ -37,7 +37,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog):
     global then
     global count
     global curr_diff
@@ -131,9 +131,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
 
     curr_diff = (alpha*tpower) + (beta*curr_diff)
     
-    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]
+    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag","Corr-Angle"]
     db_ffts = []
     lndx = 0
+    corr_ffts = []
     for ufft in [sfft]+sffts:
         #
         # Scale into dB scale for logging
@@ -144,9 +145,16 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         if not ("Corr-" in fftype):
             scaled_fft = numpy.log10(scaled_fft)
             scaled_fft = numpy.multiply (scaled_fft, [10.0]*lfft)
+        else:
+            corr_ffts.append(scaled_fft)
         db_ffts.append(scaled_fft)
+
+    re = corr_ffts[0]
+    im = corr_ffts[1]
+    cplx_corr = re +1j*im
+    
+    db_ffts.append(numpy.angle(cplx_corr))
         
-   
     ltp = time.gmtime()
     sidt = cur_sidereal (longitude)
     
@@ -203,7 +211,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 45) == 0):
+            if ((count % 45) == 0 and speclog != 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -221,7 +229,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 45) == 0):
+            if ((count % 45) == 0 and speclog != 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]

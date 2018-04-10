@@ -214,7 +214,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1416, 92)</value>
+      <value>(1088, 100)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -226,7 +226,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination)</value>
+      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination,speclog)</value>
     </param>
   </block>
   <block>
@@ -1006,6 +1006,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>vlen</key>
       <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(824, 696)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>clock</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Clock Source</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>internal</value>
     </param>
   </block>
   <block>
@@ -3122,11 +3169,11 @@ virtual zero-valued samples.</value>
     </param>
     <param>
       <key>clock_source0</key>
-      <value></value>
+      <value>clock</value>
     </param>
     <param>
       <key>time_source0</key>
-      <value></value>
+      <value>ppstime</value>
     </param>
     <param>
       <key>clock_source1</key>
@@ -3210,6 +3257,53 @@ virtual zero-valued samples.</value>
     </param>
   </block>
   <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(816, 784)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>ppstime</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>PPS Time Input</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>internal</value>
+    </param>
+  </block>
+  <block>
     <key>epy_module</key>
     <param>
       <key>alias</key>
@@ -3256,7 +3350,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog):
     global then
     global count
     global curr_diff
@@ -3350,9 +3444,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
 
     curr_diff = (alpha*tpower) + (beta*curr_diff)
     
-    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag"]
+    fft_labels = ["Diff", "Sky", "Ref", "Corr-Real", "Corr-Imag","Corr-Angle"]
     db_ffts = []
     lndx = 0
+    corr_ffts = []
     for ufft in [sfft]+sffts:
         #
         # Scale into dB scale for logging
@@ -3363,9 +3458,16 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
         if not ("Corr-" in fftype):
             scaled_fft = numpy.log10(scaled_fft)
             scaled_fft = numpy.multiply (scaled_fft, [10.0]*lfft)
+        else:
+            corr_ffts.append(scaled_fft)
         db_ffts.append(scaled_fft)
+
+    re = corr_ffts[0]
+    im = corr_ffts[1]
+    cplx_corr = re +1j*im
+    
+    db_ffts.append(numpy.angle(cplx_corr))
         
-   
     ltp = time.gmtime()
     sidt = cur_sidereal (longitude)
     
@@ -3422,7 +3524,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 45) == 0):
+            if ((count % 45) == 0 and speclog != 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -3440,7 +3542,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
                 tfp.write (tlogbuf)
                 tfp.close()
             
-            if ((count % 45) == 0):
+            if ((count % 45) == 0 and speclog != 0):
                 l = 0
                 for slogbuf in slogbufs:
                     sfn = expname + "-" + dprefix + "-" + fft_labels[l]
@@ -3845,6 +3947,53 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination):
     <param>
       <key>vlen</key>
       <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(848, 888)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>speclog</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Enable Spectral Logging</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0</value>
     </param>
   </block>
   <block>
