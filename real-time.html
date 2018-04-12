@@ -9,13 +9,31 @@
 
     $(function() {
         var HOUR = 3600;
-        var UPDATE = 3;
+        var UPDATE = 2;
         var C = 299792.0;  // Speed of light in the void...
         
-        var contData = [];  // The continuum data
+        var contData = [[], [], []];  // The continuum data
+        var corrData = [[], []]; // Correlation Data
         var totalPoints = HOUR/UPDATE;  //number of Continuum points
         var scaling = 1;  // Scaling for continuum data
+        var corrScaling = 1; // Scaling for correlation data
         var offset = 0;   // Offset for continuum data
+        var contLabels = ["U", "U", "U"];
+        var corrLabels = ["U", "U"];
+        for (var i = 0; i < contData.length; i++)
+        {
+			for (var j = 0; j < totalPoints; j++)
+			{
+				contData[i][j] = 0.0;
+			}
+		}
+		for (var i = 0; i < corrData.length; i++)
+		{
+			for (var j = 0; j < totalPoints; j++)
+			{
+				corrData[i][j] = 0.0;
+			}
+		}
         
         /*
          * These can (and will) get updated during AJAX data loads
@@ -79,11 +97,7 @@
 		var y2axis = [];
         
         function zeroFilled() {
-            var res = [];
-            for (var i = 0; i < totalPoints; ++i) {
-                contData.push(0.0);
-                res.push([i*(updateInterval/1000.0), contData[i]]);
-            }
+            res = contData[0];
             return res;
         }
         
@@ -96,29 +110,6 @@
             return res;
         }
 
-        /*
-         * A number of on-click/on-change functions
-         */
-        $("#smartScale").click(function() {
-
-            var minv;
-            var maxv;
-            
-            minv = Math.min.apply(null, contData);
-            maxv = Math.max.apply(null, contData);
-            
-            plot.getOptions().yaxes[0].min = minv*0.9;
-            plot.getOptions().yaxes[0].max = maxv*1.2;
-            plot.setupGrid();
-            plot.draw();
-        });
-        
-        $("#smartScaleReset").click(function() {
-            plot.getOptions().yaxes[0].min = 0.0;
-            plot.getOptions().yaxes[0].max = 1.0;
-            plot.setupGrid();
-            plot.draw();
-        });
         
        $("#smartScale2").click(function() {
 
@@ -215,6 +206,19 @@
             }
         });
         
+        $("#corrScaling").val(scaling).change(function () {
+            var v = $(this).val();
+            if (v && !isNaN(+v)) {
+                corrScaling = +v;
+                if (corrScaling < 1) {
+                    corrScaling = 1;
+                } else if (corrScaling > 100000) {
+                    corrScaling = corrScaling;
+                }
+                $(this).val("" + corrScaling);
+            }
+        });
+        
         $("#offset").val(offset).change(function () {
             var v = $(this).val();
             offset = v;
@@ -237,6 +241,9 @@
                   xaxes: [{
             axisLabel: 'LMST Offset(Seconds)',
         }],
+                 legend: {
+				position: "ne"
+			},
             yaxes: [{
                 axisLabel: 'Detector',
                 axisLabelPadding: 25
@@ -246,6 +253,41 @@
             },
             yaxis : {
                 min: 0,
+                max: 1.0
+            },
+            grid: {
+                backgroundColor : {colors : ["ivory", "Khaki"]},
+                hoverable: true
+                }
+        });
+        
+        /*
+         * The correlation Flot plot object
+         */
+        var plotCorr = $.plot("#Correlation", [ zeroFilled() ], {
+            series: {
+                shadowSize: 0,  // Drawing is faster without shadows
+                lines: {lineWidth: 1}
+            },
+            colors: ["blue", "red", "green", "purple"],
+            axisLabels : {
+                show: true
+            },
+                  xaxes: [{
+            axisLabel: 'LMST Offset(Seconds)',
+        }],
+                 legend: {
+				position: "ne"
+			},
+            yaxes: [{
+                axisLabel: 'Correlation',
+                axisLabelPadding: 30
+                }],
+            xaxis: {
+                show: true
+            },
+            yaxis : {
+                min: -1.0,
                 max: 1.0
             },
             grid: {
@@ -313,8 +355,19 @@
          * First for the Continuum data
          */
         function onFileData(thing) {
-            contData.unshift(thing.value);
-            contData.pop();
+			for (var i = 0; i < contData.length; i++)
+			{
+				contData[i].unshift(thing.values[i]);
+				contData[i].pop();
+			}
+			for (var i = 0; i < corrData.length; i++)
+			{
+				corrData[i].unshift(thing.values[i+3]);
+				corrData[i].pop();
+			}
+			contLabels = thing.labels;
+			corrLabels[0] = thing.labels[3];
+			corrLabels[1] = thing.labels[4];
             expname = thing.expname;
             dec = thing.dec;
             lmst = thing.lmst;
@@ -330,7 +383,7 @@
          * For Spectral data
          */
         function onSpecFileData(thing) {
-            specData = thing.values.slice();
+            specData = thing.Sky.slice();
             frequency = thing.frequency;
             bandwidth = thing.bandwidth;
             fftsize = thing.fftsize;
@@ -348,9 +401,30 @@
              */
             var res = [];
             for (var i = 0; i < contData.length; ++i) {
-                res.push([i*(updateInterval/1000.0), (contData[i]*scaling)-offset]);
+				var cdat = [];
+				for (var j = 0; j < totalPoints; j++) {
+					cdat.push([j*(updateInterval/1000.0), (contData[i][j]*scaling)-offset]);
+				}
+				dic = {label : contLabels[i], data : cdat}
+				res.push(dic);
             }
-            plot.setData([res]);
+            plot.setData(res);
+            
+            /*
+             * Next the Correlation data
+             *
+             * Fairly simple--apply scaling and offset and plot
+             */
+            var res = [];
+            for (var i = 0; i < corrData.length; ++i) {
+				var cdat = [];
+				for (var j = 0; j < totalPoints; j++) {
+					cdat.push([j*(updateInterval/1000.0), (corrData[i][j]*corrScaling)]);
+				}
+				dic = {label : corrLabels[i], data : cdat}
+				res.push(dic);
+            }
+            plotCorr.setData(res);
             
             
             /*
@@ -481,6 +555,7 @@
              */
             plot.draw();
             plot2.draw();
+            plotCorr.draw();
             
             /*
              * Schedule some AJAX data retrievals
@@ -544,10 +619,13 @@
     <p>
         Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
         Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
-        <button id="smartScale" type="button">Smart Scale</button>
-        <button id="smartScaleReset" type="button">Smart Scale Reset</button>
     </p>
     
+    <h3>Correlation Data</h3>
+    <div id="Correlation" style="width:950px;height:300px"></div>
+     <p>
+        Correlation Data Scaling: <input id="corrScaling" type="text" value="1" style="text-align: right; width:5em">
+    </p>
     <div id="header2">
         <h3>Spectral Data</h3>
     </div>
