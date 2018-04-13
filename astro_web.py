@@ -17,6 +17,18 @@ import tornado.ioloop
 import tornado.web
 import tornado.template
 
+class TopLevelHandler(tornado.web.RequestHandler):
+    SUPPORTED_METHODS = ['GET']
+    def get(self, path):
+        try:
+            fp = open("/etc/hostname", "r")
+            host=fp.readline().strip('\n')
+            fp.close()
+        except:
+            host="Unknown"
+            
+        self.render("/home/astronomer/index.html", host=host)
+
 class IndexHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
     @tornado.web.authenticated
@@ -91,6 +103,7 @@ class StartHandler(BaseHandler):
         
         try:
             experiments = json.load(fp)
+            fp.close()
         except:
             self.write("Internal error -- JSON load failed")
             return
@@ -106,6 +119,7 @@ class StopHandler(BaseHandler):
             return
     
         pid = fp.readline().strip("\n")
+        fp.close()
         pid = int(pid)
         
         try:
@@ -190,6 +204,8 @@ class LoginHandler(BaseHandler):
 
 def mkapp(cookie_secret):
     application = tornado.web.Application([
+        (r"/index.html", TopLevelHandler),
+        (r"/$", TopLevelHandler),
         (r"/login", LoginHandler),
         (r"/(.*)/$", IndexHandler),
         (r"/(astro_data)$", IndexHandler),
@@ -225,7 +241,6 @@ def start_server(port=8000):
     
     cook = f.read()
     cook = cook.strip('\n')
-    print cook
     
     app = mkapp(cook)
     app.listen(port)
