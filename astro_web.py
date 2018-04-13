@@ -122,6 +122,10 @@ def mkapp(cookie_secret):
 
 import random
 def start_server(port=8000):
+	
+	#
+	# Deal with cookie secret
+	#
     rf = open("/dev/urandom", "r")
     rv = rf.read(32)
     rv = rv.encode('hex')
