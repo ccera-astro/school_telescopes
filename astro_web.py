@@ -162,6 +162,10 @@ class LoginHandler(BaseHandler):
         #
         user = self.get_argument("name")
         user = user[0:15]
+        user = user.replace("/", "")
+        user = user.replace("@", "")
+        user = user.replace(":", "")
+        user = user.replace("!", "")
         
         pw = self.get_argument("pw")
         pw = pw[0:63]
