@@ -1,20 +1,6 @@
 #!/usr/bin/env python
 """
-Starts a Tornado static file server in a given directory.
-To start the server in the current directory:
-
-    tserv .
-
-Then go to http://localhost:8000 to browse the directory.
-
-Use the --prefix option to add a prefix to the served URL,
-for example to match GitHub Pages' URL scheme:
-
-    tserv . --prefix=jiffyclub
-
-Then go to http://localhost:8000/jiffyclub/ to browse.
-
-Use the --port option to change the port on which the server listens.
+A custom server for back-of-the-dish CCERA Radio Telescope System
 
 """
 
@@ -104,28 +90,59 @@ class LoginHandler(BaseHandler):
                    '</form></body></html>')
 
     def post(self):
+		
+		#
+		# Create trimmed versions of user/pw
+		#
         user = self.get_argument("name")
+        user = user[0:15]
+        
         pw = self.get_argument("pw")
+        pw = pw[0:63]
+        
+        #
+        # Setup error / success HTML snippets
+        #
         errstr = "<html><body><h3>Unknown Username or Password</h3></body></html>"
         goodstr = "<html><body><h3>Login successful</h3></body></html>"
+        
+        #
+        # First try to find in regular password file
+        #
         try:
             pw_struct = pwd.getpwnam(user)
         except:
             self.write(errstr)
             return
-        
+        #
+        # Has low UID?  Fuggedaboudid
+        #
         if (pw_struct.pw_uid < 10):
             self.write(errstr)
             return
+        
+        #
+        # Next, try to get password from shadow pw file
+        #  On our system, we leave the file readable by everyone
+        #  Low risk--this is an embedded system with one or two
+        #    "users", and regular login isn't a normal thing.
+        #   
         try:
             spw_struct = spwd.getspnam(user)
         except:
             self.write(errstr)
             return
-            
+        
+        #
+        # OK, now do the password check
+        #
+        # Encrypt the entered password using the salt from the
+        #   shadow file.  Compare results.
+        #  
         epassword = crypt.crypt(pw, spw_struct.sp_pwd)
         if (epassword != spw_struct.sp_pwd):
             self.write(errstr)
+            return
         else:
             self.write(goodstr)
             self.set_secure_cookie("user", user)
