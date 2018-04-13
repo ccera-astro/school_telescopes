@@ -30,6 +30,8 @@ class TopLevelHandler(tornado.web.RequestHandler):
         self.render("/home/astronomer/index.html", host=host)
 
 class IndexHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
     SUPPORTED_METHODS = ['GET']
     @tornado.web.authenticated
     def get(self, path):
@@ -86,6 +88,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class Handler(tornado.web.StaticFileHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
     @tornado.web.authenticated
     def set_extra_headers(self, path):
         # Disable cache
@@ -96,8 +100,8 @@ class Handler(tornado.web.StaticFileHandler):
         return url_path
 
 class StartHandler(BaseHandler):
-    @tornado.web.autheticated
-    def get(self):
+    @tornado.web.authenticated
+    def get(self,path):
         try:
             fp = open("/home/astronomer/experiments.json", "r")
         except:
@@ -114,7 +118,7 @@ class StartHandler(BaseHandler):
 
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self):
+    def get(self,path):
         try:
             fp = open("/home/astronomer/radiometer.pid", "r")
         except:
@@ -159,7 +163,7 @@ class LoginHandler(BaseHandler):
         pw = pw[0:63]
         
         #
-        # Setup error / success HTML snippets
+        # Setup error / success HTML snipphttp://www.tornadoweb.org/en/stable/guide/security.htmets
         #
         errstr = "<html><body><h3>Unknown Username or Password</h3></body></html>"
         goodstr = "<html><body><h3>Login successful</h3></body></html>"
