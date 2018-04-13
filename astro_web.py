@@ -22,6 +22,9 @@ Use the --port option to change the port on which the server listens.
 import os
 import sys
 from argparse import ArgumentParser
+import pwd
+import spwd
+import crypt
 
 import tornado.ioloop
 import tornado.web
@@ -29,7 +32,7 @@ import tornado.template
 
 class IndexHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
-
+    @tornado.web.authenticated
     def get(self, path):
         """ GET method to list contents of directory or
         write index page if index.html exists."""
@@ -84,6 +87,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class Handler(tornado.web.StaticFileHandler):
+    @tornado.web.authenticated
     def parse_url_path(self, url_path):
         if not url_path or url_path.endswith('/'):
             url_path = url_path + 'index.html'
@@ -92,19 +96,39 @@ class Handler(tornado.web.StaticFileHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         self.write('<html><body><form action="/login" method="post">'
+                   '<h3>Radio Telescope Data System</h3>'
                    'Username: <input type="text" name="name">'
+                   '<br>'
                    'Password: <input type="password" name="pw">'
                    '<input type="submit" value="Sign in">'
                    '</form></body></html>')
 
     def post(self):
-		user = self.get_argument("name")
-		pw = self.get_argument("pw")
-		if (user == "astronomer" and pw == "astronomer"):
-			self.set_secure_cookie("user", self.get_argument("name"))
-			self.write("Successful login, welcome")
-		else:
-			self.write("Unknown username or password")
+        user = self.get_argument("name")
+        pw = self.get_argument("pw")
+        errstr = "<html><body><h3>Unknown Username or Password</h3></body></html>"
+        goodstr = "<html><body><h3>Login successful</h3></body></html>"
+        try:
+            pw_struct = pwd.getpwnam(user)
+        except:
+            self.write(errstr)
+            return
+        
+        if (pw_struct.pw_uid < 10):
+            self.write(errstr)
+            return
+        try:
+            spw_struct = spwd.getspnam(user)
+        except:
+            self.write(errstr)
+            return
+            
+        epassword = crypt.crypt(pw, spw_struct.sp_pwd)
+        if (epassword != spw_struct.sp_pwd):
+            self.write(errstr)
+        else:
+            self.write(goodstr)
+            self.set_secure_cookie("user", user)
 
 def mkapp(cookie_secret):
     application = tornado.web.Application([
@@ -122,10 +146,10 @@ def mkapp(cookie_secret):
 
 import random
 def start_server(port=8000):
-	
-	#
-	# Deal with cookie secret
-	#
+    
+    #
+    # Deal with cookie secret
+    #
     rf = open("/dev/urandom", "r")
     rv = rf.read(32)
     rv = rv.encode('hex')
@@ -148,27 +172,9 @@ def start_server(port=8000):
     tornado.ioloop.IOLoop.instance().start()
 
 
-def parse_args(args=None):
-    parser = ArgumentParser(
-        description=(
-            'Start a Tornado server to serve static files out of a '
-            'given directory and with a given prefix.'))
-    parser.add_argument(
-        '-f', '--prefix', type=str, default='',
-        help='A prefix to add to the location from which pages are served.')
-    parser.add_argument(
-        '-p', '--port', type=int, default=8000,
-        help='Port on which to run server.')
-    parser.add_argument(
-        'dir', help='Directory from which to serve files.')
-    return parser.parse_args(args)
-
-
 def main(args=None):
-    args = parse_args(args)
-    os.chdir(args.dir)
-    print('Starting server on port {}'.format(args.port))
-    start_server(port=args.port)
+    print('Starting server on port 8000')
+    start_server(port=8000)
 
 
 if __name__ == '__main__':
