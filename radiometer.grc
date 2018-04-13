@@ -3626,7 +3626,9 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
             jfp = open(os.path.join(local,"spectral_temp"), "w")
             jfp.write(jstring+"\n")
             jfp.close()
-            os.rename("spectral_temp", "spectral.json")
+            src = os.path.join(local,"spectral_temp")
+            dst = os.path.join(local,"spectral.json")
+            os.rename(src, dst)
         except:
             pass
     
