@@ -699,7 +699,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>n</key>
-      <value>frate*2</value>
+      <value>int(frate*2.5)</value>
     </param>
     <param>
       <key>type</key>
@@ -750,7 +750,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>n</key>
-      <value>frate*2</value>
+      <value>int(frate*2.5)</value>
     </param>
     <param>
       <key>type</key>
