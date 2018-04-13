@@ -18,7 +18,6 @@ Use the --port option to change the port on which the server listens.
 
 """
 
-from __future__ import print_function
 
 import os
 import sys
@@ -79,6 +78,9 @@ class IndexHandler(tornado.web.RequestHandler):
         return t.generate(files=files, path=path)
 
 
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
 
 
 class Handler(tornado.web.StaticFileHandler):
@@ -87,9 +89,26 @@ class Handler(tornado.web.StaticFileHandler):
             url_path = url_path + 'index.html'
         return url_path
 
+class LoginHandler(BaseHandler):
+    def get(self):
+        self.write('<html><body><form action="/login" method="post">'
+                   'Username: <input type="text" name="name">'
+                   'Password: <input type="password" name="pw">'
+                   '<input type="submit" value="Sign in">'
+                   '</form></body></html>')
 
-def mkapp(prefix=''):
+    def post(self):
+		user = self.get_argument("name")
+		pw = self.get_argument("pw")
+		if (user == "astronomer" and pw == "astronomer"):
+			self.set_secure_cookie("user", self.get_argument("name"))
+			self.write("Successful login, welcome")
+		else:
+			self.write("Unknown username or password")
+
+def mkapp(cookie_secret):
     application = tornado.web.Application([
+        (r"/login", LoginHandler),
         (r"/(.*)/$", IndexHandler),
         (r"/(astro_data)$", IndexHandler),
         (r"/astro_data/(.*)", Handler, {'path': "/home/astronomer/astro_data"}),
@@ -97,13 +116,30 @@ def mkapp(prefix=''):
         (r"/(expcontrol\.html)", Handler, {'path' : "/home/astronomer"}),
         (r"/(jquery.*\.js)", Handler, {'path' : "/home/astronomer"}),
         (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"})
-    ], debug=False)
+    ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
 
-
-def start_server(prefix='', port=8000):
-    app = mkapp(prefix)
+import random
+def start_server(port=8000):
+    rf = open("/dev/urandom", "r")
+    rv = rf.read(32)
+    rv = rv.encode('hex')
+    rf.close()
+    
+    try:
+        f=open(".cookie_secret", "r")
+    except:
+        f=open(".cookie_secret", "w")
+        f.write(rv+"\n")
+        f.close()
+        f=open(".cookie_secret", "r")
+    
+    cook = f.read()
+    cook = cook.strip('\n')
+    print cook
+    
+    app = mkapp(cook)
     app.listen(port)
     tornado.ioloop.IOLoop.instance().start()
 
@@ -128,7 +164,7 @@ def main(args=None):
     args = parse_args(args)
     os.chdir(args.dir)
     print('Starting server on port {}'.format(args.port))
-    start_server(prefix=args.prefix, port=args.port)
+    start_server(port=args.port)
 
 
 if __name__ == '__main__':

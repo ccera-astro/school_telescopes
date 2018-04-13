@@ -3623,9 +3623,10 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
         jstring = json.dumps(js, indent=4)
         
         try:
-            jfp = open(os.path.join(local,"spectral.json"), "w")
+            jfp = open(os.path.join(local,"spectral_temp"), "w")
             jfp.write(jstring+"\n")
             jfp.close()
+            os.rename("spectral_temp", "spectral.json")
         except:
             pass
     
