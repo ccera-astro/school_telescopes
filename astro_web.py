@@ -19,7 +19,7 @@ import tornado.template
 
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
-    def get(self, path):
+    def get(self):
         try:
             fp = open("/etc/hostname", "r")
             host=fp.readline().strip('\n')
@@ -143,13 +143,17 @@ class StopHandler(BaseHandler):
 
 class LoginHandler(BaseHandler):
     def get(self):
-        self.write('<html><body><form action="/login" method="post">'
-                   '<h3>Radio Telescope Data System</h3>'
-                   'Username: <input type="text" name="name">'
-                   '<br>'
-                   'Password: <input type="password" name="pw">'
-                   '<input type="submit" value="Sign in">'
-                   '</form></body></html>')
+        n = self.get_argument ("next", "/")
+        loginpage = ('<html><body><form action="/login" method="post">'
+		'<h3>Radio Telescope Data System</h3>'
+		'Username: <input type="text" name="name">'
+		'<br>'
+		'Password: <input type="password" name="pw">'
+		'<input type="hidden" name="next" value="@@@@">'
+		'<input type="submit" value="Sign in">'
+		'</form></body></html>')
+        loginpage = loginpage.replace('@@@@', n)
+        self.write(loginpage)
 
     def post(self):
         
@@ -208,6 +212,7 @@ class LoginHandler(BaseHandler):
         else:
             self.write(goodstr)
             self.set_secure_cookie("user", user)
+            self.redirect(self.get_argument("next", u"/"))
 
 def mkapp(cookie_secret):
     application = tornado.web.Application([
