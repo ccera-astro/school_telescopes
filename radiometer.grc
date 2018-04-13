@@ -3602,9 +3602,12 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     jstring = json.dumps(js, indent=4)
     
     try:
-        jfp = open(os.path.join(local,"tpower.json"), "w")
+        jfp = open(os.path.join(local,"tpower_temp"), "w")
         jfp.write(jstring+"\n")
         jfp.close()
+        src = os.path.join(local,"tpower_temp")
+        dst = os.path.join(local,"tpower.json")
+        os.rename(src,dst)
     except:
         pass
     
