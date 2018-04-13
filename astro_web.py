@@ -6,6 +6,7 @@ A custom server for back-of-the-dish CCERA Radio Telescope System
 
 
 import os
+import signal
 import sys
 from argparse import ArgumentParser
 import pwd
@@ -79,6 +80,46 @@ class Handler(tornado.web.StaticFileHandler):
             url_path = url_path + 'index.html'
         return url_path
 
+class StartHandler(BaseHandler):
+    @tornado.web.autheticated
+    def get(self):
+        try:
+            fp = open("/home/astronomer/experiments.json", "r")
+        except:
+            self.write("Internal Error -- experiment control file failed")
+            return
+        
+        try:
+            experiments = json.load(fp)
+        except:
+            self.write("Internal error -- JSON load failed")
+            return
+        
+
+class StopHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        try:
+            fp = open("/home/astronomer/radiometer.pid", "r")
+        except:
+            self.write("No Process to stop")
+            return
+    
+        pid = fp.readline().strip("\n")
+        pid = int(pid)
+        
+        try:
+            os.kill(pid, signal.SIGINT)
+        except:
+            self.write("No process to stop")
+            os.remove("/home/astronomer/radiometer.pid", "r")
+            return
+        
+        self.write ("Stopped process %d" % pid)
+        return
+        
+        
+
 class LoginHandler(BaseHandler):
     def get(self):
         self.write('<html><body><form action="/login" method="post">'
@@ -90,10 +131,10 @@ class LoginHandler(BaseHandler):
                    '</form></body></html>')
 
     def post(self):
-		
-		#
-		# Create trimmed versions of user/pw
-		#
+        
+        #
+        # Create trimmed versions of user/pw
+        #
         user = self.get_argument("name")
         user = user[0:15]
         
@@ -156,7 +197,9 @@ def mkapp(cookie_secret):
         (r"/(real-time\.html)", Handler, {'path' : "/home/astronomer"}),
         (r"/(expcontrol\.html)", Handler, {'path' : "/home/astronomer"}),
         (r"/(jquery.*\.js)", Handler, {'path' : "/home/astronomer"}),
-        (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"})
+        (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"}),
+        (r"/(start\.html)", StartHandler),
+        (r"/(stop\.html)", StopHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
