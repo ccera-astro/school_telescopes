@@ -19,6 +19,9 @@ import tornado.template
 
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
+    def set_extra_headers(self, path):
+        # Disable cache
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
     def get(self):
         try:
             fp = open("/etc/hostname", "r")
@@ -32,6 +35,9 @@ class TopLevelHandler(tornado.web.RequestHandler):
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
+    def set_extra_headers(self, path):
+        # Disable cache
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
     SUPPORTED_METHODS = ['GET']
     @tornado.web.authenticated
     def get(self, path):
@@ -144,7 +150,7 @@ class StopHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         n = self.get_argument ("next", "/")
-        loginpage = ('<html><body><form action="/login" method="post">'
+        loginpage = ('<html><body bgcolor="lightgrey"><form action="/login" method="post">'
 		'<h3>Radio Telescope Data System</h3>'
 		'Username: <input type="text" name="name">'
 		'<br>'
