@@ -200,10 +200,10 @@
             var v = $(this).val();
             if (v && !isNaN(+v)) {
                 scaling = +v;
-                if (scaling < 1) {
-                    scaling = 1;
+                if (scaling < 0.001) {
+                    scaling = 0.001;
                 } else if (scaling > 100000) {
-                    scaling = scaling;
+                    scaling = 100000;
                 }
                 $(this).val("" + scaling);
             }
@@ -216,7 +216,7 @@
                 if (corrScaling < 1) {
                     corrScaling = 1;
                 } else if (corrScaling > 100000) {
-                    corrScaling = corrScaling;
+                    corrScaling = 100000;
                 }
                 $(this).val("" + corrScaling);
             }
