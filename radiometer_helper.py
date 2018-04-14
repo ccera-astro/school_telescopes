@@ -258,6 +258,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
         jfp.close()
         src = os.path.join(local,"tpower_temp")
         dst = os.path.join(local,"tpower.json")
+        os.remove(dst)
         os.rename(src,dst)
     except:
         pass
@@ -282,6 +283,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
             jfp.close()
             src = os.path.join(local,"spectral_temp")
             dst = os.path.join(local,"spectral.json")
+            os.remove(dst)
             os.rename(src, dst)
         except:
             pass
