@@ -151,27 +151,26 @@ class LoginHandler(BaseHandler):
     def get(self):
         n = self.get_argument ("next", "/")
         loginpage = ('<html><body bgcolor="lightgrey"><form action="/login" method="post">'
-		'<h3>Radio Telescope Data System</h3>'
-		'Username: <input type="text" name="name">'
-		'<br>'
-		'Password: <input type="password" name="pw">'
-		'<input type="hidden" name="next" value="@@@@">'
-		'<input type="submit" value="Sign in">'
-		'</form></body></html>')
+        '<h3>Radio Telescope Data System</h3>'
+        'Username: <input type="text" name="name">'
+        '<br>'
+        'Password: <input type="password" name="pw">'
+        '<input type="hidden" name="next" value="@@@@">'
+        '<input type="submit" value="Sign in">'
+        '</form></body></html>')
         loginpage = loginpage.replace('@@@@', n)
         self.write(loginpage)
 
     def post(self):
-        
+        badchars = ['<', '>', '{', '}','@', ':', '!', '%', '#', '*', '(', ')']
         #
         # Create trimmed versions of user/pw
         #
         user = self.get_argument("name")
         user = user[0:15]
-        user = user.replace("/", "")
-        user = user.replace("@", "")
-        user = user.replace(":", "")
-        user = user.replace("!", "")
+        for bad in badchars:
+            user = user.replace(bad, "")
+        
         
         pw = self.get_argument("pw")
         pw = pw[0:63]
