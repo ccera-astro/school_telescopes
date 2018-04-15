@@ -8,53 +8,36 @@
             "rates" : [2.5,3.0,6.0],
             "rfgain" : [0,25],
             "freqs" : [25,1600],
-            "bbgain" : 15,
-            "ifgain" : 20,
-            "local" : "/mnt/data/astro_data",
+            "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdate",
-            "Radiometer" : {"device" : "airpsy=0,pack=1 file=/dev/zero,rate=10.0e6",
-                "command" : "radiometer.py"}
+            "Combo-Radiometer" : {"device" : "airpsy=0,pack=1 file=/dev/zero,rate=10.0e6",
+                "command" : "radiometer.py --ifgain 20 --bbgain 15"}
         },
         "School2" :
         {
             "hwname" : "LimeSDR",
-            "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 6.0, 8.0, 10.0],
+            "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0],
             "rfgain" : [0,30],
             "freqs" : [10,3800],
-            "bbgain" : 5,
-            "ifgain" : 5,
-            "local" : "/mnt/data/astro_data",
+            "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
             "antenna" : "LNAW",
-            "Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1 file=/dev/zero,rate=10.0e6",
-                "command" : "radiometer.py"},
+            "Combo-Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1 file=/dev/zero,rate=10.0e6",
+                "command" : "radiometer.py --ifgain 5 --bbgain 5"}
                 
-            "Differential" : {"device" : "soapy=0,device=limesdr,nchan=2",
-                "command" : "radiometer.py"},
-            
-            "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2",
-                "command" : "radiometer.py"}
         },
         "Hobby1" :
         {
             "hwname" : "LimeSDR",
-            "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 6.0, 8.0, 10.0],
+            "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0],
             "freqs" : [10,3800],
             "rfgain" : [0,30],
-            "ifgain" : 5,
-            "bbgain" : 5,
-            "local" : "/mnt/data/astro_data",
+            "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
             "antenna" : "LNAW",
             
-            "Radiometer" : {"device" : "soapy=0,device=imesdr,nchan=1 file=/dev/zero,rate=10.0e6",
-                "command" : "radiometer.py"},
-                
-            "Differential" : {"device" : "soapy=0,device=limesdr,nchan2",
-                "command" : "radiometer.py"},
-            
-            "Interferometer" : {"device" : "soapy=0,device=limesdr,nchan=2",
-                "command" : "radiometer.py"}
+            "Combo-Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1 file=/dev/zero,rate=10.0e6",
+                "command" : "radiometer.py --bbgain 5 --ifgain 5"}
         },
         "Hobby-Premium" :
         {
@@ -62,20 +45,12 @@
             "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0],
             "freqs" : [70,6000],
             "rfgain" : [0,70],
-            "ifgain" : 5,
-            "bbgain" : 5,
-            "local" : "/mnt/data/astro_data",
+            "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
             "antenna" : "RX2",
             
-            "Radiometer" : {"device" : "uhd=0,type=b200,subdev='A:A',num_recv_frames=128,nchan=1 file=/dev/zero,rate=10e6",
-                "command" : "radiometer.py"},
-                
-            "Differential" : {"device" : "uhd=0,type=b200,nchan=2,num_recv_frames=256",
-                "command" : "radiometer.py"},
-            
-            "Interferometer" : {"device" : "uhd=0,type=b200,nchan=2,num_recv_frames=256",
-                "command" : "radiometer.py"}
+            "Combo-Radiometer" : {"device" : "uhd=0,type=b200,subdev='A:A',num_recv_frames=128,nchan=1 file=/dev/zero,rate=10e6",
+                "command" : "radiometer.py --ifgain 5 --bbgain 5"}
         },
         "Econo1" : 
         {
@@ -83,15 +58,10 @@
             "rates" : [1.0,1.5,2.0,2.5],
             "rfgain" : [0,35],
             "freqs" : [25,1500],
-            "ifgain" : 20,
-            "bbgain" : 20,
-            "local" : "/mnt/data/astro_data",
+            "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
-            "Radiometer" : {"device" : "rtl=SKY file=/dev/zero,rate=5e6",
-                "command" : "radiometer.py"},
-                
-            "Differential" : {"device" : "rtl=SKY rtl=REF",
-                "command" : "radiometer.py"}
+            "Combo-Radiometer" : {"device" : "rtl=SKY file=/dev/zero,rate=5e6",
+                "command" : "radiometer.py --ifgain 20 --bbgain 20"}
         }
     }
 }

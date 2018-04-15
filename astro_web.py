@@ -144,6 +144,22 @@ class StartHandler(BaseHandler):
         latitude = self.float_vert(self.get_argument ("latitude", "44.9"))
         rfgain = self.float_vert(self.get_argument ("rfgain", "20"))
         declination = self.float_vert(self.get_argument("declination", "41.0"))
+        speclog = self.get_argument("speclog", "False")
+        
+        etypedict = {"pulsar" : "Pulsar", "radiometer" : "Combo-Radiometer"}
+        etype = self.get_argument("etype", "radiometer")
+        if (etype not in etypedict):
+            self.write ("Experiment type %s is unknown" % etype)
+            return
+        
+        key = etypedict[etype]
+        if (key not in hwtype):
+            self.write ("Experiment type %s is not supported by this hardware" % key)
+
+        softconfig = hwtype[key]
+        print softconfig
+        
+        
         
         if "BAD" in [freq,srate,integration,longitude,latitude,rfgain,declination]:
             self.write("Invalid floating-point input")
