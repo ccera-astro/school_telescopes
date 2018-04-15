@@ -12,10 +12,12 @@ from argparse import ArgumentParser
 import pwd
 import spwd
 import crypt
+import numbers
 
 import tornado.ioloop
 import tornado.web
 import tornado.template
+import json
 
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
@@ -106,6 +108,13 @@ class Handler(tornado.web.StaticFileHandler):
         return url_path
 
 class StartHandler(BaseHandler):
+    def float_vert(self,v):
+        try:
+            x = float(v)
+        except:
+            return ("BAD")
+        return x
+
     @tornado.web.authenticated
     def get(self,path):
         try:
@@ -120,7 +129,47 @@ class StartHandler(BaseHandler):
         except:
             self.write("Internal error -- JSON load failed")
             return
+            
+        me = experiments["myhw"]
+        hlist = experiments["hwtypes"]
+        hwtype = hlist[me]
+        frange = hwtype["freqs"]
+        slist = hwtype["rates"]
+        grange = hwtype["rfgain"]
         
+        freq = self.float_vert(self.get_argument ("freq", "1420.4058e6"))
+        srate = self.float_vert(self.get_argument ("srate", "1.0"))
+        integration = self.float_vert(self.get_argument ("integration", "10"))
+        longitude = self.float_vert(self.get_argument ("longitude", "-76.03"))
+        latitude = self.float_vert(self.get_argument ("latitude", "44.9"))
+        rfgain = self.float_vert(self.get_argument ("rfgain", "20"))
+        declination = self.float_vert(self.get_argument("declination", "41.0"))
+        
+        if "BAD" in [freq,srate,integration,longitude,latitude,rfgain,declination]:
+            self.write("Invalid floating-point input")
+            return
+        
+        if (not (frange[0]*1.0e6 <= freq and freq <= frange[1]*1.0e6)):
+            self.write ("Error in frequency input: must be between %f and %f MHz" % (frange[0], frange[1]))
+            return
+         
+        if (not (srate in slist)):
+            self.write ("Error in sample rate--invalid rate, must be in %s" % str(slist))
+            return
+        
+        if (not (-180.0 <= longitude and longitude <= 180.0)):
+            self.write ("Error in longitude input -- out of range")
+        
+        if (not (-90 <= latitude and latitude <= 90)):
+            self.write ("Error in latitude input -- out of range")
+            return
+        
+        if (not (-90 <= declination and declination <= 90)):
+            self.write ("Error in declination input -- out of range")
+            return
+            
+        self.write ("This is where we'd start stuff")
+        return
 
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
@@ -139,7 +188,7 @@ class StopHandler(BaseHandler):
             os.kill(pid, signal.SIGINT)
         except:
             self.write("No process to stop")
-            os.remove("/home/astronomer/radiometer.pid", "r")
+            os.remove("/home/astronomer/radiometer.pid")
             return
         
         self.write ("Stopped process %d" % pid)
