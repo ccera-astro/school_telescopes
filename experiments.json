@@ -1,5 +1,13 @@
 {
     "myhw" : "Hobby-Premium",
+    "usbtypes" :
+    {
+        "0bda:2832" : "RTLSDR",
+        "0bda:2838" : "RTLSDR",
+        "2500:0020" : "USRP-B210",
+        "1d50:6108" : "LimeSDR-USB",
+        "1d50:60a1" : "AirSpy-R2"
+    },
     "hwtypes" :
     {
         "School1" :
