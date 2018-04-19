@@ -12,12 +12,16 @@
     {
         "AirSpy-R2-1" :
         {
+            "commands" :
+            {
+                "radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"]
+            },
             "hwname" : "AirSpy",
             "rates" : [2.5,3.0,6.0],
             "rfgain" : [0,25],
             "freqs" : [25,1600],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdate",
+            "remote" : "/home/astronomer/rdata",
             "Combo-Radiometer" : {"device" : "airpsy=0,pack=1 file=/dev/zero,rate=10.0e6",
                 "command" : "radiometer.py --ifgain 20 --bbgain 15"}
         },

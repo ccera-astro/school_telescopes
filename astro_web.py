@@ -315,6 +315,7 @@ def mkapp(cookie_secret):
         (r"/(expcontrol\.html)", Handler, {'path' : "/home/astronomer"}),
         (r"/(jquery.*\.js)", Handler, {'path' : "/home/astronomer"}),
         (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"}),
+        (r"/(sysconfig\.json)", Handler, {'path' : "/home/astronomer"}),
         (r"/(start\.html)", StartHandler),
         (r"/(stop\.html)", StopHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
