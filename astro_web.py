@@ -157,7 +157,6 @@ class StartHandler(BaseHandler):
             self.write ("Experiment type %s is not supported by this hardware" % key)
 
         softconfig = hwtype[key]
-        print softconfig
         
         
         
@@ -332,9 +331,62 @@ def start_server(port=8000):
     app.listen(port)
     tornado.ioloop.IOLoop.instance().start()
 
-
+import subprocess
 def main(args=None):
+    
+    try:
+        f = open("experiments.json", "r")
+    except:
+        print "Could not open experiments.json"
+        sys.exit()
+    
+    exp = json.load(f)
+    f.close()
+    
+        
     print('Starting server on port 8000')
+    p = subprocess.Popen("lsusb", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    outs = p.communicate()
+    usblines = outs[0].split("\n")
+    
+    usbcount = 0
+    usbtype = "Unknown"
+    for t in exp["usbtypes"]:
+        for l in usblines:
+            if t in l:
+                usbcount += 1
+                usbtype = exp["usbtypes"][t]
+        if (usbcount > 0):
+            break
+    
+    hwtype = "%s-%d" % (usbtype, usbcount)
+    
+    p = subprocess.Popen("ifconfig eth0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    outs = p.communicate()
+    ethlines = outs[0].split("\n")
+    
+    for l in ethlines:
+        if ("inet" in l):
+            ethtoks = l.strip(" ").split(" ")
+            break
+    
+    ipaddr = ethtoks[1]
+    
+    f = open("/etc/hostname", "r")
+    l = f.readline()
+    host = l.strip("\n")
+    f.close()
+    
+    dic = {"hostname" : host, "ipaddr" : ipaddr, "hwtype" : hwtype} 
+    
+    f = open("sysconfig.json", "w")
+    f.write(json.dumps(dic, indent=4))
+    f.close()
+    
+            
+    
+    
+    
     start_server(port=8000)
 
 
