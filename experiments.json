@@ -1,16 +1,16 @@
 {
-    "myhw" : "Hobby-Premium",
     "usbtypes" :
     {
         "0bda:2832" : "RTLSDR",
         "0bda:2838" : "RTLSDR",
         "2500:0020" : "USRP-B210",
+        "fffe:0002" : "USRP-USRP1",
         "1d50:6108" : "LimeSDR-USB",
         "1d50:60a1" : "AirSpy-R2"
     },
     "hwtypes" :
     {
-        "School1" :
+        "AirSpy-R2-1" :
         {
             "hwname" : "AirSpy",
             "rates" : [2.5,3.0,6.0],
@@ -21,7 +21,7 @@
             "Combo-Radiometer" : {"device" : "airpsy=0,pack=1 file=/dev/zero,rate=10.0e6",
                 "command" : "radiometer.py --ifgain 20 --bbgain 15"}
         },
-        "School2" :
+        "LimeSDR-USB-1" :
         {
             "hwname" : "LimeSDR",
             "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0],
@@ -34,20 +34,8 @@
                 "command" : "radiometer.py --ifgain 5 --bbgain 5"}
                 
         },
-        "Hobby1" :
-        {
-            "hwname" : "LimeSDR",
-            "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0],
-            "freqs" : [10,3800],
-            "rfgain" : [0,30],
-            "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
-            "antenna" : "LNAW",
-            
-            "Combo-Radiometer" : {"device" : "soapy=0,device=limesdr,nchan=1 file=/dev/zero,rate=10.0e6",
-                "command" : "radiometer.py --bbgain 5 --ifgain 5"}
-        },
-        "Hobby-Premium" :
+
+        "USRP-B210-1" :
         {
             "hwname" : "USRP-B210",
             "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0],
@@ -60,7 +48,7 @@
             "Combo-Radiometer" : {"device" : "uhd=0,type=b200,subdev='A:A',num_recv_frames=128,nchan=1 file=/dev/zero,rate=10e6",
                 "command" : "radiometer.py --ifgain 5 --bbgain 5"}
         },
-        "Econo1" : 
+        "RTLSDR-1" : 
         {
             "hwname" : "RTL-SDR",
             "rates" : [1.0,1.5,2.0,2.5],
@@ -68,7 +56,18 @@
             "freqs" : [25,1500],
             "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
-            "Combo-Radiometer" : {"device" : "rtl=SKY file=/dev/zero,rate=5e6",
+            "Combo-Radiometer" : {"device" : "rtl=RCVR1 file=/dev/zero,rate=5e6",
+                "command" : "radiometer.py --ifgain 20 --bbgain 20"}
+        }
+        "RTLSDR-2" : 
+        {
+            "hwname" : "RTL-SDR",
+            "rates" : [1.0,1.5,2.0,2.5],
+            "rfgain" : [0,35],
+            "freqs" : [25,1500],
+            "local" : "/home/astronomer/astro_data",
+            "remote" : "/mnt/rdata",
+            "Combo-Radiometer" : {"device" : "rtl=RCVR1 rtl=RCVR2",
                 "command" : "radiometer.py --ifgain 20 --bbgain 20"}
         }
     }
