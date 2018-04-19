@@ -129,9 +129,25 @@ class StartHandler(BaseHandler):
         except:
             self.write("Internal error -- JSON load failed")
             return
+        
+        try:
+            fp = open("/home/astronomer/sysconfig.json", "r")
+        except:
+            self.write("Internal Error -- cannot open sysconfig file")
+            return
+        
+        try:
+            sysconfig = json.load(fp)
+        except:
+            self.write("Internal error -- JSON load for sysconfig failed")
+            return
+
             
-        me = experiments["myhw"]
+        me = sysconfig["hwtype"]
         hlist = experiments["hwtypes"]
+        if (me not in hlist):
+            self.write("Internal error -- hwtype %s not in database" % me)
+            return
         hwtype = hlist[me]
         frange = hwtype["freqs"]
         slist = hwtype["rates"]
@@ -340,11 +356,13 @@ def main(args=None):
         print "Could not open experiments.json"
         sys.exit()
     
+    #
+    # Jsonify
+    #
     exp = json.load(f)
     f.close()
     
         
-    print('Starting server on port 8000')
     p = subprocess.Popen("lsusb", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outs = p.communicate()
     usblines = outs[0].split("\n")
@@ -383,10 +401,7 @@ def main(args=None):
     f.write(json.dumps(dic, indent=4))
     f.close()
     
-            
-    
-    
-    
+    print('Starting server on port 8000')
     start_server(port=8000)
 
 
