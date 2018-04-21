@@ -79,7 +79,7 @@ class IndexHandler(tornado.web.RequestHandler):
         <hr>
         <ul>
         {% for filename in files %}
-        <li><a href="{{ filename }}">{{ filename }}</a>
+        <li><a href="{{ path }}/{{ filename }}">{{ filename }}</a>
         {% end %}
         </ul>
         <hr>
@@ -206,7 +206,7 @@ class StopHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
         try:
-            fp = open("/home/astronomer/radiometer.pid", "r")
+            fp = open("/home/astronomer/experiment.pid", "r")
         except:
             self.write("No Process to stop")
             return
@@ -219,7 +219,7 @@ class StopHandler(BaseHandler):
             os.kill(pid, signal.SIGINT)
         except:
             self.write("No process to stop")
-            os.remove("/home/astronomer/radiometer.pid")
+            os.remove("/home/astronomer/experiment.pid")
             return
         
         self.write ("Stopped process %d" % pid)
