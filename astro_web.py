@@ -115,6 +115,11 @@ class StartHandler(BaseHandler):
             return ("BAD")
         return x
 
+    def varsub(self,x,vl):
+        for v in vl:
+            x = x.replace("@@"+v, str(vl[v]))
+        return x
+
     @tornado.web.authenticated
     def get(self,path):
         try:
@@ -144,23 +149,56 @@ class StartHandler(BaseHandler):
 
             
         me = sysconfig["hwtype"]
+        commands = experiments["commands"]
         hlist = experiments["hwtypes"]
         if (me not in hlist):
             self.write("Internal error -- hwtype %s not in database" % me)
             return
+        
+        varlist = {}
+        
         hwtype = hlist[me]
         frange = hwtype["freqs"]
         slist = hwtype["rates"]
-        grange = hwtype["rfgain"]
+        grange = hwtype["rfgains"]
         
         freq = self.float_vert(self.get_argument ("freq", "1420.4058e6"))
+        varlist["freq"] = freq
+        
         srate = self.float_vert(self.get_argument ("srate", "1.0"))
+        varlist["srate"] = srate*1.0e6
+        varlist["abw"] = (srate*0.85)*1.0e6
+        
         integration = self.float_vert(self.get_argument ("integration", "10"))
+        varlist["alpha"] = 1.0/integration
+        
         longitude = self.float_vert(self.get_argument ("longitude", "-76.03"))
+        varlist["longitude"] = longitude
+        
         latitude = self.float_vert(self.get_argument ("latitude", "44.9"))
+        varlist["latitude"] = latitude
+        
         rfgain = self.float_vert(self.get_argument ("rfgain", "20"))
+        varlist["rfgain"] = rfgain
+        
         declination = self.float_vert(self.get_argument("declination", "41.0"))
+        varlist["declination"] = declination
+        
+        varlist["rmount"] = self.get_argument("rmount", "//NONE")
+        varlist["ruser"] = self.get_argument("ruser", "nobody")
+        varlist["rpassword"] = self.get_argument("rpassword", "GoopldyGock")
+        varlist["expname"] = self.get_argument("expname", "UNKNOWN")
+        
         speclog = self.get_argument("speclog", "False")
+        if (speclog == "on"):
+            specbool = 1
+        else:
+            specbool = 0
+        varlist["speclog"] = specbool
+        
+        for key in hwtype:
+            if (type(hwtype[key]) is not list):
+                varlist[key] = hwtype[key]
         
         etypedict = {"pulsar" : "Pulsar", "radiometer" : "Combo-Radiometer"}
         etype = self.get_argument("etype", "radiometer")
@@ -173,7 +211,6 @@ class StartHandler(BaseHandler):
             self.write ("Experiment type %s is not supported by this hardware" % key)
 
         softconfig = hwtype[key]
-        
         
         
         if "BAD" in [freq,srate,integration,longitude,latitude,rfgain,declination]:
@@ -198,8 +235,20 @@ class StartHandler(BaseHandler):
         if (not (-90 <= declination and declination <= 90)):
             self.write ("Error in declination input -- out of range")
             return
-            
+        
         self.write ("This is where we'd start stuff")
+
+        if (softconfig not in commands):
+            self.write ("Command profile for %s not in configuration" % softconfig)
+            return
+
+        cmdstr = ""
+        for x in commands[softconfig]:
+            cmdstr = ""
+            cls = experiments[x]
+            for l in cls:
+                cmdstr = cmdstr + self.varsub(l,varlist) + " "
+            print cmdstr
         return
 
 class StopHandler(BaseHandler):

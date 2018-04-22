@@ -1,5 +1,5 @@
 {
-    cmd_radiometer : [
+    "cmd_radiometer" : [
 		"python2 radiometer.py",
         "--abw @@abw",
         "--alpha @@alpha",
@@ -13,21 +13,24 @@
 		"--latitude @@latitude",
 		"--longitude @@longitude",
 		"--lstore @@local",
-		"--rfgain @@remote",
-		"--rstore @@rstore",
-		"--speclog 1",
+		"--rfgain @@rfgain",
+		"--rstore @@remote",
+		"--speclog @@speclog",
 		"--srate @@srate",
 		" >experiment.log 2>&1 & echo $! >experiment.pid"
 		],
 		
-	cmd_mount : [
+	"cmd_mount" : [
 		"umount @@remote >/dev/null 2>&1;",
 		"/home/astronomer/astromounter @@rmount @@remote -o username=@@ruser,password=@@rpassword"
 		],
-	cmd_moveto : [
-		echo python2 moveto.py @@latitude @@declination"
+	"cmd_moveto" : [
+		"echo python2 moveto.py @@latitude @@declination"
 		],
-		
+	"commands" :
+	{
+		"radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"]
+	},
     "usbtypes" :
     {
         "0bda:2832" : "RTLSDR",
@@ -41,10 +44,6 @@
     {
         "AirSpy-R2-1" :
         {
-            "commands" :
-            {
-                "radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"]
-            },
             "hwname" : "AirSpy",
             "rates" : [2.5,3.0,6.0],
             "rfgains" : [0,25],
@@ -53,62 +52,65 @@
             "freqs" : [25,1600],
             "local" : "/home/astronomer/astro_data",
             "remote" : "/home/astronomer/rdata",
-            "device" : "airspy=0,pack=1",
+            "device" : "airspy=0,pack=1 file=/dev/zero,rate=10e6",
             "antenna" : "Default",
             "Combo-Radiometer" : "radiometer"
         },
         "LimeSDR-USB-1" :
         {
-            "commands" :
-            {
-                "radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"]
-            },
             "hwname" : "LimeSDR",
             "rates" : [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0],
             "rfgains" : [0,30],
             "freqs" : [10,3800],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "LNAW",
             "bbgain" : 5,
             "ifgain" : 5,
-            "Combo-Radiometer" : {"radiometer"} 
+            "device" : "soapy,driver=limesdr,nchan=2",
+            "Combo-Radiometer" : "radiometer"
         },
-
         "USRP-B210-1" :
         {
             "hwname" : "USRP-B210",
             "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0],
             "freqs" : [70,6000],
-            "rfgain" : [0,70],
+            "rfgains" : [0,70],
             "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
             "antenna" : "RX2",
-            
-            "Combo-Radiometer" : {"device" : "uhd=0,type=b200,subdev='A:A',num_recv_frames=128,nchan=1 file=/dev/zero,rate=10e6",
-                "command" : "radiometer.py --ifgain 5 --bbgain 5"}
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "uhd,type=b200,nchan=2,num_recv_frames=128",
+            "Combo-Radiometer" : "radiometer"
         },
         "RTLSDR-1" : 
         {
             "hwname" : "RTL-SDR",
             "rates" : [1.0,1.5,2.0,2.5],
-            "rfgain" : [0,35],
+            "rfgains" : [0,35],
             "freqs" : [25,1500],
             "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
-            "Combo-Radiometer" : {"device" : "rtl=RCVR1 file=/dev/zero,rate=5e6",
-                "command" : "radiometer.py --ifgain 20 --bbgain 20"}
+            "antenna" : "default",
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "rtlsdr=RCVR1 file=/dev/zero,rate=10e6",
+            "Combo-Radiometer" : "radiometer"
         },
         "RTLSDR-2" : 
         {
             "hwname" : "RTL-SDR",
             "rates" : [1.0,1.5,2.0,2.5],
-            "rfgain" : [0,35],
+            "rfgains" : [0,35],
             "freqs" : [25,1500],
             "local" : "/home/astronomer/astro_data",
             "remote" : "/mnt/rdata",
-            "Combo-Radiometer" : {"device" : "rtl=RCVR1 rtl=RCVR2",
-                "command" : "radiometer.py --ifgain 20 --bbgain 20"}
+            "antenna" : "default",
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
+            "Combo-Radiometer" : "radiometer"
         }
     }
 }
