@@ -22,7 +22,7 @@
 		
 	"cmd_mount" : [
 		"umount @@remote >/dev/null 2>&1;",
-		"/home/astronomer/astromounter @@rmount @@remote -o username=@@ruser,password=@@rpassword"
+		"/home/astronomer/astromounter ++@@rmount @@remote -o username=@@ruser,password=@@rpassword"
 		],
 	"cmd_moveto" : [
 		"echo python2 moveto.py @@latitude @@declination"
