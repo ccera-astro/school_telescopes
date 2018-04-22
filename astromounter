@@ -1,2 +1,16 @@
 #!/bin/sh
-
+if [ $1 == "++" ]
+then
+	if [ -e $2 ]
+	then
+		rm -f $2
+	fi
+	exit
+fi
+cifsmount=`echo $1|sed -e s/++//`
+rm -f $2
+mount.cifs $cifsmount /mnt/rdata $3 >/dev/null 2>&1
+if [ $? == 0 ]
+then
+	ln -s /mnr/rdata $2
+fi

@@ -17,11 +17,11 @@
 		"--rstore @@remote",
 		"--speclog @@speclog",
 		"--srate @@srate",
-		" >experiment.log 2>&1 & echo $! >experiment.pid"
+		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
 		],
 		
 	"cmd_mount" : [
-		"umount @@remote >/dev/null 2>&1;",
+		"umount /mnt/rdata >/dev/null 2>&1;",
 		"/home/astronomer/astromounter ++@@rmount @@remote -o username=@@ruser,password=@@rpassword"
 		],
 	"cmd_moveto" : [
@@ -67,7 +67,7 @@
             "antenna" : "LNAW",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "soapy,driver=limesdr,nchan=2",
+            "device" : "soapy,driver=lime,nchan=2",
             "Combo-Radiometer" : "radiometer"
         },
         "USRP-B210-1" :

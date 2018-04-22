@@ -13,11 +13,14 @@ import pwd
 import spwd
 import crypt
 import numbers
+import time
 
 import tornado.ioloop
 import tornado.web
 import tornado.template
 import json
+
+import subprocess
 
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
@@ -167,7 +170,7 @@ class StartHandler(BaseHandler):
         
         srate = self.float_vert(self.get_argument ("srate", "1.0"))
         varlist["srate"] = srate*1.0e6
-        varlist["abw"] = (srate*0.85)*1.0e6
+        varlist["abw"] = (srate*0.90)*1.0e6
         
         integration = self.float_vert(self.get_argument ("integration", "10"))
         varlist["alpha"] = 1.0/integration
@@ -241,15 +244,35 @@ class StartHandler(BaseHandler):
         if (softconfig not in commands):
             self.write ("Command profile for %s not in configuration" % softconfig)
             return
-
+            
+        
+        try:
+            f = open ("/home/astronomer/experiment.pid", "r")
+            l = f.readline().strip('\n')
+            os.kill(int(l),signal.SIGINT)
+            time.sleep(0.5)
+            os.kill(int(l),signal.SIGHUP)
+            time.sleep(2.0)
+        except:
+            pass
+            
         cmdstr = ""
         for x in commands[softconfig]:
             cmdstr = ""
             cls = experiments[x]
             for l in cls:
                 cmdstr = cmdstr + self.varsub(l,varlist) + " "
-            print cmdstr
+              
+            p = subprocess.Popen (cmdstr, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            outs = p.communicate()
+            r = p.wait()
+            if (r != 0):
+                self.write ("Process failed to start correctly")
+                self.write (outs[0])
+                self.write (outs[1])
         return
+        
+
 
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
@@ -266,6 +289,8 @@ class StopHandler(BaseHandler):
         
         try:
             os.kill(pid, signal.SIGINT)
+            time.sleep(0.25)
+            os.kill(pid, signal.SIGHUP)
         except:
             self.write("No process to stop")
             os.remove("/home/astronomer/experiment.pid")
@@ -397,7 +422,7 @@ def start_server(port=8000):
     app.listen(port)
     tornado.ioloop.IOLoop.instance().start()
 
-import subprocess
+
 def main(args=None):
     
     try:
