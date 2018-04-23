@@ -301,6 +301,14 @@ class StartHandler(BaseHandler):
                 os.remove("reboot_name.txt")
             except:
                 pass
+        
+        try:
+            f = open(varlist["local"] + "/" + varlist["expname"] + "-notes.txt", "w")
+            f.write(self.get_argument("notes", "None"))
+            f.write("\n")
+            f.close()
+        except:
+            pass
         return
         
 
