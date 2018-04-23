@@ -199,6 +199,7 @@ class StartHandler(BaseHandler):
             specbool = 0
         varlist["speclog"] = specbool
         
+        
         for key in hwtype:
             if (type(hwtype[key]) is not list):
                 varlist[key] = hwtype[key]
@@ -239,8 +240,6 @@ class StartHandler(BaseHandler):
             self.write ("Error in declination input -- out of range")
             return
         
-        self.write ("This is where we'd start stuff")
-
         if (softconfig not in commands):
             self.write ("Command profile for %s not in configuration" % softconfig)
             return
@@ -257,6 +256,7 @@ class StartHandler(BaseHandler):
             pass
             
         cmdstr = ""
+        saved_commands = ""
         for x in commands[softconfig]:
             cmdstr = ""
             cls = experiments[x]
@@ -270,6 +270,37 @@ class StartHandler(BaseHandler):
                 self.write ("Process failed to start correctly")
                 self.write (outs[0])
                 self.write (outs[1])
+            
+            saved_commands += cmdstr
+            saved_commands += "\n"
+            
+        f = open ("experiment.pid", "r")
+        pid = int(f.readline().strip('\n'))
+        f.close()
+        self.write ("Experiment %s started with PID %d\n<br>" % (varlist["expname"], pid))
+        
+        print "save %s" % self.get_argument("save", "off")
+        print "startup %s" % self.get_argument("startup", "off")
+        
+        if (self.get_argument("save", "off") == "on"):
+            fn = "%s.sh" % varlist["expname"]
+            f = open(fn, "w")
+            f.write (saved_commands)
+            f.close()
+            os.chmod(fn, 0755)
+            self.write("Saved experiment profile %s\n<br>" % fn)
+            
+        
+        if (self.get_argument("startup", "off") == "on"):
+            f = open("reboot_name.txt", "w")
+            f.write(varlist["expname"]+"\n")
+            f.close()
+            self.write("Saved experiment profile %s to reboot\n<br>" % varlist["expname"])
+        else:
+            try:
+                os.remove("reboot_name.txt")
+            except:
+                pass
         return
         
 
@@ -298,6 +329,53 @@ class StopHandler(BaseHandler):
         
         self.write ("Stopped process %d" % pid)
         return
+        
+class RestartHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self,path):
+        
+        expname = self.get_argument("expname", "???")
+        fn = expname+".sh"
+        
+        if not os.path.exists(fn):
+            self.write ("Could not find experiment profile %s" % expname)
+            return
+        
+        pidfile = False
+        try:
+            fp = open("/home/astronomer/experiment.pid", "r")
+            pidfile = True
+        except:
+            pass
+        
+        if (pidfile != False):
+            pid = fp.readline().strip("\n")
+            fp.close()
+            pid = int(pid)
+            
+            try:
+                os.kill(pid, signal.SIGINT)
+                time.sleep(0.25)
+                os.kill(pid, signal.SIGHUP)
+            except:
+                pass
+        
+        p = subprocess.Popen("/home/astronomer/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = p.communicate()
+        r = p.wait()
+        if r != 0:
+            self.write(outs[0])
+            self.write(outs[1])
+            return
+        
+        f = open ("experiment.pid", "r")
+        pid = int(f.readline().strip('\n'))
+        f.close()
+        
+        self.write ("Re-started experiment %s with pid %d" % (expname, pid))
+        
+        return
+        
         
         
 
@@ -391,7 +469,8 @@ def mkapp(cookie_secret):
         (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"}),
         (r"/(sysconfig\.json)", Handler, {'path' : "/home/astronomer"}),
         (r"/(start\.html)", StartHandler),
-        (r"/(stop\.html)", StopHandler)
+        (r"/(stop\.html)", StopHandler),
+        (r"/(restart\.html)", RestartHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
