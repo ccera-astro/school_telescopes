@@ -1,0 +1,17 @@
+Have expcontrol do more useful stuff with the info from sysconfig.json
+
+Add "save profile" and "safe profile to system startup" buttons to
+    expcontrol
+    
+Add a "re-run profile" section to the expcontrol page.
+
+Arrange for airspy_web to start at system startup--maybe it should
+  handle experimental startup-on-boot.  Yeah.  That's the ticket.
+  
+Try to reorganize expcontrol so that it's less cluttered and
+  easier to understand.
+  
+Perhaps remove the timed-start/stop stuff for now.
+
+Doing something with the experimental notes.
+
