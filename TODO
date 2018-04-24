@@ -1,2 +1,4 @@
 Pretty up the homepage some more
 Add documentation
+Make sure that when you do "Restart" it only does so if the input
+  profile is valid.
