@@ -22,6 +22,10 @@ import json
 
 import subprocess
 
+def gethome():
+    global  HOMEDIR
+    return HOMEDIR
+
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
     def set_extra_headers(self, path):
@@ -34,8 +38,11 @@ class TopLevelHandler(tornado.web.RequestHandler):
             fp.close()
         except:
             host="Unknown"
-            
-        self.render("/home/astronomer/index.html", host=host)
+        f = open(gethome()+"/"+"sysconfig.json", "r")
+        js = json.load(f)
+        f.close()
+           
+        self.render(gethome()+"/"+"index.html", host=host, ipaddr=js["ipaddr"])
 
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -126,7 +133,7 @@ class StartHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
         try:
-            fp = open("/home/astronomer/experiments.json", "r")
+            fp = open(gethome()+"/"+"experiments.json", "r")
         except:
             self.write("Internal Error -- experiment control file failed")
             return
@@ -139,7 +146,7 @@ class StartHandler(BaseHandler):
             return
         
         try:
-            fp = open("/home/astronomer/sysconfig.json", "r")
+            fp = open(gethome()+"/"+"sysconfig.json", "r")
         except:
             self.write("Internal Error -- cannot open sysconfig file")
             return
@@ -246,7 +253,7 @@ class StartHandler(BaseHandler):
             
         
         try:
-            f = open ("/home/astronomer/experiment.pid", "r")
+            f = open (gethome()+"/"+"experiment.pid", "r")
             l = f.readline().strip('\n')
             os.kill(int(l),signal.SIGINT)
             time.sleep(0.5)
@@ -274,7 +281,7 @@ class StartHandler(BaseHandler):
             saved_commands += cmdstr
             saved_commands += "\n"
             
-        f = open ("experiment.pid", "r")
+        f = open (gethome()+"/"+"experiment.pid", "r")
         pid = int(f.readline().strip('\n'))
         f.close()
         self.write ("Experiment %s started with PID %d\n<br>" % (varlist["expname"], pid))
@@ -317,7 +324,7 @@ class StopHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
         try:
-            fp = open("/home/astronomer/experiment.pid", "r")
+            fp = open(gethome()+"/"+"experiment.pid", "r")
         except:
             self.write("No Process to stop")
             return
@@ -332,7 +339,7 @@ class StopHandler(BaseHandler):
             os.kill(pid, signal.SIGHUP)
         except:
             self.write("No process to stop")
-            os.remove("/home/astronomer/experiment.pid")
+            os.remove(gethome()+"/"+"experiment.pid")
             return
         
         self.write ("Stopped process %d" % pid)
@@ -351,7 +358,7 @@ class RestartHandler(BaseHandler):
         
         pidfile = False
         try:
-            fp = open("/home/astronomer/experiment.pid", "r")
+            fp = open(gethome()+"/"+"experiment.pid", "r")
             pidfile = True
         except:
             pass
@@ -368,7 +375,7 @@ class RestartHandler(BaseHandler):
             except:
                 pass
         
-        p = subprocess.Popen("/home/astronomer/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(gethome()+"/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         r = p.wait()
         if r != 0:
@@ -376,7 +383,7 @@ class RestartHandler(BaseHandler):
             self.write(outs[1])
             return
         
-        f = open ("experiment.pid", "r")
+        f = open (gethome()+"/"+"experiment.pid", "r")
         pid = int(f.readline().strip('\n'))
         f.close()
         
@@ -468,14 +475,17 @@ def mkapp(cookie_secret):
         (r"/index.html", TopLevelHandler),
         (r"/$", TopLevelHandler),
         (r"/login", LoginHandler),
-        (r"/(.*)/$", IndexHandler),
+        (r"/(Documents)/$", IndexHandler),
+        (r"/(Documents)$", IndexHandler),
         (r"/(astro_data)$", IndexHandler),
-        (r"/astro_data/(.*)", Handler, {'path': "/home/astronomer/astro_data"}),
-        (r"/(real-time\.html)", Handler, {'path' : "/home/astronomer"}),
-        (r"/(expcontrol\.html)", Handler, {'path' : "/home/astronomer"}),
-        (r"/(jquery.*\.js)", Handler, {'path' : "/home/astronomer"}),
-        (r"/(experiment.*\.json)", Handler, {'path' : "/home/astronomer"}),
-        (r"/(sysconfig\.json)", Handler, {'path' : "/home/astronomer"}),
+        (r"/(transparent-logo\.png)", Handler, {'path' : gethome()}),
+        (r"/astro_data/(.*)", Handler, {'path': gethome()+"/"+"astro_data"}),
+        (r"/Documents/(.*)", Handler, {'path' : gethome()+"/"+"Documents"}),
+        (r"/(real-time\.html)", Handler, {'path' : gethome()}),
+        (r"/(expcontrol\.html)", Handler, {'path' : gethome()}),
+        (r"/(jquery.*\.js)", Handler, {'path' : gethome()}),
+        (r"/(experiment.*\.json)", Handler, {'path' : gethome()}),
+        (r"/(sysconfig\.json)", Handler, {'path' : gethome()}),
         (r"/(start\.html)", StartHandler),
         (r"/(stop\.html)", StopHandler),
         (r"/(restart\.html)", RestartHandler)
@@ -511,6 +521,9 @@ def start_server(port=8000):
 
 
 def main(args=None):
+    global HOMEDIR
+    
+    HOMEDIR=os.path.realpath(".")
     
     try:
         f = open("experiments.json", "r")
