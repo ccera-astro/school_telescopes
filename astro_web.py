@@ -44,14 +44,75 @@ class TopLevelHandler(tornado.web.RequestHandler):
            
         self.render(gethome()+"/"+"index.html", host=host, ipaddr=js["ipaddr"])
 
+
+class ExpControlHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+    SUPPORTED_METHODS = ['GET']
+    @tornado.web.authenticated
+    def set_extra_headers(self, path):
+        # Disable cache
+
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def get(self,path):
+        try:
+            fp = open("/etc/hostname", "r")
+            host=fp.readline().strip('\n')
+            fp.close()
+        except:
+            host="Unknown"
+        
+        running = "None"
+        plist = ""
+        pid = -1
+        try:
+            f = open(gethome()+"/"+"experiment.pid", "r")
+            l = f.readline().strip('\n')
+            f.close()
+            pid = int(l)
+        except:
+            pass
+        
+        if (pid != -1):
+            try:
+                os.kill (pid, 0)
+            except:
+                pid = -1
+        
+        if (pid != -1):
+            try:
+                f = open (gethome()+"/"+"astro_data/tpower.json")
+                js = json.load(f)
+                f.close()
+                running = js["expname"]
+            except:
+                pass
+
+        plist=""
+        dls = os.listdir(gethome())
+        
+        for n in dls:
+            if (".sh" in n):
+                plist = plist + " " + n.replace(".sh", "")
+
+        f = open(gethome()+"/"+"sysconfig.json", "r")
+        js = json.load(f)
+        f.close()
+        self.render(gethome()+"/"+"expcontrol.html", host=host,
+            ipaddr=js["ipaddr"],
+            running=running,
+            plist=plist,
+            pid=str(pid))
+
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
+    
+    @tornado.web.authenticated
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
     SUPPORTED_METHODS = ['GET']
-    @tornado.web.authenticated
     def get(self, path):
         """ GET method to list contents of directory or
         write index page if index.html exists."""
@@ -468,6 +529,7 @@ class LoginHandler(BaseHandler):
         else:
             self.write(goodstr)
             self.set_secure_cookie("user", user)
+            print "redirecting to %s" % self.get_argument("next")
             self.redirect(self.get_argument("next", u"/"))
 
 def mkapp(cookie_secret):
@@ -482,7 +544,7 @@ def mkapp(cookie_secret):
         (r"/astro_data/(.*)", Handler, {'path': gethome()+"/"+"astro_data"}),
         (r"/Documents/(.*)", Handler, {'path' : gethome()+"/"+"Documents"}),
         (r"/(real-time\.html)", Handler, {'path' : gethome()}),
-        (r"/(expcontrol\.html)", Handler, {'path' : gethome()}),
+        (r"/(expcontrol\.html)", ExpControlHandler),
         (r"/(jquery.*\.js)", Handler, {'path' : gethome()}),
         (r"/(experiment.*\.json)", Handler, {'path' : gethome()}),
         (r"/(sysconfig\.json)", Handler, {'path' : gethome()}),

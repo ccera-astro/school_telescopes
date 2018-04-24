@@ -139,7 +139,7 @@
 <hr>
 <hr>
 <form action="/stop.html" method="get">
-<h3>Stop Currently Running Experiment</h3>
+<h3>Stop Currently Running Experiment: {{ running }} ({{ pid }})</h3>
 <input type="submit" value="Stop">
 </form> 
 <hr>
@@ -147,6 +147,9 @@
 <form action="/restart.html" method="get">
 <h3>Restart saved experiment profile</h3>
 <b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
+<p>
+Available profiles: {{ plist }}
+</p>
 <input type="submit" value="Restart">
 </form>
 </body>
