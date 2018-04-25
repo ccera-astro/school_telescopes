@@ -36,6 +36,8 @@
         "0bda:2832" : "RTLSDR",
         "0bda:2838" : "RTLSDR",
         "2500:0020" : "USRP-B210",
+        "2500:0021" : "USRP-B205",
+        "2500:0022" : "USRP-B205",
         "fffe:0002" : "USRP-USRP1",
         "1d50:6108" : "LimeSDR-USB",
         "1d50:60a1" : "AirSpy-R2"
@@ -82,6 +84,34 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,nchan=2,num_recv_frames=128",
+            "Combo-Radiometer" : "radiometer"
+        },
+        "USRP-B205-1" :
+		{
+            "hwname" : "USRP-B205",
+            "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0],
+            "freqs" : [70,6000],
+            "rfgains" : [0,70],
+            "local" : "/home/astronomer/astro_data",
+            "remote" : "/mnt/rdata",
+            "antenna" : "RX2",
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "uhd,type=b200,num_recv_frames=128,nchan=1 file=/dev/zero,rate=10e6",
+            "Combo-Radiometer" : "radiometer"
+        },
+        "USRP-B205-2" :
+		{
+            "hwname" : "USRP-B205",
+            "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0],
+            "freqs" : [70,6000],
+            "rfgains" : [0,70],
+            "local" : "/home/astronomer/astro_data",
+            "remote" : "/mnt/rdata",
+            "antenna" : "RX2",
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=64 uhd,type=b200,name=RCVR2,num_recv_frames=64",
             "Combo-Radiometer" : "radiometer"
         },
         "RTLSDR-1" : 
