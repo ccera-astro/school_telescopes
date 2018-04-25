@@ -44,6 +44,68 @@ class TopLevelHandler(tornado.web.RequestHandler):
            
         self.render(gethome()+"/"+"index.html", host=host, ipaddr=js["ipaddr"])
 
+class PwChangeHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+    SUPPORTED_METHODS = ['GET']
+    @tornado.web.authenticated
+    def set_extra_headers(self, path):
+        # Disable cache
+
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def get(self,path):
+        user = self.get_argument("user", "unknown")
+        opw = self.get_argument("opassword", "???")
+        npw1 = self.get_argument("npassword1", "???")
+        npw2 = self.get_argument("npassword2", "???")
+        
+        #
+        # Setup error / success HTML snipphttp://www.tornadoweb.org/en/stable/guide/security.htmets
+        #
+        errstr = "<html><body><h3>Unknown Username or Password</h3></body></html>"
+        goodstr = "<html><body><h3>Password Update successful</h3></body></html>"
+        
+        #
+        # First try to find in regular password file
+        #
+        try:
+            pw_struct = pwd.getpwnam(user)
+        except:
+            self.write(errstr)
+            return
+        #
+        # Has low UID?  Fuggedaboudid
+        #
+        if (pw_struct.pw_uid < 1000):
+            self.write(errstr)
+            return
+        
+        #
+        # Next, try to get password from shadow pw file
+        #  On our system, we leave the file readable by everyone
+        #  Low risk--this is an embedded system with one or two
+        #    "users", and regular login isn't a normal thing.
+        #   
+        try:
+            spw_struct = spwd.getspnam(user)
+        except:
+            self.write(errstr)
+            return
+        
+        #
+        # OK, now do the password check
+        #
+        # Encrypt the entered password using the salt from the
+        #   shadow file.  Compare results.
+        #  
+        epassword = crypt.crypt(opw, spw_struct.sp_pwd)
+        if (epassword != spw_struct.sp_pwd):
+            self.write(errstr)
+            return
+        
+        self.write(goodstr)
+        
+        
 
 class ExpControlHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -451,9 +513,7 @@ class RestartHandler(BaseHandler):
         self.write ("Re-started experiment %s with pid %d" % (expname, pid))
         
         return
-        
-        
-        
+           
 
 class LoginHandler(BaseHandler):
     def get(self):
@@ -500,7 +560,7 @@ class LoginHandler(BaseHandler):
         #
         # Has low UID?  Fuggedaboudid
         #
-        if (pw_struct.pw_uid < 10):
+        if (pw_struct.pw_uid < 1000):
             self.write(errstr)
             return
         
@@ -544,13 +604,15 @@ def mkapp(cookie_secret):
         (r"/astro_data/(.*)", Handler, {'path': gethome()+"/"+"astro_data"}),
         (r"/Documents/(.*)", Handler, {'path' : gethome()+"/"+"Documents"}),
         (r"/(real-time\.html)", Handler, {'path' : gethome()}),
+        (r"/(password\.html)", Handler, {'path' : gethome()}),
         (r"/(expcontrol\.html)", ExpControlHandler),
         (r"/(jquery.*\.js)", Handler, {'path' : gethome()}),
         (r"/(experiment.*\.json)", Handler, {'path' : gethome()}),
         (r"/(sysconfig\.json)", Handler, {'path' : gethome()}),
         (r"/(start\.html)", StartHandler),
         (r"/(stop\.html)", StopHandler),
-        (r"/(restart\.html)", RestartHandler)
+        (r"/(restart\.html)", RestartHandler),
+        (r"/(pwchange\.html)", PwChangeHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
