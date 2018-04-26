@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-    <title>Radio Astronomy Control Panel</title>
+    <title>Radio Astronomy Control Panel: {{host}}/{{ipaddr}}</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="generator" content="Geany 1.24.1" />
 
@@ -148,10 +148,32 @@
 <h3>Restart saved experiment profile</h3>
 <b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
 <p>
-Available profiles: {{ plist }}
+<i>Available profiles: {{ plist }}</i>
 </p>
 <input type="submit" value="Restart">
 </form>
 </body>
-
+<hr>
+<hr>
+<form action="/profiles.html" method="get">
+<h3>Manage Profiles</h3>
+<p>
+	<i>Available profiles: {{ plist}}</i>
+</p>
+<p>
+To <b>just</b> delete current system-startup profile, leave Experiment Name blank
+and select <i>Delete system startup profile</i>
+<p>
+To delete named profile select <i>Delete profile</i>, and to add profile to
+system startup, select <i>Add profile to startup</i>
+</p>
+</p>
+<br>
+<b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
+<b>Delete profile</b><input type="checkbox" name="delete">
+<b>Add profile to startup</b><input type="checkbox" name="add"><br>
+<b>Delete system startup profile ({{ startup }})</b><input type="checkbox" name="startup"><br>
+<p>
+<input type="submit" value="Update">
+</form>
 </html>

@@ -26,6 +26,10 @@ def gethome():
     global  HOMEDIR
     return HOMEDIR
 
+def getluser():
+    global USER
+    return USER
+
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
     def set_extra_headers(self, path):
@@ -54,7 +58,7 @@ class PwChangeHandler(tornado.web.RequestHandler):
 
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
     def get(self,path):
-        user = self.get_argument("user", "unknown")
+        user = getluser()
         opw = self.get_argument("opassword", "???")
         npw1 = self.get_argument("npassword1", "???")
         npw2 = self.get_argument("npassword2", "???")
@@ -105,8 +109,7 @@ class PwChangeHandler(tornado.web.RequestHandler):
         
         self.write(goodstr)
         
-        
-
+       
 class ExpControlHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
@@ -156,6 +159,13 @@ class ExpControlHandler(tornado.web.RequestHandler):
         for n in dls:
             if (".sh" in n):
                 plist = plist + " " + n.replace(".sh", "")
+        start_profile = "Not present"
+        try:
+            f = open(gethome()+"/"+"reboot_name.txt", "r")
+            start_profile = f.readline().strip('\n')
+            f.close()
+        except:
+            pass
 
         f = open(gethome()+"/"+"sysconfig.json", "r")
         js = json.load(f)
@@ -164,6 +174,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
             ipaddr=js["ipaddr"],
             running=running,
             plist=plist,
+            startup=start_profile,
             pid=str(pid))
 
 class IndexHandler(tornado.web.RequestHandler):
@@ -468,6 +479,54 @@ class StopHandler(BaseHandler):
         self.write ("Stopped process %d" % pid)
         return
         
+class ProfileHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self,path):
+        expname = self.get_argument("expname", "")
+        startup = self.get_argument("startup", "False")
+        delete = self.get_argument("delete", "False")
+        add = self.get_argument("add", "False")
+        
+        if add != "on" and delete != "on" and startup != "on":
+            self.write ("No options selected, doing nothing")
+            return
+        
+        if startup == "on" and expname != "":
+			self.write ("Profile name must be blank for Remove from Startup")
+			return
+            
+        pfn = gethome() + "/" + expname + ".sh"
+        if expname != "":
+            if delete == "on" and add != "on":
+                if (os.path.exists(pfn)):
+                    os.remove (pfn)
+                else:
+                    self.write ("No such experiment profile %s" % expname)
+                    return
+            elif delete != "on" and add == "on":
+                if os.path.exists(pfn):
+                    f = open (gethome() + "/reboot_name.txt", "w")
+                    f.write(expname+"\n")
+                    f.close()
+                    self.write ("Added profile %s to system startup" % expname)
+                else:
+                    self.write ("No such experiment profile %s" % expname)
+                    return
+            else:
+				self.write ("Conflict options Add/Delete")
+            return
+        
+        if startup == "on" and delete != "on" and add != "on":
+            pfn = gethome() + "/reboot_name.txt"
+            if os.path.exists(pfn):
+                os.remove(pfn)
+                self.write ("Removed profile from system startup")
+            else:
+				self.write ("No startup file to remove")
+        else:
+            self.write ("Remove from startup must be the only option if selected")
+
+        
 class RestartHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
@@ -520,7 +579,6 @@ class LoginHandler(BaseHandler):
         n = self.get_argument ("next", "/")
         loginpage = ('<html><body bgcolor="lightgrey"><form action="/login" method="post">'
         '<h3>Radio Telescope Data System</h3>'
-        'Username: <input type="text" name="name">'
         '<br>'
         'Password: <input type="password" name="pw">'
         '<input type="hidden" name="next" value="@@@@">'
@@ -532,14 +590,9 @@ class LoginHandler(BaseHandler):
     def post(self):
         badchars = ['<', '>', '{', '}','@', ':', '!', '%', '#', '*', '(', ')']
         #
-        # Create trimmed versions of user/pw
+        # Create trimmed versions of pw
         #
-        user = self.get_argument("name")
-        user = user[0:15]
-        for bad in badchars:
-            user = user.replace(bad, "")
-        
-        
+        user = getluser()
         pw = self.get_argument("pw")
         pw = pw[0:63]
         
@@ -612,7 +665,8 @@ def mkapp(cookie_secret):
         (r"/(start\.html)", StartHandler),
         (r"/(stop\.html)", StopHandler),
         (r"/(restart\.html)", RestartHandler),
-        (r"/(pwchange\.html)", PwChangeHandler)
+        (r"/(pwchange\.html)", PwChangeHandler),
+        (r"/(profiles\.html)", ProfileHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
@@ -646,8 +700,12 @@ def start_server(port=8000):
 
 def main(args=None):
     global HOMEDIR
+    global USER
     
     HOMEDIR=os.path.realpath(".")
+    pw_struct = pwd.getpwuid(os.getuid())
+    USER = pw_struct.pw_name
+    
     
     try:
         f = open("experiments.json", "r")
