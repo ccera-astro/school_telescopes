@@ -167,6 +167,15 @@ class ExpControlHandler(tornado.web.RequestHandler):
         except:
             pass
 
+        currlog = ""
+        try:
+            f = open (gethome()+"/astro_data/"+running+".log", "r")
+            currlog=f.read()
+            f.close()
+        except:
+			pass
+            
+        
         f = open(gethome()+"/"+"sysconfig.json", "r")
         js = json.load(f)
         f.close()
@@ -175,7 +184,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
             running=running,
             plist=plist,
             startup=start_profile,
-            pid=str(pid))
+            pid=str(pid), currlog=currlog)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -483,27 +492,26 @@ class ProfileHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
         expname = self.get_argument("expname", "")
-        startup = self.get_argument("startup", "False")
-        delete = self.get_argument("delete", "False")
-        add = self.get_argument("add", "False")
+        action = self.get_argument("action", "none")
+        actions = ["delete", "add", "startup"]
         
-        if add != "on" and delete != "on" and startup != "on":
-            self.write ("No options selected, doing nothing")
+        if action not in actions:
+            self.write ("No or invalid action selected, doing nothing")
             return
         
-        if startup == "on" and expname != "":
-			self.write ("Profile name must be blank for Remove from Startup")
-			return
+        if action == "startup" and expname != "":
+            self.write ("Profile name must be blank for Remove from Startup")
+            return
             
         pfn = gethome() + "/" + expname + ".sh"
         if expname != "":
-            if delete == "on" and add != "on":
+            if action == "delete":
                 if (os.path.exists(pfn)):
                     os.remove (pfn)
                 else:
                     self.write ("No such experiment profile %s" % expname)
                     return
-            elif delete != "on" and add == "on":
+            if action == "add":
                 if os.path.exists(pfn):
                     f = open (gethome() + "/reboot_name.txt", "w")
                     f.write(expname+"\n")
@@ -512,17 +520,15 @@ class ProfileHandler(BaseHandler):
                 else:
                     self.write ("No such experiment profile %s" % expname)
                     return
-            else:
-				self.write ("Conflict options Add/Delete")
             return
         
-        if startup == "on" and delete != "on" and add != "on":
+        if action == "startup":
             pfn = gethome() + "/reboot_name.txt"
             if os.path.exists(pfn):
                 os.remove(pfn)
                 self.write ("Removed profile from system startup")
             else:
-				self.write ("No startup file to remove")
+                self.write ("No startup file to remove")
         else:
             self.write ("Remove from startup must be the only option if selected")
 
@@ -735,6 +741,7 @@ def main(args=None):
             break
     
     hwtype = "%s-%d" % (usbtype, usbcount)
+    
     
     p = subprocess.Popen("ifconfig eth0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outs = p.communicate()

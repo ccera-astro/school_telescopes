@@ -6,7 +6,7 @@
         "--antenna @@antenna",
         "--bbgain @@bbgain",
         "--declination @@declination",
-		"--device @@device",
+		"--device '@@device'",
 		"--expname @@expname",
 		"--freq  @@freq",
 		"--ifgain @@ifgain",
@@ -40,11 +40,11 @@
         "2500:0022" : "USRP-B205",
         "fffe:0002" : "USRP-USRP1",
         "1d50:6108" : "LimeSDR-USB",
-        "1d50:60a1" : "AirSpy-R2"
+        "1d50:60a1" : "AirSpy-Mini"
     },
     "hwtypes" :
     {
-        "AirSpy-R2-1" :
+        "AirSpy-Mini-1" :
         {
             "hwname" : "AirSpy",
             "rates" : [2.5,3.0,6.0],

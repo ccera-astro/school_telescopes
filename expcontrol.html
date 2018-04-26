@@ -101,7 +101,7 @@
      <h4 id="radioType">Installed radio(s): Unknown</h4>
 <hr>
 <b>Sample Rate (Msps)</b>
-  <input id="srate1" type="radio" name="srate" value="1.0" checked>1
+  <input id="srate1" type="radio" name="srate" value="1.0" disabled="true">1
   <input id="srate1_5" type="radio" name="srate" value="1.5" disabled="true">1.5
   <input id="srate2" type="radio" name="srate" value="2.0" disabled="true">2
   <input id="srate2_5" type="radio" name="srate" value="2.5" disabled="true">2.5
@@ -140,6 +140,11 @@
 <hr>
 <form action="/stop.html" method="get">
 <h3>Stop Currently Running Experiment: {{ running }} ({{ pid }})</h3>
+<h2>Current log</h2>
+<pre>
+{{currlog}}
+</pre>
+<br>
 <input type="submit" value="Stop">
 </form> 
 <hr>
@@ -170,9 +175,9 @@ system startup, select <i>Add profile to startup</i>
 </p>
 <br>
 <b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
-<b>Delete profile</b><input type="checkbox" name="delete">
-<b>Add profile to startup</b><input type="checkbox" name="add"><br>
-<b>Delete system startup profile ({{ startup }})</b><input type="checkbox" name="startup"><br>
+<b>Delete profile</b><input type="radio" name="action" value="delete"><br>
+<b>Add profile to startup</b><input type="radio" name="action" value="add"><br>
+<b>Delete system startup profile ({{ startup }})</b><input type="radio" name="action" value="startup"><br>
 <p>
 <input type="submit" value="Update">
 </form>
