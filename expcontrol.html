@@ -37,7 +37,8 @@
             var goodkeys = {"Combo-Radiometer" : "etRadiometer"}
             
             var goodrates = {1.0 : "srate1", 1.5 : "srate1_5", 2.0 : "srate2", 2.5 : "srate2_5",
-                3.0 : "srate3", 4.0 : "srate4", 5.0 : "srate5", 6.0 : "srate6", 8.0 : "srate8", 10.0 : "srate10"}
+                3.0 : "srate3", 4.0 : "srate4", 5.0 : "srate5", 6.0 : "srate6", 8.0 : "srate8", 10.0 : "srate10",
+                12.0 : "srate12", 15.0 : "srate15"}
                 
             key1 = hwtype;
             $("#radioType").text("Installed Receiver(s): "+hjson.hwtypes[key1].hwname + " @" + ipaddr);
@@ -110,7 +111,9 @@
   <input id="srate5" type="radio" name="srate" value="5.0" disabled="true">5
   <input id="srate6" type="radio" name="srate" value="6.0" disabled="true">6
   <input id="srate8" type="radio" name="srate" value="8.0" disabled="true">8
-  <input id="srate10" type="radio" name="srate" value="10.0" disabled="true">10<br>
+  <input id="srate10" type="radio" name="srate" value="10.0" disabled="true">10
+  <input id="srate12" type="radio" name="srate" value="12.0" disabled="true">12
+  <input id="srate15" type="radio" name="srate" value="15.0" disabled="true">15<br>
 <b>Experiment Type</b><br>
   <input id="etRadiometer" type="radio" name="etype" value="radiometer" checked>Combo Radiometer<br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor<br>
