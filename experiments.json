@@ -41,14 +41,14 @@
         "fffe:0002" : "USRP-USRP1",
         "1d50:6108" : "LimeSDR-USB",
         "0403:601f" : "LimeSDR-Mini",
-        "1d50:60a1" : "AirSpy-Mini"
+        "1d50:60a1" : "AirSpy"
     },
     "hwtypes" :
     {
-        "AirSpy-Mini-1" :
+        "AirSpy-1" :
         {
             "hwname" : "AirSpy",
-            "rates" : [2.5,3.0,6.0],
+            "rates" : [2.5,3.0,6.0,10.0],
             "rfgains" : [0,25],
             "bbgain" : 20,
             "ifgain" : 10,
