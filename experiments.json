@@ -48,7 +48,7 @@
         "AirSpy-1" :
         {
             "hwname" : "AirSpy",
-            "rates" : [2.5,3.0,6.0,10.0],
+            "rates" : [2.5,3.0,6.0],
             "rfgains" : [0,25],
             "bbgain" : 20,
             "ifgain" : 10,
@@ -94,11 +94,11 @@
             "freqs" : [70,6000],
             "rfgains" : [0,70],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,nchan=2,num_recv_frames=128",
+            "device" : "uhd,type=b200,nchan=2,num_recv_frames=256,otw_format=sc12",
             "Combo-Radiometer" : "radiometer"
         },
         "USRP-B205-1" :
@@ -108,11 +108,11 @@
             "freqs" : [70,6000],
             "rfgains" : [0,70],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,num_recv_frames=128,nchan=1 file=/dev/zero,rate=15e6",
+            "device" : "uhd,type=b200,num_recv_frames=256,nchan=1,otw_format=sc12 file=/dev/zero,rate=15e6",
             "Combo-Radiometer" : "radiometer"
         },
         "USRP-B205-2" :
@@ -122,11 +122,11 @@
             "freqs" : [70,6000],
             "rfgains" : [0,70],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=128 uhd,type=b200,name=RCVR2,num_recv_frames=128",
+            "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=128,otw_format=sc12 uhd,type=b200,name=RCVR2,num_recv_frames=128,otw_format=sc12",
             "Combo-Radiometer" : "radiometer"
         },
         "RTLSDR-1" : 
@@ -136,7 +136,7 @@
             "rfgains" : [0,35],
             "freqs" : [25,1500],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,
@@ -150,7 +150,7 @@
             "rfgains" : [0,35],
             "freqs" : [25,1500],
             "local" : "/home/astronomer/astro_data",
-            "remote" : "/mnt/rdata",
+            "remote" : "/home/astronomer/rdata",
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,

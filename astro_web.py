@@ -29,6 +29,22 @@ def gethome():
 def getluser():
     global USER
     return USER
+    
+def killit(pid):
+    try:
+        os.kill(pid, os.SIGTERM)
+    except:
+        return(-1)
+    
+    time.sleep(1.0)
+
+    try:
+        retval = -1
+        os.kill(pid, 0)
+    except:
+        retval = 0
+        
+    return(retval)
 
 class TopLevelHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET']
@@ -173,7 +189,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
             currlog=f.read()
             f.close()
         except:
-			pass
+            pass
             
         
         f = open(gethome()+"/"+"sysconfig.json", "r")
@@ -394,14 +410,14 @@ class StartHandler(BaseHandler):
             self.write ("Command profile for %s not in configuration" % softconfig)
             return
             
-        
+        rv = 0
         try:
             f = open (gethome()+"/"+"experiment.pid", "r")
             l = f.readline().strip('\n')
-            os.kill(int(l),signal.SIGINT)
-            time.sleep(0.5)
-            os.kill(int(l),signal.SIGHUP)
-            time.sleep(2.0)
+            f.close()
+            if (killit(int(l)) == -1):
+                self.write ("Failed to kill previous process: %d" % int(l))
+            time.sleep(1.0)
         except:
             pass
             
@@ -429,8 +445,6 @@ class StartHandler(BaseHandler):
         f.close()
         self.write ("Experiment %s started with PID %d\n<br>" % (varlist["expname"], pid))
         
-        print "save %s" % self.get_argument("save", "off")
-        print "startup %s" % self.get_argument("startup", "off")
         
         if (self.get_argument("save", "off") == "on"):
             fn = "%s.sh" % varlist["expname"]
@@ -476,16 +490,19 @@ class StopHandler(BaseHandler):
         fp.close()
         pid = int(pid)
         
+        rv = 0
         try:
-            os.kill(pid, signal.SIGINT)
-            time.sleep(0.25)
-            os.kill(pid, signal.SIGHUP)
+            rv = killit(pid)
+            time.sleep(1.0)
         except:
             self.write("No process to stop")
             os.remove(gethome()+"/"+"experiment.pid")
             return
         
-        self.write ("Stopped process %d" % pid)
+        if (rv == 0):
+            self.write ("Stopped process %d" % pid)
+        else:
+            self.write ("Failed to stop process %d" % pid)
         return
         
 class ProfileHandler(BaseHandler):
@@ -508,6 +525,7 @@ class ProfileHandler(BaseHandler):
             if action == "delete":
                 if (os.path.exists(pfn)):
                     os.remove (pfn)
+                    self.write ("Removed profile %s" % expname)
                 else:
                     self.write ("No such experiment profile %s" % expname)
                     return
@@ -556,13 +574,15 @@ class RestartHandler(BaseHandler):
             fp.close()
             pid = int(pid)
             
+            rv = 0
             try:
-                os.kill(pid, signal.SIGINT)
-                time.sleep(0.25)
-                os.kill(pid, signal.SIGHUP)
+                rv = killit(pid)
+                time.sleep(0.5)
             except:
                 pass
         
+        if (rv != 0):
+            self.write("Could not stop previous process %d" % pid)
         p = subprocess.Popen(gethome()+"/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         r = p.wait()
