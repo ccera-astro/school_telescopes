@@ -90,7 +90,7 @@
         "USRP-B210-1" :
         {
             "hwname" : "USRP-B210",
-            "rates" : [1.0,  2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0],
+            "rates" : [1.0,  2.0, 4.0, 6.0, 8.0],
             "freqs" : [70,6000],
             "rfgains" : [0,70],
             "local" : "/home/astronomer/astro_data",
@@ -98,7 +98,7 @@
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,nchan=2,num_recv_frames=256,otw_format=sc12",
+            "device" : "uhd,type=b200,nchan=2,num_recv_frames=256,otw_format=sc8,peak=0.01",
             "Combo-Radiometer" : "radiometer"
         },
         "USRP-B205-1" :
@@ -112,7 +112,7 @@
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,num_recv_frames=256,nchan=1,otw_format=sc12 file=/dev/zero,rate=15e6",
+            "device" : "uhd,type=b200,num_recv_frames=256,nchan=1,otw_format=sc8 file=/dev/zero,rate=15e6",
             "Combo-Radiometer" : "radiometer"
         },
         "USRP-B205-2" :
@@ -126,7 +126,7 @@
             "antenna" : "RX2",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=128,otw_format=sc12 uhd,type=b200,name=RCVR2,num_recv_frames=128,otw_format=sc12",
+            "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=128,otw_format=sc8 uhd,type=b200,name=RCVR2,num_recv_frames=128,otw_format=sc8",
             "Combo-Radiometer" : "radiometer"
         },
         "RTLSDR-1" : 

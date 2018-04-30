@@ -416,7 +416,7 @@ class StartHandler(BaseHandler):
             l = f.readline().strip('\n')
             f.close()
             if (killit(int(l)) == -1):
-                self.write ("Failed to kill previous process: %d" % int(l))
+                self.write ("Failed to kill previous process: %d\n" % int(l))
             time.sleep(1.0)
         except:
             pass
@@ -502,7 +502,7 @@ class StopHandler(BaseHandler):
         if (rv == 0):
             self.write ("Stopped process %d" % pid)
         else:
-            self.write ("Failed to stop process %d" % pid)
+            self.write ("Failed to stop process %d\n" % pid)
         return
         
 class ProfileHandler(BaseHandler):

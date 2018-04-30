@@ -172,7 +172,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>2048</value>
+      <value>1024</value>
     </param>
   </block>
   <block>
