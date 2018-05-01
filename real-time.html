@@ -221,7 +221,7 @@
                 corrScaling = +v;
                 if (corrScaling < 1) {
                     corrScaling = 1;
-                } else if (corrScaling > 1.0e10 {
+                } else if (corrScaling > 1.0e10) {
                     corrScaling = 1.0e10;
                 }
                 $(this).val("" + corrScaling);
@@ -234,22 +234,22 @@
             $(this).val("" + offset);
         });
         
-        $("#spec_min").val(smin).change(function() {
+        $("#spec_min").val(spec_min).change(function() {
 			var v  = $(this).val();
 			sscale_min = v;
 			plot2.getOptions().yaxes[0].min = sscale_min;
 			plot2.getOptions().yaxes[0].max = sscale_max;
 			plot2.setupGrid();
-			plot2.Draw();
+			plot2.draw();
 		});
 		
-		$("#spec_max").val(smin).change(function() {
+		$("#spec_max").val(spec_max).change(function() {
 			var v = $(this).val();
 			sscale_max = v;
 			plot2.getOptions().yaxes[0].min = sscale_min;
 			plot2.getOptions().yaxes[0].max = sscale_max;
 			plot2.setupGrid();
-			plot2.Draw();
+			plot2.draw();
 		});
 		
 		$("#spec_min").val(sscale_min);
