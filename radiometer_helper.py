@@ -9,6 +9,17 @@ import time
 
 then = time.time()
 
+#
+# Avoid the middle 4% of the FFT (DC offset) when calculating sum over bins
+#
+def fftsum(vec):
+	l = len(vec)
+	first = l/2 - int(l*0.02)
+	second = l/2 + int(l*0.02)
+	sum1  = numpy.sum(vec[0:first])
+	sum1 += numpy.sum(vec[second:l])
+	return sum1
+
 def cur_sidereal(longitude):
     longstr = "%02d" % int(longitude)
     longstr = longstr + ":"
@@ -91,12 +102,12 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # I THINK THIS IS THE MOST NUMERICALLY-CORRECT APPROACH.  BUT I
     #   COULD BE WILDLY WRONG.
     #
-    tpower = numpy.sum(sfft)
+    tpower = fftsum(sffts[SKY]) - fftsum(sffts[REF])
     
     #
     # Sky
     #
-    skypower = numpy.sum(sffts[SKY])
+    skypower = fftsum(sffts[SKY])
     if (curr_sky < -50.0):
         curr_sky = skypower
     curr_sky = (alpha*skypower) + (beta*curr_sky)
@@ -105,7 +116,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # Ref
     #
     if (len(ffts) > 1):
-        refpower = numpy.sum(sffts[REF])
+        refpower = fftsum(sffts[REF])
         if (curr_ref < -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
@@ -114,8 +125,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # Correlation
     #
     if(len(ffts) > 1):
-        corrpower_real = numpy.sum(sffts[CORR_REAL])
-        corrpower_imag = numpy.sum(sffts[CORR_IMAG])
+        corrpower_real = fftsum(sffts[CORR_REAL])
+        corrpower_imag = fftsum(sffts[CORR_IMAG])
         if (curr_corr_real < -50.0):
             curr_corr_real = corrpower_real
             curr_corr_imag = corrpower_imag
