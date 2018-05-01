@@ -294,14 +294,14 @@ class StartHandler(BaseHandler):
         try:
             fp = open(gethome()+"/"+"experiments.json", "r")
         except:
-            self.write("Internal Error -- experiment control file failed")
+            self.write("Internal Error -- experiment control file open failed\n")
             return
         
         try:
             experiments = json.load(fp)
             fp.close()
         except:
-            self.write("Internal error -- JSON load failed")
+            self.write("Internal error -- JSON load failed\n")
             return
         
         try:
@@ -480,8 +480,9 @@ class StartHandler(BaseHandler):
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
+        pfn = gethome()+"/"+"experiment.pid"
         try:
-            fp = open(gethome()+"/"+"experiment.pid", "r")
+            fp = open(pfn, "r")
         except:
             self.write("No Process to stop\n")
             return
@@ -501,6 +502,7 @@ class StopHandler(BaseHandler):
         
         if (rv == 0):
             self.write ("Stopped process %d\n" % pid)
+            os.remove(pfn)
         else:
             self.write ("Failed to stop process %d\n" % pid)
         return
@@ -563,12 +565,14 @@ class RestartHandler(BaseHandler):
             return
         
         pidfile = False
+        pfn = gethome()+"/"+"experiment.pid"
         try:
-            fp = open(gethome()+"/"+"experiment.pid", "r")
+            fp = open(pfn)
             pidfile = True
         except:
             pass
         
+        rv = 0
         if (pidfile != False):
             pid = fp.readline().strip("\n")
             fp.close()
@@ -580,9 +584,11 @@ class RestartHandler(BaseHandler):
                 time.sleep(0.5)
             except:
                 pass
+            os.remove(pfn)
         
         if (rv != 0):
-            self.write("Could not stop previous process %d" % pid)
+            self.write("Could not stop previous process %d\n" % pid)
+            
         p = subprocess.Popen(gethome()+"/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         r = p.wait()
@@ -595,7 +601,7 @@ class RestartHandler(BaseHandler):
         pid = int(f.readline().strip('\n'))
         f.close()
         
-        self.write ("Re-started experiment %s with pid %d" % (expname, pid))
+        self.write ("Re-started experiment %s with pid %d\n" % (expname, pid))
         
         return
            
