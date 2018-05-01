@@ -102,6 +102,12 @@
 		 *  y2axis (Spectral) values
 		 */
 		var y2axis = [];
+		
+		/*
+		 * Scaling values for spectral
+		 */
+		var sscale_min = -90;
+		var sscale_max = -50;
         
         function zeroFilled() {
             res = contData[0];
@@ -136,8 +142,8 @@
         $("#smartScale2Reset").click(function() {
             smartscaling = false;
             if (baseline_state == false) {
-				plot2.getOptions().yaxes[0].min = -80;
-				plot2.getOptions().yaxes[0].max = -40;
+				plot2.getOptions().yaxes[0].min = sscale_min;
+				plot2.getOptions().yaxes[0].max = sscale_max;;
 			}
 			else {
 				plot2.getOptions().yaxes[0].min = -4;
@@ -202,8 +208,8 @@
                 scaling = +v;
                 if (scaling < 0.001) {
                     scaling = 0.001;
-                } else if (scaling > 100000) {
-                    scaling = 100000;
+                } else if (scaling > 1.0e19) {
+                    scaling = 1.0e10;
                 }
                 $(this).val("" + scaling);
             }
@@ -215,8 +221,8 @@
                 corrScaling = +v;
                 if (corrScaling < 1) {
                     corrScaling = 1;
-                } else if (corrScaling > 100000) {
-                    corrScaling = 100000;
+                } else if (corrScaling > 1.0e10 {
+                    corrScaling = 1.0e10;
                 }
                 $(this).val("" + corrScaling);
             }
@@ -227,6 +233,27 @@
             offset = v;
             $(this).val("" + offset);
         });
+        
+        $("#spec_min").val(smin).change(function() {
+			var v  = $(this).val();
+			sscale_min = v;
+			plot2.getOptions().yaxes[0].min = sscale_min;
+			plot2.getOptions().yaxes[0].max = sscale_max;
+			plot2.setupGrid();
+			plot2.Draw();
+		});
+		
+		$("#spec_max").val(smin).change(function() {
+			var v = $(this).val();
+			sscale_max = v;
+			plot2.getOptions().yaxes[0].min = sscale_min;
+			plot2.getOptions().yaxes[0].max = sscale_max;
+			plot2.setupGrid();
+			plot2.Draw();
+		});
+		
+		$("#spec_min").val(sscale_min);
+		$("#spec_max").val(sscale_max);
         
         
         /*
@@ -663,7 +690,9 @@
     Show Doppler<input id="showDoppler" type="checkbox">
     Peak Hold<input id="peakHold" type="checkbox">
     <button type="button" id="smartScale2">Smart Scale</button>
-    <button type="button" id="smartScale2Reset">Reset Smart Scale</button>
+    <button type="button" id="smartScale2Reset">Reset Smart Scale</button><br>
+    <input type="text" id="spec_min" value="-80">Scale Min
+    <input type="text" id="spec_max" value="-50">Scale Max
     </p>
     
     <hr>
