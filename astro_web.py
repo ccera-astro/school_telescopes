@@ -32,11 +32,11 @@ def getluser():
     
 def killit(pid):
     try:
-        os.kill(pid, os.SIGTERM)
+        os.kill(pid, signal.SIGTERM)
     except:
         return(-1)
     
-    time.sleep(1.0)
+    time.sleep(0.75)
 
     try:
         retval = -1
@@ -483,7 +483,7 @@ class StopHandler(BaseHandler):
         try:
             fp = open(gethome()+"/"+"experiment.pid", "r")
         except:
-            self.write("No Process to stop")
+            self.write("No Process to stop\n")
             return
     
         pid = fp.readline().strip("\n")
@@ -500,7 +500,7 @@ class StopHandler(BaseHandler):
             return
         
         if (rv == 0):
-            self.write ("Stopped process %d" % pid)
+            self.write ("Stopped process %d\n" % pid)
         else:
             self.write ("Failed to stop process %d\n" % pid)
         return
