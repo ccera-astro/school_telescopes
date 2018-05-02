@@ -3496,16 +3496,87 @@ import time
 then = time.time()
 
 #
-# Avoid the middle 4% of the FFT (DC offset) when calculating sum over bins
+# Given a frequency and width, compute the
+#  bins in a given FFT size to exclude from
+#  calculations.
 #
-def fftsum(vec):
-	l = len(vec)
-	first = l/2 - int(l*0.02)
-	second = l/2 + int(l*0.02)
-	sum1  = numpy.sum(vec[0:first])
-	sum1 += numpy.sum(vec[second:l])
-	return sum1
+# On input, must know:
+#   FFT length
+#   Fc
+#   Total bandwidth represented by FFT
+#   The centroid of the exclusion frequency
+#   The width of the exclusion zone
+#
+def derive_exclusion(fftl,freq,bw,efreq,ewid):
+    binw = bw/fftl
+    startf = freq-(bw/2.0)
+    offset = efreq - startf
+    offset -= (ewid/2.0)
+    end = offset + ewid
+    
+    offset /= binw
+    offset = int(offset)
+    
+    end /= binw
+    end = int(end)
+    
+    #
+    # Handle effective zero-width case
+    #  (due to integer round-down)
+    #
+    if (end == offset):
+        end = offset+1
 
+    #
+    # Handle offsets spilling off the end
+    #
+    if (offset &lt; 0):
+        offset = 0
+    if (offset &gt;= fftl):
+        offset = fftl-1
+    
+    
+    if (end &lt; 0):
+        end = 0
+    if (end &gt;= fftl):
+        end = fftl-1
+
+    #
+    # Handle effective zero-width case
+    #  (due to integer round-down)
+    #
+    if (end == offset):
+        end = offset+1
+        
+    return [offset,end]
+    
+    
+
+#
+# sum an fft-like, with a list of exclusion zones
+#
+def fftsum(vec,exlist):
+    
+    #
+    # First derive the total sum
+    #
+    sum1 = numpy.sum(vec)
+    
+    #
+    # Then subtract-out
+    #  The zones of exclusion
+    #
+    for ex in exlist:
+        st = ex[0]
+        en = ex[1]
+        sum1 -= numpy.sum(vec[st:en])
+    return sum1
+
+#
+# Get current sidereal time
+#
+# Only required input for our purposes is longitude
+#
 def cur_sidereal(longitude):
     longstr = "%02d" % int(longitude)
     longstr = longstr + ":"
@@ -3546,7 +3617,26 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     REF = 1
     CORR_REAL = 2
     CORR_IMAG = 3
+   
+    #
+    # For exclusions in vector sum (notching-out offensive regions)
+    #   most notably the DC-offset region, where there can often be
+    #   large spikes
+    #
+    # But also any user-supplied regions 
+    #
+    exclusions=[]
     
+    #
+    # It is most convenient for the user to specify exclusions in terms
+    #   of frequency and width, so we have a derivation function that
+    #   turns that into a tuple-like of [start,end]
+    #
+    exclusions.append(derive_exclusion(len(ffts[0]),freq,bw,freq,25.0e3))
+    
+    #
+    # Need to allow user-specified list somehow.  &gt;&gt;&gt;&gt;TODO&lt;&lt;&lt;&lt;&lt;
+    #
     
     #
     # Protect against getting called too often
@@ -3588,12 +3678,12 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # I THINK THIS IS THE MOST NUMERICALLY-CORRECT APPROACH.  BUT I
     #   COULD BE WILDLY WRONG.
     #
-    tpower = fftsum(sffts[SKY]) - fftsum(sffts[REF])
+    tpower = fftsum(sffts[SKY],exclusions) - fftsum(sffts[REF],exclusions)
     
     #
     # Sky
     #
-    skypower = fftsum(sffts[SKY])
+    skypower = fftsum(sffts[SKY],exclusions)
     if (curr_sky &lt; -50.0):
         curr_sky = skypower
     curr_sky = (alpha*skypower) + (beta*curr_sky)
@@ -3602,7 +3692,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # Ref
     #
     if (len(ffts) &gt; 1):
-        refpower = fftsum(sffts[REF])
+        refpower = fftsum(sffts[REF],exclusions)
         if (curr_ref &lt; -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
@@ -3611,8 +3701,8 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # Correlation
     #
     if(len(ffts) &gt; 1):
-        corrpower_real = fftsum(sffts[CORR_REAL])
-        corrpower_imag = fftsum(sffts[CORR_IMAG])
+        corrpower_real = fftsum(sffts[CORR_REAL],exclusions)
+        corrpower_imag = fftsum(sffts[CORR_IMAG],exclusions)
         if (curr_corr_real &lt; -50.0):
             curr_corr_real = corrpower_real
             curr_corr_imag = corrpower_imag
