@@ -119,7 +119,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl):
     global then
     global count
     global curr_diff
@@ -147,6 +147,15 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #   turns that into a tuple-like of [start,end]
     #
     exclusions.append(derive_exclusion(len(ffts[0]),freq,bw,freq,25.0e3))
+    
+    #
+    # Process user-provided exclusion(s)
+    #
+    if (excl != ""):
+        for v in excl.split(","):
+            t = v.split(":")
+            e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
+            exclusions.append(e)
     
     #
     # Need to allow user-specified list somehow.  >>>>TODO<<<<<

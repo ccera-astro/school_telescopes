@@ -226,7 +226,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination,speclog)</value>
+      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination,speclog,excl)</value>
     </param>
   </block>
   <block>
@@ -1284,6 +1284,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>value</key>
       <value>airspy=0,pack=1 file=/dev/zero,rate=10.0e6</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(56, 976)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>excl</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Frequency exclusions</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>""</value>
     </param>
   </block>
   <block>
@@ -3605,7 +3652,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl):
     global then
     global count
     global curr_diff
@@ -3633,6 +3680,15 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #   turns that into a tuple-like of [start,end]
     #
     exclusions.append(derive_exclusion(len(ffts[0]),freq,bw,freq,25.0e3))
+    
+    #
+    # Process user-provided exclusion(s)
+    #
+    if (excl != ""):
+        for v in excl.split(","):
+            t = v.split(":")
+            e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
+            exclusions.append(e)
     
     #
     # Need to allow user-specified list somehow.  &gt;&gt;&gt;&gt;TODO&lt;&lt;&lt;&lt;&lt;
