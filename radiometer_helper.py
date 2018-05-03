@@ -84,6 +84,7 @@ def fftsum(vec,exlist):
         st = ex[0]
         en = ex[1]
         sum1 -= numpy.sum(vec[st:en])
+        
     return sum1
 
 #

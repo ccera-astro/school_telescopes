@@ -108,6 +108,19 @@
 		 */
 		var sscale_min = -90;
 		var sscale_max = -50;
+		
+		/*
+		 * Correlation plot
+		 */
+		var corrscale_min = -1.0;
+		var corrscale_max = 1.0;
+	    
+	    
+	    /*
+	     * Continuum plot
+	     */
+	     var contscale_min = -0.5;
+	     var contscale_max = 2.0;
         
         function zeroFilled() {
             res = contData[0];
@@ -254,6 +267,48 @@
 		
 		$("#spec_min").val(sscale_min);
 		$("#spec_max").val(sscale_max);
+		
+		$("#corr_min").val(corr_min).change(function() {
+			var v  = $(this).val();
+			corrscale_min = v;
+			plotCorr.getOptions().yaxes[0].min = corrscale_min;
+			plotCorr.getOptions().yaxes[0].max = corrscale_max;
+			plotCorr.setupGrid();
+			plotCorr.draw();
+		});
+		
+		$("#corr_max").val(corr_max).change(function() {
+			var v = $(this).val();
+			corrscale_max = v;
+			plotCorr.getOptions().yaxes[0].min = corrscale_min;
+			plotCorr.getOptions().yaxes[0].max = corrscale_max;
+			plotCorr.setupGrid();
+			plotCorr.draw();
+		});
+		
+		$("#corr_min").val(corrscale_min);
+		$("#corr_max").val(corrscale_max);
+
+		$("#cont_min").val(cont_min).change(function() {
+			var v  = $(this).val();
+			contscale_min = v;
+			plot.getOptions().yaxes[0].min = contscale_min;
+			plot.getOptions().yaxes[0].max = contscale_max;
+			plot.setupGrid();
+			plot.draw();
+		});
+		
+		$("#cont_max").val(cont_max).change(function() {
+			var v = $(this).val();
+			contscale_max = v;
+			plot.getOptions().yaxes[0].min = contscale_min;
+			plot.getOptions().yaxes[0].max = contscale_max;
+			plot.setupGrid();
+			plot.draw();
+		});
+		
+		$("#cont_min").val(contscale_min);
+		$("#cont_max").val(contscale_max);
         
         
         /*
@@ -669,13 +724,17 @@
 
     <p>
         Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
-        Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em">
+        Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em"><br>
+           <input type="text" id="cont_min" value="-80">Display Min
+    <input type="text" id="cont_max" value="-50">Display Max
     </p>
     
     <h3>Correlation Data</h3>
     <div id="Correlation" style="width:950px;height:300px"></div>
      <p>
-        Correlation Data Scaling: <input id="corrScaling" type="text" value="1" style="text-align: right; width:5em">
+        Correlation Data Scaling: <input id="corrScaling" type="text" value="1" style="text-align: right; width:5em"><br>
+    <input type="text" id="corr_min" value="-80">Display Min
+    <input type="text" id="corr_max" value="-50">Display Max
     </p>
     <div id="header2">
         <h3>Spectral Data</h3>
@@ -691,8 +750,8 @@
     Peak Hold<input id="peakHold" type="checkbox">
     <button type="button" id="smartScale2">Smart Scale</button>
     <button type="button" id="smartScale2Reset">Reset Smart Scale</button><br>
-    <input type="text" id="spec_min" value="-80">Scale Min
-    <input type="text" id="spec_max" value="-50">Scale Max
+    <input type="text" id="spec_min" value="-80">Display Min
+    <input type="text" id="spec_max" value="-50">Display Max
     </p>
     
     <hr>
