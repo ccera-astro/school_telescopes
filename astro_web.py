@@ -357,6 +357,10 @@ class StartHandler(BaseHandler):
         varlist["ruser"] = self.get_argument("ruser", "nobody")
         varlist["rpassword"] = self.get_argument("rpassword", "GoopldyGock")
         varlist["expname"] = self.get_argument("expname", "UNKNOWN")
+        varlist["excl"] = self.get_argument("excl", "none")
+        
+        if (varlist["excl"] == ""):
+			varlist["excl"] = "none"
         
         speclog = self.get_argument("speclog", "False")
         if (speclog == "on"):

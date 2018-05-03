@@ -8,6 +8,7 @@
         "--declination @@declination",
 		"--device '@@device'",
 		"--expname @@expname",
+		"--excl @@excl",
 		"--freq  @@freq",
 		"--ifgain @@ifgain",
 		"--latitude @@latitude",

@@ -3684,7 +3684,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #
     # Process user-provided exclusion(s)
     #
-    if (excl != ""):
+    if (excl != "" and excl != "none"):
         for v in excl.split(","):
             t = v.split(":")
             e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
@@ -4187,7 +4187,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(frate*15)</value>
+      <value>1.0/(frate*20)</value>
     </param>
     <param>
       <key>alias</key>

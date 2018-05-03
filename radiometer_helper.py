@@ -151,7 +151,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #
     # Process user-provided exclusion(s)
     #
-    if (excl != ""):
+    if (excl != "" and excl != "none"):
         for v in excl.split(","):
             t = v.split(":")
             e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
