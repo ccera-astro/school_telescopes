@@ -118,7 +118,9 @@
   <input id="etRadiometer" type="radio" name="etype" value="radiometer" checked>Combo Radiometer
   <i>(Two-channel total power, difference, and correlation)</i><br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor
-  <i>(Pulsar monitoring with dispersion compensation)</i><br>
+  <i>(Pulsar monitoring with dispersion compensation:NOT YET SUPPORTED)</i><br>
+  <p style="margin-left:40px">DM<input type="text" name="dm" value="1.0" disabled="true"><br>
+  Pulse rate<input type="text" name="prate" value="1.0" disabled="true"><br></p>
   <b>Spectral logging</b><input type="checkbox" id="splogging" name="speclog"><i>  (including spectral correlation
   components)</i><br>
   <b>Frequency</b> <input type="text" name="freq" required value="1420.4058e6">
@@ -133,7 +135,8 @@
   <b>Remote Logging Password</b> <input type="password" name="rpassword" maxlength=32><br>
   <b>Declination Target</b> <input type="text" name="declination" value=41 min=-90 max=90 step=0.1><br>
   <b>Local Longitude</b><input type="text" name="longitude" value="-75.9" min=-180 max=180 step=0.1>
-  <b>Local Latitude</b><input type="text" name="latitude" value="44.9" min=-90 max=90 step=0.25><br>
+  <b>Local Latitude</b><input type="text" name="latitude" value="44.9" min=-90 max=90 step=0.25>
+  <b>Baseline distance(m)</b><input type="text" name="baseline" value="1.0" min="1.0" max="5000"><br>
   <b>Integration time</b><input type="number" name="integration" value=1.0 min=1.0 max=100.0 step=1><b>seconds</b><br>
   <br>
   <i>Enter excluded frequency range(s) in the form <u>frequency:width,frequency:width...</u> with values in Hz.<br>
