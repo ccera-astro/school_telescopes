@@ -2,6 +2,34 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
+<style>
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+ 
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+</style>
+
 <head>
     <title>Radio Astronomy Control Panel: {{host}}/{{ipaddr}}</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
@@ -115,7 +143,11 @@
   <input id="srate10" type="radio" name="srate" value="10.0" disabled="true">10
   <input id="srate12" type="radio" name="srate" value="12.0" disabled="true">12
   <input id="srate15" type="radio" name="srate" value="15.0" disabled="true">15<br>
-<b>Experiment Type</b><br>
+<div class="tooltip">
+	<span class="tooltiptext"><i>Currently, only combination radiometry is supported</i></span>
+<b>Experiment Type</b>
+</div>
+<br>
   <input id="etRadiometer" type="radio" name="etype" value="radiometer" checked>Combo Radiometer
   <i>(Two-channel total power, difference, and correlation)</i><br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor
@@ -124,7 +156,11 @@
   Pulse rate<input type="text" name="prate" value="1.0" disabled="true"><br></p>
   <b>Spectral logging</b><input type="checkbox" id="splogging" name="speclog"><i>  (including spectral correlation
   components)</i><br>
+   <br>
+<div class="tooltip">
+  <span class="tooltiptext"><i>RF center frequency in Hz. Eg: 1420.405e6</i></span> 
   <b>Frequency</b> <input type="text" name="freq" required value="1420.4058e6">
+</div>
   
   <b>RF Gain</b>
   <input type="number" id="rfgain" name="rfgain" min=0 max=40 value="0" step=0.5>                                                 
@@ -139,11 +175,14 @@
   <b>Local Latitude</b><input type="text" name="latitude" value="44.9" min=-90 max=90 step=0.25>
   <b>Baseline distance(m)</b><input type="text" name="baseline" value="1.0" min="1.0" max="5000"><br>
   <b>Integration time</b><input type="number" name="integration" value=1.0 min=1.0 max=100.0 step=1><b>seconds</b><br>
-  <br>
-  <i>Enter excluded frequency range(s) in the form <u>frequency:width,frequency:width...</u> with values in Hz.<br>
-  Example: <code>612.5e6:25e3,609.7e6:40e3</code></i><br>
-  <br>
-  <b>Frequency exclusions</b><input type="text" name="excl" maxlength=128 size=50><br>
+<div class="tooltip">
+   <span class="tooltiptext"><i>Enter excluded frequency range(s) in the form <u>frequency:width,frequency:width...</u> with values in Hz.<br>
+  Example: <code>612.5e6:25e3,609.7e6:40e3</code></i><br></span>
+  <b>Frequency exclusions</b>
+</div>
+<input type="text" name="excl" maxlength=128 size=50><br>
+<br>
+<hr>
   <b>Save profile</b><input type="checkbox" id="save" name="save">
   <b>Save to system startup</b><input type="checkbox" id="startup" name="startup"><br>
 
@@ -151,8 +190,7 @@
   <textarea name="notes" style="width:350px;height:150px;"></textarea><br>
   <input type="submit" value="Start">
 </form>
-<hr>
-<hr>
+<hr style="height:10px;background-color:beige">
 <form action="/stop.html" method="get">
 <h3>Stop Currently Running Experiment: {{ running }} ({{ pid }})</h3>
 <h2>Current log</h2>
@@ -162,8 +200,7 @@
 <br>
 <input type="submit" value="Stop">
 </form> 
-<hr>
-<hr>
+<hr style="height:10px;background-color:beige">
 <form action="/restart.html" method="get">
 <h3>Restart saved experiment profile</h3>
 <b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
@@ -172,9 +209,7 @@
 </p>
 <input type="submit" value="Restart">
 </form>
-</body>
-<hr>
-<hr>
+<hr style="height:10px;background-color:beige">
 <form action="/profiles.html" method="get">
 <h3>Manage Profiles</h3>
 <p>
@@ -196,4 +231,5 @@ system startup, select <i>Add profile to startup</i>
 <p>
 <input type="submit" value="Update">
 </form>
+</body>
 </html>
