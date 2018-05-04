@@ -79,6 +79,10 @@ class PwChangeHandler(tornado.web.RequestHandler):
         npw1 = self.get_argument("npassword1", "???")
         npw2 = self.get_argument("npassword2", "???")
         
+        if (npw1 != npw2):
+            self.write ("<html><body><h3>New Passwords do not match</h3></body></html>")
+            return
+        
         #
         # Setup error / success HTML snipphttp://www.tornadoweb.org/en/stable/guide/security.htmets
         #
@@ -123,7 +127,17 @@ class PwChangeHandler(tornado.web.RequestHandler):
             self.write(errstr)
             return
         
-        self.write(goodstr)
+        pip = subprocess.Popen(gethome()+"/"+"super %s" % npw2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = pip.communicate()
+        r = pip.returncode
+        if (r != 0):
+            self.write(errstr)
+            self.write("<html><body><pre>")
+            self.write(outs[0])
+            self.write(outs[1])
+            self.write("</pre></body></html>")
+        else:
+            self.write(goodstr)
         
        
 class ExpControlHandler(tornado.web.RequestHandler):
@@ -360,7 +374,7 @@ class StartHandler(BaseHandler):
         varlist["excl"] = self.get_argument("excl", "none")
         
         if (varlist["excl"] == ""):
-			varlist["excl"] = "none"
+            varlist["excl"] = "none"
         
         speclog = self.get_argument("speclog", "False")
         if (speclog == "on"):
