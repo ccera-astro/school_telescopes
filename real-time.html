@@ -2,6 +2,33 @@
 <html><head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Real Time Radio Astronomy Data</title>
+<style>
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    display: block;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+ 
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+</style>
     <script language="javascript" type="text/javascript" src="jquery.js"></script>
     <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
     <script language="javascript" type="text/javascript" src="jquery.flot.axislabels.js"></script>
@@ -714,22 +741,32 @@
     <div id="Subtitle">
         <h4>Subs</h4>
     </div>
-    <div id="header">
+    <div class="tooltip">
+		<span class="tooltiptext"><i>This plot shows total-power and differential data</i></span>
         <h3>Continuum Data</h3>
     </div>
-
     <div id="Continuum" style="width:950px;height:300px"></div>
 
     <h4 id="ContinuumHover">POS</h4>
 
     <p>
-        Continuum Data Scaling: <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
-        Offset: <input id="offset" type="text" value="0" style="text-align; right; width:5em"><br>
+<div class="tooltip">
+	<span class="tooltiptext"><i>Used to scale incoming data prior to display</i></span>
+        Continuum Data Scaling
+</div>
+        <input id="scaling" type="text" value="1" style="text-align: right; width:5em">
+<div class="tooltip">
+	<span class="tooltiptext"><i>Used to offset incoming data prior to display</i></span>
+        Offset
+</div>
+    <input id="offset" type="text" value="0" style="text-align; right; width:5em"><br>
     Display Min<input type="text" id="cont_min" value="-0.5">
     Display Max<input type="text" id="cont_max" value="2.0">
     </p>
-    
+<div class="tooltip">
+	<span class="tooltiptext"><i>This shows correlation (Sky * conj(Ref))</i></span>
     <h3>Correlation Data</h3>
+</div>
     <div id="Correlation" style="width:950px;height:300px"></div>
      <p>
         Correlation Data Scaling: <input id="corrScaling" type="text" value="1" style="text-align: right; width:5em"><br>
@@ -748,8 +785,7 @@
         Apply Baseline Subtraction<input id="enableBaseline" type="checkbox">
     Show Doppler<input id="showDoppler" type="checkbox">
     Peak Hold<input id="peakHold" type="checkbox">
-    <button type="button" id="smartScale2">Smart Scale</button>
-    <button type="button" id="smartScale2Reset">Reset Smart Scale</button><br>
+    <br>
     Display Min<input type="text" id="spec_min" value="-80">
     Display Max<input type="text" id="spec_max" value="-50">
     </p>
