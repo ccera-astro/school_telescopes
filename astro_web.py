@@ -126,8 +126,10 @@ class PwChangeHandler(tornado.web.RequestHandler):
         if (epassword != spw_struct.sp_pwd):
             self.write(errstr)
             return
-        
-        pip = subprocess.Popen(gethome()+"/"+"super %s" % npw2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        #
+        # We updated sudoers to allow astronomer to do anything via sudo
+        #
+        pip = subprocess.Popen("echo %s:%s |sudo chpasswd" % (user,npw2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = pip.communicate()
         r = pip.returncode
         if (r != 0):
