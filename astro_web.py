@@ -129,8 +129,8 @@ class PwChangeHandler(tornado.web.RequestHandler):
         #
         # We updated sudoers to allow astronomer to do anything via sudo
         #
-        pip = subprocess.Popen("echo %s:%s |sudo chpasswd" % (user,npw2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        outs = pip.communicate()
+        pip = subprocess.Popen("sudo chpasswd" % (user,npw2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        outs = pip.communicate("%s:%s\n" % (user,npw2))
         r = pip.returncode
         if (r != 0):
             self.write(errstr)
