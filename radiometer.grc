@@ -3473,7 +3473,7 @@ This is further processed in the logger, providing
     </param>
     <param>
       <key>sync</key>
-      <value>sync</value>
+      <value></value>
     </param>
   </block>
   <block>
