@@ -462,6 +462,10 @@
             $("#SpectralHover").text(str);
         });
         
+        $("#Correlation").bind("plothover", function (even, pos, item) {
+			var str = "(" + pos.x.toFixed(2) + "sec " + pos.y.toFixed(2)+")";
+			$("#CorrelationHover").text(str);
+		});
         /*
          * event functions for AJAX
          */
@@ -768,10 +772,13 @@
     <h3>Correlation Data</h3>
 </div>
     <div id="Correlation" style="width:950px;height:300px"></div>
+     <h4 id="CorrelationHover">POS</h4>
      <p>
         Correlation Data Scaling: <input id="corrScaling" type="text" value="1" style="text-align: right; width:5em"><br>
     Display Min<input type="text" id="corr_min" value="-1.0">
-    Display Max<input type="text" id="corr_max" value="1.0">
+    Display Max<input type="text" id="corr_max" value="1.0"><br>
+
+    <p>
     </p>
     <div id="header2">
         <h3>Spectral Data</h3>
