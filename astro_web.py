@@ -246,14 +246,51 @@ class SysControlHandler(tornado.web.RequestHandler):
             ntpconf = True
         except:
             pass
+            
+        gateway=""
+        netmask=""
+        dns=""
+        
+        netconf = False
+        try:
+            f = open ("/etc/systemd/network/eth0.network", "r")
+            netlines = f.readlines()
+            f.close()
+            netconf = True
+        except:
+            pass
         
         if (ntpconf == True):
             for l in ntplines:
                 if (re.match("NTP=..+", l)):
                     ntpservers = l[len("NTP="):]
+                    ntpservers = ntpservers.strip("\n")
+        
+        if (netconf == True):
+            for l in netlines:
+                if (re.match("Gateway=..+", l)):
+                    gateway = l[len("Gateway="):]
+                    gateway = gateway.strip("\n")
+                if (re.match("DNS=..+", l)):
+                    dns = l[len("DNS="):]
+                    dns = dns.strip("\n")
+                if (re.match("Address=..+", l)):
+                    a = l.strip('\n')
+                    a = a.split("/")
+                    a = int(a[1])
+                    m = 0
+                    for i in range(0,a):
+                        m |= 1<<(31-i)
+                    ml = struct.pack("I", m)
+                    mask[0] = struct.unpack('B', ml[3])
+                    mask[1] = struct.unpack('B', ml[2])
+                    mask[2] = struct.unpack('B', ml[1])
+                    mask[3] = struct.unpack('B', ml[0])
+                    netmask = "%d.%d.%d.%d" % (mask[0], mask[1], mask[2], mask[3])
+                        
 
         self.render(gethome()+"/"+"syscontrol.html", hostname=js["hostname"],
-            ipaddr=js["ipaddr"],ntpservers=ntpservers)
+            ipaddr=js["ipaddr"],ntpservers=ntpservers, gateway=gateway, netmask=netmask)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -540,6 +577,7 @@ class SysUpdateHandler(BaseHandler):
         newmask = self.get_argument("newmask", "")
         newhost = self.get_argument("newhost", "")
         newdns = self.get_argument("newdns", "")
+        newgateway = self.get_argument("newgateway", "")
         try:
             t = socket.inet_aton(newip)
         except:
@@ -579,7 +617,7 @@ class SysUpdateHandler(BaseHandler):
         os.remove(tname)
         
         #
-        # Update /etc/systemd/network/eth0
+        # Update /etc/systemd/network/eth0.network
         #
         
         tf = tempfile.mkstemp()
@@ -593,10 +631,11 @@ class SysUpdateHandler(BaseHandler):
 Name=eth0
 
 [Network]
-Address={newip}/{masklen}
-Gateway={newgate}
 DNS={newdns}
-        """.format(newip=newip, newgate=newgate, newdns=newdns, masklen=masklen)
+Address={newip}/{masklen}
+Gateway={newgateway}
+
+""".format(newip=newip, newgate=newgate, newdns=newdns, masklen=masklen)
 
         f.close()
         p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
