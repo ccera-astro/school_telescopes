@@ -20,6 +20,9 @@ import tornado.web
 import tornado.template
 import json
 
+import re
+import socket
+
 import subprocess
 
 def gethome():
@@ -217,6 +220,38 @@ class ExpControlHandler(tornado.web.RequestHandler):
             plist=plist,
             startup=start_profile,
             pid=str(pid), currlog=currlog)
+
+import re         
+class SysControlHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+    SUPPORTED_METHODS = ['GET']
+    @tornado.web.authenticated
+    def set_extra_headers(self, path):
+        # Disable cache
+
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def get(self,path):
+        ntpservers=""
+        f = open(gethome()+"/"+"sysconfig.json", "r")
+        js = json.load(f)
+        f.close()
+        ntpconf = False
+        try:
+            f = open("/etc/systemd/timesyncd.conf", "r")
+            ntplines=f.readlines()
+            f.close()
+            ntpconf = True
+        except:
+            pass
+        
+        if (ntpconf == True):
+            for l in ntplines:
+                if (re.match("NTP=..+", l)):
+                    ntpservers = l[len("NTP="):]
+
+        self.render(gethome()+"/"+"syscontrol.html", hostname=js["hostname"],
+            ipaddr=js["ipaddr"],ntpservers=ntpservers)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -494,9 +529,38 @@ class StartHandler(BaseHandler):
         except:
             pass
         return
+
+
+class SysUpdateHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self,path):
+        newip = self.get_argument("newip", "")
+        newmask = self.get_argument("newmask", "")
+        newhost = self.get_argument("newhost", "")
+        print "newip %s newmask %s newhost %s" % (newip, newmask, newhost)
+        try:
+            t = socket.inet_aton(newip)
+        except:
+            self.write ("Invalid IP address entered (%s)" % newip)
+            return
         
+        try:
+            t = socket.inet_aton(newmask)
+        except:
+            self.write ("Invalid IP netmask entered (%s)" % newmask)
+            return
 
-
+        newhost = newhost[0:32]
+        if (not re.match("[a-zA-Z0-9-.]+",newhost)):
+            self.write ("Invalid characters in hostname (%s)" % newhost)
+            return
+        
+        #
+        # Here is where we'd do the updates to system files.
+        # BUT NOT TONIGHT!
+        # :)
+        
+            
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
@@ -526,7 +590,7 @@ class StopHandler(BaseHandler):
         else:
             self.write ("Failed to stop process %d\n" % pid)
         return
-        
+
 class ProfileHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
@@ -709,6 +773,7 @@ def mkapp(cookie_secret):
         (r"/astro_data/(.*)", Handler, {'path': gethome()+"/"+"astro_data"}),
         (r"/Documents/(.*)", Handler, {'path' : gethome()+"/"+"Documents"}),
         (r"/(real-time\.html)", Handler, {'path' : gethome()}),
+        (r"/(syscontrol\.html)", SysControlHandler),
         (r"/(password\.html)", Handler, {'path' : gethome()}),
         (r"/(expcontrol\.html)", ExpControlHandler),
         (r"/(jquery.*\.js)", Handler, {'path' : gethome()}),
@@ -718,7 +783,8 @@ def mkapp(cookie_secret):
         (r"/(stop\.html)", StopHandler),
         (r"/(restart\.html)", RestartHandler),
         (r"/(pwchange\.html)", PwChangeHandler),
-        (r"/(profiles\.html)", ProfileHandler)
+        (r"/(profiles\.html)", ProfileHandler),
+        (r"/(sysupdate\.html)", SysUpdateHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application

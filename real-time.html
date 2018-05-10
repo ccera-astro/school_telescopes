@@ -463,7 +463,7 @@
         });
         
         $("#Correlation").bind("plothover", function (even, pos, item) {
-			var str = "(" + pos.x.toFixed(2) + "sec " + pos.y.toFixed(2)+")";
+			var str = "(" + pos.x.toFixed(2) + "sec " + pos.y.toFixed(4)+")";
 			$("#CorrelationHover").text(str);
 		});
         /*
