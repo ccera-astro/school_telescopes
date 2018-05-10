@@ -19,6 +19,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.template
 import json
+import tempfile
 
 import re
 import socket
@@ -556,9 +557,48 @@ class SysUpdateHandler(BaseHandler):
             return
         
         #
-        # Here is where we'd do the updates to system files.
-        # BUT NOT TONIGHT!
-        # :)
+        # Update /etc/hostname
+        #
+        tf = tempfile.mkstemp()
+        tname = tf[1]
+        f = os.fdopen(tf[0], "w")
+        f.write(newhost+"\n")
+        f.close()
+        p = subprocess.Popen("sudo cp %s /etc/hostname" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = p.communicate()
+        os.remove(tname)
+        
+        #
+        # Upate /etc/systemd/network/eth0
+        #
+        
+        tf = tempfile.mkstemp()
+        tname = tf[1]
+        f = os.fdopen(tf[0], "w")
+        #
+        # Write stuff
+        #
+        """
+        [Match]
+Name=enp1s0
+
+[Network]
+Address=10.1.10.9/24
+Gateway=10.1.10.1
+DNS=10.1.10.1
+#DNS=8.8.8.8
+"""
+
+        f.close()
+        p = subprocess.Popen("sudo cp %s /etc/hostname" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = p.communicate()
+        os.remove(tname)
+        
+        
+        
+        
+        
+        
         
             
 class StopHandler(BaseHandler):
