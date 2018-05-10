@@ -578,25 +578,37 @@ class SysUpdateHandler(BaseHandler):
         newhost = self.get_argument("newhost", "")
         newdns = self.get_argument("newdns", "")
         newgateway = self.get_argument("newgateway", "")
-        try:
-            t = socket.inet_aton(newip)
-        except:
-            self.write ("Invalid IP address entered (%s)" % newip)
-            return
+        newntp = self.get_argument("ntpservers", "")
         
-        try:
-            t = socket.inet_aton(newmask)
-        except:
-            self.write ("Invalid IP netmask entered (%s)" % newmask)
-            return
+        if (newip != ""):
+            try:
+                t = socket.inet_aton(newip)
+            except:
+                self.write ("Invalid IP address entered (%s)" % newip)
+                return
+        if (newmask != ""):
+            try:
+                t = socket.inet_aton(newmask)
+            except:
+                self.write ("Invalid IP netmask entered (%s)" % newmask)
+                return
         
         ti = struct.unpack('i', t)
         masklen = bin(ti).count("1")
         
-        try:
-            t = socket.inet_aton(newdns)
-        except:
-            self.write("Invalid DNS address entered (%s)" % newdns)
+        if (newdns != ""):
+            try:
+                t = socket.inet_aton(newdns)
+            except:
+                self.write("Invalid DNS address entered (%s)" % newdns)
+                return
+                
+        if (newgateway != ""):
+            try:
+                t = socket.inet_aton(newgateway)
+            except:
+                self.write("Invalid Gateway address entered (%s)" % newgateway)
+                return
 
         newhost = newhost[0:32]
         if (not re.match("[a-zA-Z0-9-.]+",newhost)):
@@ -636,11 +648,41 @@ Address={newip}/{masklen}
 Gateway={newgateway}
 
 """.format(newip=newip, newgate=newgate, newdns=newdns, masklen=masklen)
-
+        f.write(w+"\n")
         f.close()
-        p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0.network" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
-        os.remove(tname)  
+        os.remove(tname)
+        
+        #
+        # Update /etc/systemd/timesyncd.conf
+        #
+        if (ntpservers != ""):
+            
+            ntpline="NTP="+ntpservers+"\n"
+            f = open ("/etc/systemd/timesyncd.conf", "r")
+            tslines = f.readlines()
+            f.close()
+            
+            tf = tempfile.mkstemp ()
+            tfname = tf[1]
+            f = os.fdopen(tf[0], "w")
+            
+            ntpwritten = False
+            for l in tslines:
+                if (re.match("NTP=..+", l)):
+                    f.write (ntpline)
+                    ntpwritten = True
+                else:
+                    f.write(l)
+                    
+            if (ntpwritten != True):
+                f.write(ntpline)         
+            f.close()
+            p = subprocess.Popen("sudo cp %s /etc/systemd/timesyncd.conf" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            outs = p.communicate()
+            os.remove(tname)
+            
         return
      
 class StopHandler(BaseHandler):
