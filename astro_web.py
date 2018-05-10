@@ -14,6 +14,7 @@ import spwd
 import crypt
 import numbers
 import time
+import struct
 
 import tornado.ioloop
 import tornado.web
@@ -538,7 +539,7 @@ class SysUpdateHandler(BaseHandler):
         newip = self.get_argument("newip", "")
         newmask = self.get_argument("newmask", "")
         newhost = self.get_argument("newhost", "")
-        print "newip %s newmask %s newhost %s" % (newip, newmask, newhost)
+        newdns = self.get_argument("newdns", "")
         try:
             t = socket.inet_aton(newip)
         except:
@@ -550,11 +551,20 @@ class SysUpdateHandler(BaseHandler):
         except:
             self.write ("Invalid IP netmask entered (%s)" % newmask)
             return
+        
+        ti = struct.unpack('i', t)
+        masklen = bin(ti).count("1")
+        
+        try:
+            t = socket.inet_aton(newdns)
+        except:
+            self.write("Invalid DNS address entered (%s)" % newdns)
 
         newhost = newhost[0:32]
         if (not re.match("[a-zA-Z0-9-.]+",newhost)):
             self.write ("Invalid characters in hostname (%s)" % newhost)
             return
+        
         
         #
         # Update /etc/hostname
@@ -569,7 +579,7 @@ class SysUpdateHandler(BaseHandler):
         os.remove(tname)
         
         #
-        # Upate /etc/systemd/network/eth0
+        # Update /etc/systemd/network/eth0
         #
         
         tf = tempfile.mkstemp()
@@ -578,29 +588,22 @@ class SysUpdateHandler(BaseHandler):
         #
         # Write stuff
         #
-        """
-        [Match]
-Name=enp1s0
+        w="""
+[Match]
+Name=eth0
 
 [Network]
-Address=10.1.10.9/24
-Gateway=10.1.10.1
-DNS=10.1.10.1
-#DNS=8.8.8.8
-"""
+Address={newip}/{masklen}
+Gateway={newgate}
+DNS={newdns}
+        """.format(newip=newip, newgate=newgate, newdns=newdns, masklen=masklen)
 
         f.close()
-        p = subprocess.Popen("sudo cp %s /etc/hostname" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
-        os.remove(tname)
-        
-        
-        
-        
-        
-        
-        
-            
+        os.remove(tname)  
+        return
+     
 class StopHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
