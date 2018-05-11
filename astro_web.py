@@ -282,15 +282,17 @@ class SysControlHandler(tornado.web.RequestHandler):
                     for i in range(0,a):
                         m |= 1<<(31-i)
                     ml = struct.pack("I", m)
-                    mask[0] = struct.unpack('B', ml[3])
-                    mask[1] = struct.unpack('B', ml[2])
-                    mask[2] = struct.unpack('B', ml[1])
-                    mask[3] = struct.unpack('B', ml[0])
+                    mask=[]
+                    mask.append(struct.unpack('B', ml[3])[0])
+                    mask.append(struct.unpack('B', ml[2])[0])
+                    mask.append(struct.unpack('B', ml[1])[0])
+                    mask.append(struct.unpack('B', ml[0])[0])
+                    print mask[0]
                     netmask = "%d.%d.%d.%d" % (mask[0], mask[1], mask[2], mask[3])
                         
 
         self.render(gethome()+"/"+"syscontrol.html", hostname=js["hostname"],
-            ipaddr=js["ipaddr"],ntpservers=ntpservers, gateway=gateway, netmask=netmask)
+            ipaddr=js["ipaddr"],ntpservers=ntpservers, gateway=gateway, netmask=netmask, dns=dns)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -594,7 +596,7 @@ class SysUpdateHandler(BaseHandler):
                 return
         
         ti = struct.unpack('i', t)
-        masklen = bin(ti).count("1")
+        masklen = bin(ti[0]).count("1")
         
         if (newdns != ""):
             try:
@@ -647,7 +649,7 @@ DNS={newdns}
 Address={newip}/{masklen}
 Gateway={newgateway}
 
-""".format(newip=newip, newgate=newgate, newdns=newdns, masklen=masklen)
+""".format(newip=newip, newgateway=newgateway, newdns=newdns, masklen=masklen)
         f.write(w+"\n")
         f.close()
         p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0.network" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -657,9 +659,9 @@ Gateway={newgateway}
         #
         # Update /etc/systemd/timesyncd.conf
         #
-        if (ntpservers != ""):
+        if (newntp != ""):
             
-            ntpline="NTP="+ntpservers+"\n"
+            ntpline="NTP="+newntp+"\n"
             f = open ("/etc/systemd/timesyncd.conf", "r")
             tslines = f.readlines()
             f.close()
