@@ -581,6 +581,7 @@ class SysUpdateHandler(BaseHandler):
         newdns = self.get_argument("newdns", "")
         newgateway = self.get_argument("newgateway", "")
         newntp = self.get_argument("ntpservers", "")
+        reboot = self.get_argument("reboot", "off")
         
         if (newip != ""):
             try:
@@ -629,6 +630,12 @@ class SysUpdateHandler(BaseHandler):
         p = subprocess.Popen("sudo cp %s /etc/hostname" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         os.remove(tname)
+        r = p.wait()
+        
+        if (r != 0):
+            self.write("Failed to update /etc/hostname")
+        else:
+			self.write("Updated /etc/hostname")
         
         #
         # Update /etc/systemd/network/eth0.network
@@ -655,6 +662,12 @@ Gateway={newgateway}
         p = subprocess.Popen("sudo cp %s /etc/systemd/network/eth0.network" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         os.remove(tname)
+        r = p.wait()
+        if (r != 0):
+            self.write ("Failed to update eth0.network")
+        else:
+			self.write ("Updated eth0.network")
+            
         
         #
         # Update /etc/systemd/timesyncd.conf
@@ -684,7 +697,19 @@ Gateway={newgateway}
             p = subprocess.Popen("sudo cp %s /etc/systemd/timesyncd.conf" % tname, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             outs = p.communicate()
             os.remove(tname)
+            r = p.wait()
+            if (r != 0):
+                self.write ("Failed to updated timesyncd.conf")
+            else:
+				self.write ("Updated timesyncd.conf")
+                
             
+            if (reboot == "on"):
+                self.write ("Rebooting system...")
+                time.sleep(5)
+                p = subprocess.Popen("sync; sudo reboot", shell=True, stdout=subprocess.PIPE, stderr=subprocess.pipe)
+                outs = p.communicate()
+                r = p.wait()
         return
      
 class StopHandler(BaseHandler):
