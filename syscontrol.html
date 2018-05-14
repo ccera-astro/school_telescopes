@@ -41,8 +41,21 @@
 <b>DNS Server</b><input type="text" name="newdns" maxlength=64 value="{{dns}}"><br>
 <b>NTP Servers</b><input type="text" name="ntpservers" maxlength=128 value="{{ntpservers}}"><br>
 <b>Reboot after update?</b><input type="checkbox" name="reboot"><br>
-<input type="submit" value="Update">
+<input type="submit" value="Update" onclick="return confirm('Are you sure you wish to apply this update?')" >
 </form>
+
+<hr style="height:10px;background-color:beige">
+<form action="/reboot.html" method="get">
+<h3>Reboot System</h3>
+<input type="submit" onclick="return confirm('Are you sure you wish to reboot?')" value="Reboot">
+</form>
+
+<hr style="height:10px;background-color:beige">
+<form action="/halt.html" method="get">
+<h3>Halt System</h3>
+<input type="submit" value="Halt" onclick="return confirm('Are you sure you wish to halt?')">
+</form>
+
 	
 </body>
 

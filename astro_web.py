@@ -571,6 +571,27 @@ class StartHandler(BaseHandler):
             pass
         return
 
+class RebootHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self,path):
+        sys.write("Rebooting...")
+        time.sleep(5)
+        p = subprocess.Pipe("sync; sudo reboot", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = p.communicate()
+        r = p.wait()
+        
+        return
+
+class HaltHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self,path):
+		sys.write("Halting...")
+		time.sleep(5)
+		p = subprocess.Pipe("sync; sudo halt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		outs=p.communicate()
+		r = p.wait()
+		
+		return
 
 class SysUpdateHandler(BaseHandler):
     @tornado.web.authenticated
@@ -635,7 +656,7 @@ class SysUpdateHandler(BaseHandler):
         if (r != 0):
             self.write("Failed to update /etc/hostname")
         else:
-			self.write("Updated /etc/hostname")
+            self.write("Updated /etc/hostname")
         
         #
         # Update /etc/systemd/network/eth0.network
@@ -666,7 +687,7 @@ Gateway={newgateway}
         if (r != 0):
             self.write ("Failed to update eth0.network")
         else:
-			self.write ("Updated eth0.network")
+            self.write ("Updated eth0.network")
             
         
         #
@@ -701,7 +722,7 @@ Gateway={newgateway}
             if (r != 0):
                 self.write ("Failed to updated timesyncd.conf")
             else:
-				self.write ("Updated timesyncd.conf")
+                self.write ("Updated timesyncd.conf")
                 
             
             if (reboot == "on"):
@@ -935,7 +956,9 @@ def mkapp(cookie_secret):
         (r"/(restart\.html)", RestartHandler),
         (r"/(pwchange\.html)", PwChangeHandler),
         (r"/(profiles\.html)", ProfileHandler),
-        (r"/(sysupdate\.html)", SysUpdateHandler)
+        (r"/(sysupdate\.html)", SysUpdateHandler),
+        (r"/(reboot\.html)", RebootHandler),
+        (r"/(halt\.html)", HaltHandler)
     ], debug=False, cookie_secret=cookie_secret, login_url="/login")
 
     return application
