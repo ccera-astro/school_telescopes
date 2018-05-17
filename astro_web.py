@@ -576,7 +576,7 @@ class RebootHandler(BaseHandler):
     def get(self,path):
         sys.write("Rebooting...")
         time.sleep(5)
-        p = subprocess.Pipe("sync; sudo reboot", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen("sync; sudo reboot", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
         r = p.wait()
         
@@ -585,9 +585,9 @@ class RebootHandler(BaseHandler):
 class HaltHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
-		sys.write("Halting...")
+		self.write("Halting...")
 		time.sleep(5)
-		p = subprocess.Pipe("sync; sudo halt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		p = subprocess.Popen("sync; sudo halt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		outs=p.communicate()
 		r = p.wait()
 		
