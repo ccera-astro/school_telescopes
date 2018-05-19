@@ -2,7 +2,7 @@
 # Continuum Data Display
 
 This display shows the total detected power for the two input channels--**SKY** and **REF**. The total power displayed
-is in arbitrary units as calculated by the [receiver *DSP* chain](/Documents/receiver-description.html).  That chain includes an *FFT* on both input channels,
+is in arbitrary units as calculated by the [receiver *DSP* chain](/Documents/receiver.html).  That chain includes an *FFT* on both input channels,
 and the total power is a scalar sum of each bin in the *FFT*, with the [frequency exclusions](/Documents/exclusions.html)
 subtracted out. This allows for there to be in-band persistent *RFI* present at the input, but that *RFI* will not contribute
 significantly to the final data products.
