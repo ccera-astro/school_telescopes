@@ -3943,19 +3943,28 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # Roughly once a minute, handle old-data removal
     #
     if ((count % 60) == 0):
-        start = int(time.time()) - ((DAY*WEEK)*2)
-        for tday in range(start,start+(DAY*WEEK),DAY):
+        start = int(time.time()) - ((DAY*WEEK)*4)
+        end = int(time.time()) - ((DAY*WEEK)*1)
+        for tday in range(start,end,DAY):
             ltp = time.gmtime(tday)
             dprefix = "%04d%02d%02d" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday)
             tfn = expname + "-" + dprefix + "-tp.csv"
+            tfn = os.path.join(local, tfn)
 
             if (os.path.exists(tfn)):
-                os.remove(tfn)
+                try:
+                    os.remove(tfn)
+                except:
+                    pass
             
             for lbl in fft_labels:
-                sfn = expname + "-" + dprefix + "-" + lbl + "-spec.csv"             
+                sfn = expname + "-" + dprefix + "-" + lbl + "-spec.csv"
+                sfn = os.path.join(local,sfn)         
                 if (os.path.exists(sfn)):
-                    os.remove(sfn)
+                    try:
+                        os.remove(sfn)
+                    except:
+                        pass
         
     count += 1
     return True

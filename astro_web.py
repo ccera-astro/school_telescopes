@@ -574,7 +574,7 @@ class StartHandler(BaseHandler):
 class RebootHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
-        sys.write("Rebooting...")
+        self.write("Rebooting...")
         time.sleep(5)
         p = subprocess.Popen("sync; sudo reboot", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outs = p.communicate()
