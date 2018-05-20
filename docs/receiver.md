@@ -1,5 +1,7 @@
 <title>Receiver DSP Flow</title>
 
+<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+
 # Receiver DSP Flow
 
 ## Overview

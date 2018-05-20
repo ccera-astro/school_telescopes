@@ -1,4 +1,7 @@
 <title>Spectral Data Display</title>
+
+<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+
 # Spectral Data Display
 
 This display shows the FFT-derived spectrum for both input channels. The units are in dB, relative to full-scale

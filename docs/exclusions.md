@@ -1,4 +1,7 @@
 <title>Frequency Exclusions Control</title>
+
+<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+
 # Frequency Exclusions Control
 
 This control is used to define a number of *zones of exclusion* when processing raw FFT

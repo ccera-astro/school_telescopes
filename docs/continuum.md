@@ -1,4 +1,7 @@
 <title>Continuum Data Display</title>
+
+<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+
 # Continuum Data Display
 
 This display shows the total detected power for the two input channels--**SKY** and **REF**. The total power displayed
