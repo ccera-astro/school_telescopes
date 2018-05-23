@@ -3,6 +3,10 @@
 <hr>
 # Receiver DSP Flow
 
+The DSP/SDR parts of the **ORION** system are all implemented with the
+[*Gnu Radio*](http://www.gnuradio.org) open-source DSP framework.
+
+
 ## Overview
 The receiver for the *Combo Radiometer* application starts by taking a 1024-bin FFT for each
 receiver channel, using a Blackmann-Harris window.

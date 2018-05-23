@@ -940,7 +940,7 @@ def mkapp(cookie_secret):
         (r"/login", LoginHandler),
         (r"/(Documents)$", IndexHandler),
         (r"/(astro_data)$", IndexHandler),
-        (r"/(transparent-logo\.png)", Handler, {'path' : gethome()}),
+        (r"/(.*\.png)", Handler, {'path' : gethome()}),
         (r"/astro_data/(.*)", Handler, {'path': gethome()+"/"+"astro_data"}),
         (r"/Documents/(.*)", Handler, {'path' : gethome()+"/"+"Documents"}),
         (r"/(real-time\.html)", Handler, {'path' : gethome()}),
