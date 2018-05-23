@@ -1,6 +1,6 @@
 <title>Frequency Exclusions Control</title>
 
-<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+<img  alt="ORION" src="../orion_logo.png" width="100" height="25">
 
 # Frequency Exclusions Control
 
@@ -20,4 +20,6 @@ be prone to interference, by isolating zones of persistent *RFI* and discarding 
 
 This means that *Continuum* and *Correlation* calculations and derivations can be produced
 without the perturbing influence of *RFI* artifacts.
-
+<hr>
+<hr>
+<img  alt="CCERA" src="../transparent-logo.png" width="150" height="35">

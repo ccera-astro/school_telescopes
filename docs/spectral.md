@@ -1,6 +1,7 @@
 <title>Spectral Data Display</title>
 
-<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+<img  alt="ORION" src="../orion_logo.png" width="100" height="25">
+<hr>
 
 # Spectral Data Display
 
@@ -41,3 +42,6 @@ Exponential notation (e.g: 1.0e3) is allowed.
 
 This control sets the maximum value displayed within the graph.
 Exponental notation (e.g: 1.0e3) is allowed.
+<hr>
+<hr>
+<img  alt="CCERA" src="../transparent-logo.png" width="150" height="35">

@@ -1,7 +1,6 @@
 <title>Receiver DSP Flow</title>
-
-<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
-
+<img  alt="ORION" src="../orion_logo.png" width="100" height="25">
+<hr>
 # Receiver DSP Flow
 
 ## Overview
@@ -23,6 +22,10 @@ files in a .csv format, as well as *current data* files in a .json format.
 The *current data* files are used to feed the real-time displays via a
 web browser.
 
+The simplified diagram below illusrates the signal flow.
+
+![](dsp_diagram.png)
+
 ## Notes
 
 These operations are performed whether the attached hardware receiver(s)
@@ -34,3 +37,6 @@ simply contains zeros, which implies that the *difference* and
 In a configuration where there are two non-mutually-coherent receivers,
 the *difference* output will contain meaningful data, but the
 *correlation* output will not.
+<hr>
+<hr>
+<img  alt="CCERA" src="../transparent-logo.png" width="150" height="35">

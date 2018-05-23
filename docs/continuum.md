@@ -1,6 +1,8 @@
 <title>Continuum Data Display</title>
 
-<img  alt="CCERA" src="transparent-logo.png" width="100" height="25">
+<img  alt="CCERA" src="../orion_logo.png" width="100" height="25">
+
+<hr>
 
 # Continuum Data Display
 
@@ -44,3 +46,7 @@ Exponential notation (e.g.: 1.0e3) is allowed.
 
 This control sets the maximum value of the displayed data.
 Exponential notation (e.g.: 1.0e3) is allowed.
+
+<hr>
+<hr>
+<img  alt="CCERA" src="../transparent-logo.png" width="150" height="35">
