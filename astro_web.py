@@ -585,13 +585,13 @@ class RebootHandler(BaseHandler):
 class HaltHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,path):
-		self.write("Halting...")
-		time.sleep(5)
-		p = subprocess.Popen("sync; sudo halt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		outs=p.communicate()
-		r = p.wait()
-		
-		return
+        self.write("Halting...")
+        time.sleep(5)
+        p = subprocess.Popen("sync; sudo halt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs=p.communicate()
+        r = p.wait()
+        
+        return
 
 class SysUpdateHandler(BaseHandler):
     @tornado.web.authenticated
@@ -866,6 +866,8 @@ class LoginHandler(BaseHandler):
     def get(self):
         n = self.get_argument ("next", "/")
         loginpage = ('<html><body bgcolor="lightgrey"><form action="/login" method="post">'
+        '<img  alt="ORION" src="/orion_logo.png" width="100" height="25">'
+        '<hr>'
         '<h3>Radio Telescope Data System</h3>'
         '<br>'
         'Password: <input type="password" name="pw">'
