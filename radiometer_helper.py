@@ -120,8 +120,19 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl,fast,scalars):
     global then
+    #
+    # Protect against getting called too often
+    #
+    if ((time.time() - then) < 1.0):
+        return False
+    else:
+        then = time.time()
+    
+    #
+    # So that on most calls, we end up doing nearly-nothing before returning
+    #
     global count
     global curr_diff
     global curr_sky
@@ -132,43 +143,39 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     REF = 1
     CORR_REAL = 2
     CORR_IMAG = 3
-   
-    #
-    # For exclusions in vector sum (notching-out offensive regions)
-    #   most notably the DC-offset region, where there can often be
-    #   large spikes
-    #
-    # But also any user-supplied regions 
-    #
-    exclusions=[]
     
     #
-    # It is most convenient for the user to specify exclusions in terms
-    #   of frequency and width, so we have a derivation function that
-    #   turns that into a tuple-like of [start,end]
+    # In fast mode, the scalars are not derived from the FFT bits and pieces
+    # The FFT outputs are only used as coarse estimates of spectrum
     #
-    exclusions.append(derive_exclusion(len(ffts[0]),freq,bw,freq,25.0e3))
+    # There are a separate set of (fast-mode-only) scalars passed to us
+    #   instead
+    #
+    if (fast == 0):
+        #
+        # For exclusions in vector sum (notching-out offensive regions)
+        #   most notably the DC-offset region, where there can often be
+        #   large spikes
+        #
+        # But also any user-supplied regions 
+        #
+        exclusions=[]
+        
+        #
+        # It is most convenient for the user to specify exclusions in terms
+        #   of frequency and width, so we have a derivation function that
+        #   turns that into a tuple-like of [start,end]
+        #
+        exclusions.append(derive_exclusion(len(ffts[0]),freq,bw,freq,25.0e3))
     
-    #
-    # Process user-provided exclusion(s)
-    #
-    if (excl != "" and excl != "none"):
-        for v in excl.split(","):
-            t = v.split(":")
-            e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
-            exclusions.append(e)
-    
-    #
-    # Need to allow user-specified list somehow.  >>>>TODO<<<<<
-    #
-    
-    #
-    # Protect against getting called too often
-    #
-    if ((time.time() - then) < 1.0):
-        return False
-    else:
-        then = time.time()
+        #
+        # Process user-provided exclusion(s)
+        #
+        if (excl != "" and excl != "none"):
+            for v in excl.split(","):
+                t = v.split(":")
+                e = derive_exclusion(len(ffts[0]),freq,bw,float(t[0]),float(t[1]))
+                exclusions.append(e)
     
     beta = 1.0-alpha
     
@@ -202,21 +209,35 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     # I THINK THIS IS THE MOST NUMERICALLY-CORRECT APPROACH.  BUT I
     #   COULD BE WILDLY WRONG.
     #
-    tpower = fftsum(sffts[SKY],exclusions) - fftsum(sffts[REF],exclusions)
+    if (fast == 0):
+        tpower = fftsum(sffts[SKY],exclusions) - fftsum(sffts[REF],exclusions)
+    else:
+        tpower = scalars[1]-scalars[2]
     
-    #
-    # Sky
-    #
-    skypower = fftsum(sffts[SKY],exclusions)
-    if (curr_sky < -50.0):
-        curr_sky = skypower
-    curr_sky = (alpha*skypower) + (beta*curr_sky)
-    
-    #
-    # Ref
-    #
-    if (len(ffts) > 1):
-        refpower = fftsum(sffts[REF],exclusions)
+    if (fast == 0):
+        #
+        # Sky
+        #
+        skypower = fftsum(sffts[SKY],exclusions)
+        if (curr_sky < -50.0):
+            curr_sky = skypower
+        curr_sky = (alpha*skypower) + (beta*curr_sky)
+        
+        #
+        # Ref
+        #
+        if (len(ffts) > 1):
+            refpower = fftsum(sffts[REF],exclusions)
+            if (curr_ref < -50.0):
+                curr_ref = refpower
+            curr_ref = (alpha*refpower) + (beta*curr_ref)
+    else:
+        skypower = scalars[1]
+        if (curr_sky < -50.0):
+            curr_skey = skypower
+        curr_sky = (alpha*skypower) + (beta*curr_sky)
+        
+        refpower = scalars[2]
         if (curr_ref < -50.0):
             curr_ref = refpower
         curr_ref = (alpha*refpower) + (beta*curr_ref)
@@ -224,7 +245,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #
     # Correlation
     #
-    if(len(ffts) > 1):
+    if(len(ffts) > 1 and fast == 0):
         corrpower_real = fftsum(sffts[CORR_REAL],exclusions)
         corrpower_imag = fftsum(sffts[CORR_IMAG],exclusions)
         if (curr_corr_real < -50.0):
@@ -232,7 +253,14 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
             curr_corr_imag = corrpower_imag
         curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
         curr_corr_imag = (alpha*corrpower_imag) + (beta*curr_corr_imag)
-    
+    else:
+        corrpower_real = scalars[0].real
+        corrpower_imag = scalars[0].imag
+        if (curr_corr_real < -50.0):
+            curr_corr_real = corrpower_real
+            curr_corr_imag = corrpower_imag
+            curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
+            curr_corr_imag = (alpha*corrpower_imag) + (beta*curr_corr_imag)
     #
     # Smooth total power estimate with single-pole IIR filter
     #
