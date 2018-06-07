@@ -20,6 +20,28 @@
 		"--srate @@srate",
 		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
 		],
+    "cmd_radiometer_fast" : [
+		"python2 radiometer.py",
+        "--abw @@abw",
+        "--alpha @@alpha",
+        "--antenna @@antenna",
+        "--bbgain @@bbgain",
+        "--declination @@declination",
+		"--device '@@device'",
+		"--expname @@expname",
+		"--excl @@excl",
+		"--freq  @@freq",
+		"--ifgain @@ifgain",
+		"--latitude @@latitude",
+		"--longitude @@longitude",
+		"--lstore @@local",
+		"--rfgain @@rfgain",
+		"--rstore @@remote",
+		"--speclog @@speclog",
+		"--srate @@srate",
+		"--fast 1",
+		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
+		],
 		
 	"cmd_mount" : [
 		"umount /mnt/rdata >/dev/null 2>&1;",
@@ -28,9 +50,18 @@
 	"cmd_moveto" : [
 		"echo python2 moveto.py @@latitude @@declination"
 		],
+	"cmd_d1_spectrometer" : [
+	    "python2 d1_spectral_logger.py",
+		"--declination @@declination",
+		"--longitude @@longitude",
+		"--prefix @@local",
+		"--rfgain @@rfgain"
+		],
 	"commands" :
 	{
-		"radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"]
+		"radiometer" : ["cmd_mount", "cmd_moveto", "cmd_radiometer"],
+		"fast" : ["cmd_mount", "cmd_moveto", "cmd_radiometer_fast"],
+		"d1" : ["cmd_mount", "cmd_moveto", "cmd_d1_spectrometer"]
 	},
     "usbtypes" :
     {
@@ -58,7 +89,8 @@
             "remote" : "/home/astronomer/rdata",
             "device" : "airspy=0,pack=1 file=/dev/zero,rate=10e6",
             "antenna" : "Default",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast"
         },
         "LimeSDR-USB-1" :
         {
@@ -72,7 +104,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "soapy,driver=lime,nchan=2",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast"
         },
         "LimeSDR-Mini-1" :
         {
@@ -87,6 +120,7 @@
             "ifgain" : 5,
             "device" : "soapy,driver=lime file=/dev/zero,rate=12e6",
             "Combo-Radiometer" : "radiometer"
+            "Fast" : "fast"
         },
         "USRP-B210-1" :
         {
@@ -100,7 +134,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,nchan=2,num_recv_frames=512,otw_format=sc12",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast",
         },
         "USRP-B205-1" :
 		{
@@ -114,7 +149,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,num_recv_frames=512,nchan=1,otw_format=sc12 file=/dev/zero,rate=15e6",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast"
         },
         "USRP-B205-2" :
 		{
@@ -128,7 +164,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=256,otw_format=sc12 uhd,type=b200,name=RCVR2,num_recv_frames=256,otw_format=sc12",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast"
         },
         "RTLSDR-1" : 
         {
@@ -142,7 +179,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "rtlsdr=RCVR1 file=/dev/zero,rate=10e6",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast"
         },
         "RTLSDR-2" : 
         {
@@ -156,7 +194,25 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
-            "Combo-Radiometer" : "radiometer"
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast",
+            "D1-Spectrometer" : "d1"
+        },
+        "RTLSDR-3" : 
+        {
+            "hwname" : "RTL-SDR",
+            "rates" : [1.0,1.5,2.0,2.5],
+            "rfgains" : [0,35],
+            "freqs" : [25,1500],
+            "local" : "/home/astronomer/astro_data",
+            "remote" : "/home/astronomer/rdata",
+            "antenna" : "default",
+            "bbgain" : 5,
+            "ifgain" : 5,
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
+            "Combo-Radiometer" : "radiometer",
+            "Fast" : "fast",
+            "D1-Spectrometer" : "d1"
         }
     }
 }

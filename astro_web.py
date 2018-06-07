@@ -466,7 +466,8 @@ class StartHandler(BaseHandler):
             if (type(hwtype[key]) is not list):
                 varlist[key] = hwtype[key]
         
-        etypedict = {"pulsar" : "Pulsar", "radiometer" : "Combo-Radiometer"}
+        etypedict = {"pulsar" : "Pulsar", "radiometer" : "Combo-Radiometer", "fast" : "Fast",
+			"D1" : "D1-Spectrometer"}
         etype = self.get_argument("etype", "radiometer")
         if (etype not in etypedict):
             self.write ("Experiment type %s is unknown" % etype)

@@ -62,7 +62,7 @@
          });
 		}
 		function onExpData (hjson) {
-            var goodkeys = {"Combo-Radiometer" : "etRadiometer"}
+            var goodkeys = {"Combo-Radiometer" : "etRadiometer", "Fast-Radiometer" : "etFast", "D1-Spectrometer" : "etD1"}
             
             var goodrates = {1.0 : "srate1", 1.5 : "srate1_5", 2.0 : "srate2", 2.5 : "srate2_5",
                 3.0 : "srate3", 4.0 : "srate4", 5.0 : "srate5", 6.0 : "srate6", 7.0 : "srate7", 8.0 : "srate8", 10.0 : "srate10",
@@ -146,14 +146,18 @@
   <input id="srate12" type="radio" name="srate" value="12.0" disabled="true">12
   <input id="srate15" type="radio" name="srate" value="15.0" disabled="true">15<br>
 <div class="tooltip">
-	<span class="tooltiptext"><i>Currently, only combination radiometry is supported</i></span>
+	<span class="tooltiptext"><i>Currently, only combination radiometry and D1 spectrometry is supported</i></span>
 <b>Experiment Type</b>
 </div>
 <br>
   <input id="etRadiometer" type="radio" name="etype" value="radiometer" checked>Combo Radiometer
-  <i>(Two-channel total power, difference, and correlation)</i><br>
+  <i>(Two-channel total power, spectral, difference, and correlation)</i><br>
+  <input id="etFast" type="radio" name="etype" value="fast">Fast Combo Radiometer
+  <i>(Two-channel total power, spectral, difference and correlation, without FX)</i><br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor
   <i>(Pulsar monitoring with dispersion compensation:NOT YET SUPPORTED)</i><br>
+  <input id="etD1" type="radio" name="etype" value="D1">D1 Spectrometer
+  <i>(3 or 2 channel Deuterium Spectrometer)</i><br>
   <p style="margin-left:40px">DM<input type="text" name="dm" value="1.0" disabled="true"><br>
   Pulse rate (Hz)<input type="text" name="prate" value="1.0" disabled="true"><br></p>
   <b>Spectral logging</b><input type="checkbox" id="splogging" name="speclog"><i>  (including spectral correlation

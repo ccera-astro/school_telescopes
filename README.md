@@ -1,2 +1,2 @@
-# school_telescopes
-A random collection of "stuff" useful for our school radio telescope project
+# d1_spectral_logger
+Gnu Radio App for Deuterium Line research
