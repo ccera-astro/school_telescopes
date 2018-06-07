@@ -466,16 +466,16 @@ class StartHandler(BaseHandler):
             if (type(hwtype[key]) is not list):
                 varlist[key] = hwtype[key]
         
-        etypedict = {"pulsar" : "Pulsar", "radiometer" : "Combo-Radiometer", "fast" : "Fast",
-			"D1" : "D1-Spectrometer"}
+        etypes = ["radiometer", "fast", "d1", "pulsar"]
         etype = self.get_argument("etype", "radiometer")
-        if (etype not in etypedict):
+        if (etype not in etypes):
             self.write ("Experiment type %s is unknown" % etype)
             return
         
-        key = etypedict[etype]
+        key = etype
         if (key not in hwtype):
             self.write ("Experiment type %s is not supported by this hardware" % key)
+            return
 
         softconfig = hwtype[key]
         

@@ -62,7 +62,7 @@
          });
 		}
 		function onExpData (hjson) {
-            var goodkeys = {"Combo-Radiometer" : "etRadiometer", "Fast-Radiometer" : "etFast", "D1-Spectrometer" : "etD1"}
+            var goodkeys = {"radiometer" : "etRadiometer", "fast" : "etFast", "d1" : "etD1"}
             
             var goodrates = {1.0 : "srate1", 1.5 : "srate1_5", 2.0 : "srate2", 2.5 : "srate2_5",
                 3.0 : "srate3", 4.0 : "srate4", 5.0 : "srate5", 6.0 : "srate6", 7.0 : "srate7", 8.0 : "srate8", 10.0 : "srate10",
@@ -156,7 +156,7 @@
   <i>(Two-channel total power, spectral, difference and correlation, without FX)</i><br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor
   <i>(Pulsar monitoring with dispersion compensation:NOT YET SUPPORTED)</i><br>
-  <input id="etD1" type="radio" name="etype" value="D1">D1 Spectrometer
+  <input id="etD1" type="radio" name="etype" value="d1">D1 Spectrometer
   <i>(3 or 2 channel Deuterium Spectrometer)</i>[sample rate and frequency are ignored]<br>
   <p style="margin-left:40px">DM<input type="text" name="dm" value="1.0" disabled="true"><br>
   Pulse rate (Hz)<input type="text" name="prate" value="1.0" disabled="true"><br></p>

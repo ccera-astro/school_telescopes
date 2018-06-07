@@ -18,6 +18,7 @@
 		"--rstore @@remote",
 		"--speclog @@speclog",
 		"--srate @@srate",
+		"--fast 0",
 		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
 		],
     "cmd_radiometer_fast" : [
@@ -89,8 +90,8 @@
             "remote" : "/home/astronomer/rdata",
             "device" : "airspy=0,pack=1 file=/dev/zero,rate=10e6",
             "antenna" : "Default",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast"
+            "radiometer" : "radiometer",
+            "fast" : "fast"
         },
         "LimeSDR-USB-1" :
         {
@@ -104,8 +105,9 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "soapy,driver=lime,nchan=2",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast"
+            "radiometer" : "radiometer",
+            "fast" : "fast"
+            "d1" : "d1"
         },
         "LimeSDR-Mini-1" :
         {
@@ -119,8 +121,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "soapy,driver=lime file=/dev/zero,rate=12e6",
-            "Combo-Radiometer" : "radiometer"
-            "Fast" : "fast"
+            "radiometer" : "radiometer"
+            "fast" : "fast"
         },
         "USRP-B210-1" :
         {
@@ -134,8 +136,9 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,nchan=2,num_recv_frames=512,otw_format=sc12",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast",
+            "radiometer" : "radiometer",
+            "fast" : "fast",
+            "d1" : "d1"
         },
         "USRP-B205-1" :
 		{
@@ -149,8 +152,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,num_recv_frames=512,nchan=1,otw_format=sc12 file=/dev/zero,rate=15e6",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast"
+            "radiometer" : "radiometer",
+            "fast" : "fast"
         },
         "USRP-B205-2" :
 		{
@@ -164,8 +167,9 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=256,otw_format=sc12 uhd,type=b200,name=RCVR2,num_recv_frames=256,otw_format=sc12",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast"
+            "radiometer" : "radiometer",
+            "fast" : "fast",
+            "d1" : "d1"
         },
         "RTLSDR-1" : 
         {
@@ -179,8 +183,8 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "rtlsdr=RCVR1 file=/dev/zero,rate=10e6",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast"
+            "radiometer" : "radiometer",
+            "fast" : "fast"
         },
         "RTLSDR-2" : 
         {
@@ -193,10 +197,10 @@
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast",
-            "D1-Spectrometer" : "d1"
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2 file=/dev/zero,rate=10e6",
+            "radiometer" : "radiometer",
+            "fast" : "fast",
+            "d1" : "d1"
         },
         "RTLSDR-3" : 
         {
@@ -209,10 +213,10 @@
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
-            "Combo-Radiometer" : "radiometer",
-            "Fast" : "fast",
-            "D1-Spectrometer" : "d1"
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2 rtlsdr=RCVR3",
+            "radiometer" : "radiometer",
+            "fast" : "fast",
+            "d1" : "d1"
         }
     }
 }

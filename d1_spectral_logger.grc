@@ -975,6 +975,53 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
     </param>
   </block>
   <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(328, 712)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>device</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Device</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>rtl=0,buflen=8192 rtl=1,buflen=8192 rtl=2,buflen=8192</value>
+    </param>
+  </block>
+  <block>
     <key>fft_vxx</key>
     <param>
       <key>alias</key>
@@ -2890,7 +2937,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
     </param>
     <param>
       <key>args</key>
-      <value>rtl=0,buflen=16384 rtl=1,buflen=16384 rtl=2,buflen=16384</value>
+      <value>device</value>
     </param>
     <param>
       <key>_enabled</key>
