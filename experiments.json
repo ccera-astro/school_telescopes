@@ -56,7 +56,9 @@
 		"--declination @@declination",
 		"--longitude @@longitude",
 		"--prefix @@local",
-		"--rfgain @@rfgain"
+		"--rfgain @@rfgain",
+		"--device '@@device_d1'",
+		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
 		],
 	"commands" :
 	{
@@ -105,6 +107,7 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "soapy,driver=lime,nchan=2",
+            "device_d1" : "soapy,driver=lime,nchan=2 file=/dev/zero,rate=1.0e6",
             "radiometer" : "radiometer",
             "fast" : "fast",
             "d1" : "d1"
@@ -136,6 +139,7 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,nchan=2,num_recv_frames=512,otw_format=sc12",
+            "device_d1" : "uhd,type=b200,nchan=2 file=/dev/zero,rate=1.0e6",
             "radiometer" : "radiometer",
             "fast" : "fast",
             "d1" : "d1"
@@ -167,6 +171,7 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "uhd,type=b200,name=RCVR1,num_recv_frames=256,otw_format=sc12 uhd,type=b200,name=RCVR2,num_recv_frames=256,otw_format=sc12",
+            "device_d1" : "uhd,type=b200,name=RCVR1 uhd,type=b200,name=RCVR2 file=/dev/zero,rate=1.0e6",
             "radiometer" : "radiometer",
             "fast" : "fast",
             "d1" : "d1"
@@ -183,6 +188,7 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "rtlsdr=RCVR1 file=/dev/zero,rate=10e6",
+            "devcice_d1" : "rtlsdr=RCVR1,buflen=8192 file=/dev/zero,rate=1.0e6 file=/dev/zero,rate=1.0e6",
             "radiometer" : "radiometer",
             "fast" : "fast"
         },
@@ -197,7 +203,8 @@
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2 file=/dev/zero,rate=10e6",
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
+            "device_d1" : "rtlsdr=RCVR1,buflen=8192 rtlsdr=RCVR2,buflen=8192 file=/dev/zero,rate=1.0e6",
             "radiometer" : "radiometer",
             "fast" : "fast",
             "d1" : "d1"
@@ -213,7 +220,8 @@
             "antenna" : "default",
             "bbgain" : 5,
             "ifgain" : 5,
-            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2 rtlsdr=RCVR3",
+            "device" : "rtlsdr=RCVR1 rtlsdr=RCVR2",
+            "device_d1" : "rtlsdr=RCVR1,buflen=8192 rtlsdr=RCVR2,buflen=8192 rtlsdr=RCVR3,buflen=8192",
             "radiometer" : "radiometer",
             "fast" : "fast",
             "d1" : "d1"
