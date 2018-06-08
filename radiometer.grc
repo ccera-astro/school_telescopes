@@ -2338,6 +2338,57 @@ the shift operation here.</value>
     </param>
   </block>
   <block>
+    <key>single_pole_iir_filter_xx</key>
+    <param>
+      <key>alpha</key>
+      <value>1.0/(samp_rate*5)</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(672, 860)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>foo</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>parameter</key>
     <param>
       <key>alias</key>
@@ -4137,11 +4188,11 @@ sub-graph that computes just the scalars.</value>
     </param>
     <param>
       <key>clock_source0</key>
-      <value>clock</value>
+      <value></value>
     </param>
     <param>
       <key>time_source0</key>
-      <value>ppstime</value>
+      <value></value>
     </param>
     <param>
       <key>clock_source1</key>
@@ -4965,62 +5016,11 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     </param>
     <param>
       <key>id</key>
-      <value>scalar_tp_probe1_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-  </block>
-  <block>
-    <key>single_pole_iir_filter_xx</key>
-    <param>
-      <key>alpha</key>
-      <value>1.0/(samp_rate*5)</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(672, 860)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
       <value>scalar_tp_probe2</value>
     </param>
     <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
       <key>type</key>
       <value>float</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
     </param>
   </block>
   <block>
@@ -5656,7 +5656,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
   </connection>
   <connection>
     <source_block_id>blocks_complex_to_mag_squared_1_0</source_block_id>
-    <sink_block_id>scalar_tp_probe2</sink_block_id>
+    <sink_block_id>foo</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -5740,7 +5740,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
   </connection>
   <connection>
     <source_block_id>blocks_keep_one_in_n_2_0_0</source_block_id>
-    <sink_block_id>scalar_tp_probe1_0</sink_block_id>
+    <sink_block_id>scalar_tp_probe2</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -5805,6 +5805,12 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <sink_key>1</sink_key>
   </connection>
   <connection>
+    <source_block_id>foo</source_block_id>
+    <sink_block_id>blocks_keep_one_in_n_2_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>osmosdr_source_0</source_block_id>
     <sink_block_id>blocks_keep_m_in_n_0</sink_block_id>
     <source_key>0</source_key>
@@ -5826,12 +5832,6 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <source_block_id>osmosdr_source_0</source_block_id>
     <sink_block_id>virtual_sink_0_0</sink_block_id>
     <source_key>1</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>scalar_tp_probe2</source_block_id>
-    <sink_block_id>blocks_keep_one_in_n_2_0_0</sink_block_id>
-    <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>

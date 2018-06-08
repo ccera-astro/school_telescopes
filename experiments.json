@@ -106,7 +106,7 @@
             "ifgain" : 5,
             "device" : "soapy,driver=lime,nchan=2",
             "radiometer" : "radiometer",
-            "fast" : "fast"
+            "fast" : "fast",
             "d1" : "d1"
         },
         "LimeSDR-Mini-1" :
@@ -121,7 +121,7 @@
             "bbgain" : 5,
             "ifgain" : 5,
             "device" : "soapy,driver=lime file=/dev/zero,rate=12e6",
-            "radiometer" : "radiometer"
+            "radiometer" : "radiometer",
             "fast" : "fast"
         },
         "USRP-B210-1" :
