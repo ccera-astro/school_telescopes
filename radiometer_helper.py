@@ -5,7 +5,7 @@ import json
 import math
 import numpy
 import time
-
+import sys
 
 then = time.time()
 
@@ -234,7 +234,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     else:
         skypower = scalars[1]
         if (curr_sky < -50.0):
-            curr_skey = skypower
+            curr_sky = skypower
         curr_sky = (alpha*skypower) + (beta*curr_sky)
         
         refpower = scalars[2]
@@ -245,7 +245,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     #
     # Correlation
     #
-    if(len(ffts) > 1 and fast == 0):
+    if(fast == 0):
         corrpower_real = fftsum(sffts[CORR_REAL],exclusions)
         corrpower_imag = fftsum(sffts[CORR_IMAG],exclusions)
         if (curr_corr_real < -50.0):
@@ -259,8 +259,9 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
         if (curr_corr_real < -50.0):
             curr_corr_real = corrpower_real
             curr_corr_imag = corrpower_imag
-            curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
-            curr_corr_imag = (alpha*corrpower_imag) + (beta*curr_corr_imag)
+            
+        curr_corr_real = (alpha*corrpower_real) + (beta*curr_corr_real)
+        curr_corr_imag = (alpha*corrpower_imag) + (beta*curr_corr_imag)
     #
     # Smooth total power estimate with single-pole IIR filter
     #
