@@ -58,6 +58,8 @@
 		"--prefix @@local",
 		"--rfgain @@rfgain",
 		"--device '@@device_d1'",
+		"--expname @@expname",
+		"--alpha @@alpha",
 		" >astro_data/@@expname.log 2>&1 & echo $! >experiment.pid"
 		],
 	"commands" :

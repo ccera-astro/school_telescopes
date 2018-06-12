@@ -41,13 +41,15 @@
         
         var contData = [[], [], []];  // The continuum data
         var corrData = [[], []]; // Correlation Data
-        var specData = [[], []];  // The spectral data
+        var specData = [[], [], []];  // The spectral data
+        var nffts = 0;
         var totalPoints = HOUR/UPDATE;  //number of Continuum points
         var scaling = 1;  // Scaling for continuum data
         var corrScaling = 1; // Scaling for correlation data
         var offset = 0;   // Offset for continuum data
         var contLabels = ["U", "U", "U"];
         var corrLabels = ["U", "U"];
+        var specLabels = ["U", "U", "U"];
         for (var i = 0; i < contData.length; i++)
         {
 			for (var j = 0; j < totalPoints; j++)
@@ -90,7 +92,7 @@
          *  for spectral data.
          */
         var baseline_state = false;
-        var baseline = [[], []];
+        var baseline = [[], [], []];
         
         /*
          * Peak-hold buffer for spectral data
@@ -222,6 +224,9 @@
                     baseline_state = true;
                     baseline[0] = specData[0].slice();
                     baseline[1] = specData[1].slice();
+                    if (nffts > 2) {
+						baseline[2] = specData[2].slice();
+					}
                     if (smartscaling == false) {
                         plot2.getOptions().yaxes[0].min = -5;
                         plot2.getOptions().yaxes[0].max = 5;
@@ -232,7 +237,7 @@
             }
             else {
                 baseline_state = false;
-                baseline = [[], []];
+                baseline = [[], [], []];
                     if (smartscaling == false) {
                     plot2.getOptions().yaxes[0].min = -80;
                     plot2.getOptions().yaxes[0].max = -40;
@@ -503,8 +508,27 @@
          */
         last_spec_data=[];
         function onSpecFileData(thing) {
-            specData[0] = thing.Sky.slice();
-            specData[1] = thing.Ref.slice();
+			if ("Ref" in thing) {
+				specData[0] = thing.Sky.slice();
+				specData[1] = thing.Ref.slice();
+				nffts = 2;
+				specLabels = ["Sky", "Ref"];
+			}
+			else
+			{
+				var sndx = 0;
+				specLabels = [];
+				var keys = Object.keys(thing);
+				for(var i=0;i<keys.length;i++){
+					var key = keys[i];
+					if (key.match(/^Sky/)) {
+						specLabels.push(key)
+						specData[sndx] = thing[key].slice()
+						sndx = sndx + 1
+					}
+				}
+			}
+			nffts = sndx;
             frequency = thing.frequency;
             bandwidth = thing.bandwidth;
             fftsize = thing.fftsize;
@@ -557,6 +581,7 @@
              */
             var res2 = [];
             var res3 = [];
+            var res4 = [];
             
             /*
              * Fundamental parameters relating to frequency, so we can
@@ -567,8 +592,9 @@
             var end = frequency + (bandwidth/2);
             var v = 0;
             var v2 = 0;
+            var v3 = 0;
 
-			y2axis = [[],[]];
+			y2axis = [[], [], [], []];
 			xaxis = [];
             for (var i = 0; i < specData[0].length; ++i) {
                 var x = 0;
@@ -579,13 +605,22 @@
                 if (baseline_state == true) {
                     v = specData[0][i] - baseline[0][i];
                     v2 = specData[1][i]- baseline[1][i];
+                    if (nffts > 2) {
+						v3 = specdata[2][i] - baseline[2][i];
+					}
                 }
                 else {
                     v = specData[0][i];
                     v2 = specData[1][i];
+                    if (nffts > 2) {
+						v3 = specData[2][i];
+					}
                 }
                 y2axis[0].push(v);
                 y2axis[1].push(v2);
+                if (nffts > 2) {
+					y2axis[2].push(v3);
+				}
 
                 /*
                  * Current x-axis value
@@ -603,6 +638,10 @@
                     xaxis.push(x/1000000.0);
                     res2.push([x/1000000.0, v]);
                     res3.push([x/1000000.0, v2]);
+                    if (nffts > 2) {
+						res4.push([x/1000000.0, v3]);
+					}
+                    
                 }
                 /*
                  * Doing doppler tics (km/sec)
@@ -620,6 +659,9 @@
                     xaxis.push(dv);
                     res2.push([dv, v]);
                     res3.push([dv, v2]);
+                    if (nffts > 2) {
+						res4.push([dv, v3]);
+					}
                 }
             }
             
@@ -643,6 +685,9 @@
                     if (y2axis[1][i] > peak[i]) {
 						peak[i] = y2axis[1][i];
 					}
+					if (nffts > 2 && y2axis[2][i] > peak[i]) {
+						peak[i] = y2axis[2][i];
+					}
                 }
             }
             
@@ -664,10 +709,21 @@
                  * Call the plotter
                  */
                 
-                dic1 = {label : "Peak", data: peaky};
-                dic2 = {label : "Sky", data: res2};
-                dic3 = {label : "Ref", data: res3};
-                plot2.setData([dic2,dic3,dic1]);
+                if (nfft == 2)
+                {
+					dic1 = {label : "Peak", data: peaky};
+					dic2 = {label : "Sky", data: res2};
+					dic3 = {label : "Ref", data: res3};
+					plot2.setData([dic2,dic3,dic1]);
+				}
+				else
+				{
+					dic1 = {label : "Peak", data: peaky};
+					dic2 = {label : specLabels[0], data: res2};
+					dic3 = {label : specLabels[1], data: res3};
+					dic4 = {label : specLabels[2], data: res4};
+				}
+					
             }
             /*
              * Just plot 'res2/res3' -- no peak hold dataset
@@ -675,9 +731,19 @@
             else
             {
                 peak = y2axis[0].slice();
-                dic1 = {label : "Sky", data: res2};
-                dic2 = {label : "Ref", data: res3};
-                plot2.setData([dic1,dic2]);
+                if (nffts == 2) {
+					dic1 = {label : "Sky", data: res2};
+					dic2 = {label : "Ref", data: res3};
+					plot2.setData([dic1,dic2]);
+				}
+				else
+				{
+					dic2 = {label : specLabels[0], data: res2};
+					dic3 = {label : specLabels[1], data: res3};
+					dic4 = {label : specLabels[2], data: res4};
+					plot2.setData([dic2,dic3,dic4]);
+				}
+					
             }
 
             /*

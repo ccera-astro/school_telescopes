@@ -40,7 +40,7 @@ curr_corr_imag = -99.00
 
 then = time.time()
 avgd_ffts = []
-def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
+def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     global then
     global count
     global avgd_ffts
@@ -53,7 +53,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
     #
     # Rate at which we take incoming new data into the averager
     #
-    RATE = 10
+    RATE = 5
     
 
     #
@@ -87,6 +87,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
             avgd_ffts.append(ff)
     
     beta = 1.0-alpha
+    stime = cur_sidereal(longitude)
     #
     # We apply an averaging filter here using a single-pole-IIR filter
     #
@@ -94,7 +95,6 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
         t1 = numpy.multiply(sffts[ind],[alpha]*lfft)
         t2 = numpy.multiply(avgd_ffts[ind],[beta]*lfft)
         avgd_ffts[ind] = numpy.add(t1,t2)
-        
         #
         # Time to write out FFT data?
         #
@@ -105,7 +105,6 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
             ltp = time.gmtime()
             fn = "%04d%02d%02d-spec%d.csv" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday, ind)
             f = open(os.path.join(local,fn),"a")
-            stime = cur_sidereal(longitude)
             f.write("%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec))
             f.write(stime+",")
             f.write("%f," % (freq/1.0e6))
@@ -117,6 +116,65 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination):
             f.close()
 
     count += 1
+    
+    #
+    # Calculate total-power
+    #
+    tp1 = numpy.sum(avgd_ffts[0])
+    tp2 = numpy.sum(avgd_ffts[1])
+    tp3 = numpy.sum(avgd_ffts[2])
+       
+    #
+    # Handle json file for total power
+    #
+    ltp = time.gmtime()
+    
+    lupdate = "%04d%02d%02d-%02d:%02d:%02d" % (ltp.tm_year, ltp.tm_mon,
+        ltp.tm_mday, ltp.tm_hour, ltp.tm_min, ltp.tm_sec)
+    
+    js = {"values" : [tp1, tp2, tp3, 0.0, 0.0], "expname" : expname, "lmst" : stime.replace(",", ":"), "dec" : declination,
+        "latitude" : latitude, "longitude" : longitude, "updated" : lupdate, "labels" : ["Sky1", "Sky2", "Sky3", "Inval-0", "Inval-1"]}
+    jstring = json.dumps(js, indent=4)
+    
+    try:
+        jfp = open(os.path.join(local,"tpower_temp"), "w")
+        jfp.write(jstring+"\n")
+        jfp.close()
+        src = os.path.join(local,"tpower_temp")
+        dst = os.path.join(local,"tpower.json")
+        os.rename(src,dst)
+    except:
+        pass
+    
+    #
+    # Handle json file for spectral
+    #
+    fft_labels = ["Sky1", "Sky2", "Sky3"]
+    db_ffts = []
+    for i in range(0,len(avgd_ffts)):
+        dbt = numpy.add(avgd_ffts[i],[1.0e-15]*lfft)
+        dbt = numpy.log10(dbt)
+        dbt = numpy.multiply(dbt,[10.0]*lfft)
+        db_ffts.append(dbt)
+        
+    js = {"frequency" : freq, "bandwidth" : bw, "fftsize" : lfft,
+        fft_labels[0] : list(db_ffts[0]),
+        fft_labels[1] : list(db_ffts[1]),
+        fft_labels[2] : list(db_ffts[2])}
+    jstring = json.dumps(js, indent=4)
+    
+    
+        
+    try:
+        jfp = open(os.path.join(local,"spectral_temp"), "w")
+        jfp.write(jstring+"\n")
+        jfp.close()
+        src = os.path.join(local,"spectral_temp")
+        dst = os.path.join(local,"spectral.json")
+        os.rename(src, dst)
+    except:
+        pass
+    
     return True
     
     
