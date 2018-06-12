@@ -103,7 +103,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
             # Might as well log in this loop, too
             #
             ltp = time.gmtime()
-            fn = "%04d%02d%02d-spec%d.csv" % (ltp.tm_year, ltp.tm_mon, ltp.tm_mday, ind)
+            fn = "%s-%04d%02d%02d-spec%d.csv" % (expname, ltp.tm_year, ltp.tm_mon, ltp.tm_mday, ind)
             f = open(os.path.join(local,fn),"a")
             f.write("%02d,%02d,%02d," % (ltp.tm_hour, ltp.tm_min, ltp.tm_sec))
             f.write(stime+",")
