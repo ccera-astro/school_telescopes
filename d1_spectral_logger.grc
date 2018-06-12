@@ -156,7 +156,7 @@
     </param>
     <param>
       <key>poll_rate</key>
-      <value>0.5</value>
+      <value>1</value>
     </param>
   </block>
   <block>
@@ -199,7 +199,7 @@
     </param>
     <param>
       <key>poll_rate</key>
-      <value>0.5</value>
+      <value>1</value>
     </param>
   </block>
   <block>
@@ -242,7 +242,7 @@
     </param>
     <param>
       <key>poll_rate</key>
-      <value>0.5</value>
+      <value>1</value>
     </param>
   </block>
   <block>
@@ -296,7 +296,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>(samp_rate/3)/fftsize</value>
+      <value>(specbw)/fftsize</value>
     </param>
   </block>
   <block>
@@ -880,7 +880,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     #
     # Rate at which we take incoming new data into the averager
     #
-    RATE = 5
+    RATE = 2
     
 
     #
@@ -1809,7 +1809,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     </param>
     <param>
       <key>bw0</key>
-      <value>2.0e6</value>
+      <value>2.5e6</value>
     </param>
     <param>
       <key>dc_offset_mode0</key>
@@ -2249,7 +2249,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     </param>
     <param>
       <key>bw1</key>
-      <value>2.0e6</value>
+      <value>2.5e6</value>
     </param>
     <param>
       <key>dc_offset_mode1</key>
@@ -2689,7 +2689,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     </param>
     <param>
       <key>bw2</key>
-      <value>2.0e6</value>
+      <value>2.5e6</value>
     </param>
     <param>
       <key>dc_offset_mode2</key>

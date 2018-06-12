@@ -53,7 +53,7 @@ def log(ffts,longitude,latitude,local,freq,bw,alpha,declination,expname):
     #
     # Rate at which we take incoming new data into the averager
     #
-    RATE = 5
+    RATE = 2
     
 
     #
