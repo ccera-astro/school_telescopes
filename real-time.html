@@ -170,29 +170,29 @@
             maxv = Math.max.apply(null, y2axis[0]);
             smartscaling = true;
             if (baseline_state == false) {
-				plot2.getOptions().yaxes[0].min = minv-2.5;
-				plot2.getOptions().yaxes[0].max = maxv+2.5;
+				plotSpec.getOptions().yaxes[0].min = minv-2.5;
+				plotSpec.getOptions().yaxes[0].max = maxv+2.5;
 			}
 			else {
-				plot2.getOptions().yaxes[0].min = minv-0.25;
-				plot2.getOptions().yaxes[0].max = maxv+0.25;
+				plotSpec.getOptions().yaxes[0].min = minv-0.25;
+				plotSpec.getOptions().yaxes[0].max = maxv+0.25;
 			}
-            plot2.setupGrid();
-            plot2.draw();
+            plotSpec.setupGrid();
+            plotSpec.draw();
         });
         
         $("#smartScale2Reset").click(function() {
             smartscaling = false;
             if (baseline_state == false) {
-				plot2.getOptions().yaxes[0].min = sscale_min;
-				plot2.getOptions().yaxes[0].max = sscale_max;;
+				plotSpec.getOptions().yaxes[0].min = sscale_min;
+				plotSpec.getOptions().yaxes[0].max = sscale_max;;
 			}
 			else {
-				plot2.getOptions().yaxes[0].min = -4;
-				plot2.getOptions().yaxes[0].max = 4;
+				plotSpec.getOptions().yaxes[0].min = -4;
+				plotSpec.getOptions().yaxes[0].max = 4;
 			}
-			plot2.setupGrid();
-			plot2.draw();
+			plotSpec.setupGrid();
+			plotSpec.draw();
         });
         
         $("#showDoppler").change (function() {
@@ -204,9 +204,9 @@
                 doppler = false
                 specXlabel = "Frequency (MHz)";
             }
-            plot2.getOptions().xaxes[0].axisLabel = specXlabel;
-            plot2.setupGrid();
-            plot2.draw();
+            plotSpec.getOptions().xaxes[0].axisLabel = specXlabel;
+            plotSpec.setupGrid();
+            plotSpec.draw();
         });
         
         $("#peakHold").change (function() {
@@ -228,10 +228,10 @@
 						baseline[2] = specData[2].slice();
 					}
                     if (smartscaling == false) {
-                        plot2.getOptions().yaxes[0].min = -5;
-                        plot2.getOptions().yaxes[0].max = 5;
-                        plot2.setupGrid();
-                        plot2.draw();
+                        plotSpec.getOptions().yaxes[0].min = -5;
+                        plotSpec.getOptions().yaxes[0].max = 5;
+                        plotSpec.setupGrid();
+                        plotSpec.draw();
                     }
                 }
             }
@@ -239,10 +239,10 @@
                 baseline_state = false;
                 baseline = [[], [], []];
                     if (smartscaling == false) {
-                    plot2.getOptions().yaxes[0].min = -80;
-                    plot2.getOptions().yaxes[0].max = -40;
-                    plot2.setupGrid();
-                    plot2.draw();
+                    plotSpec.getOptions().yaxes[0].min = -80;
+                    plotSpec.getOptions().yaxes[0].max = -40;
+                    plotSpec.setupGrid();
+                    plotSpec.draw();
                 }
             }
         });
@@ -282,19 +282,19 @@
         $("#spec_min").val(spec_min).change(function() {
 			var v  = $(this).val();
 			sscale_min = v;
-			plot2.getOptions().yaxes[0].min = sscale_min;
-			plot2.getOptions().yaxes[0].max = sscale_max;
-			plot2.setupGrid();
-			plot2.draw();
+			plotSpec.getOptions().yaxes[0].min = sscale_min;
+			plotSpec.getOptions().yaxes[0].max = sscale_max;
+			plotSpec.setupGrid();
+			plotSpec.draw();
 		});
 		
 		$("#spec_max").val(spec_max).change(function() {
 			var v = $(this).val();
 			sscale_max = v;
-			plot2.getOptions().yaxes[0].min = sscale_min;
-			plot2.getOptions().yaxes[0].max = sscale_max;
-			plot2.setupGrid();
-			plot2.draw();
+			plotSpec.getOptions().yaxes[0].min = sscale_min;
+			plotSpec.getOptions().yaxes[0].max = sscale_max;
+			plotSpec.setupGrid();
+			plotSpec.draw();
 		});
 		
 		$("#spec_min").val(sscale_min);
@@ -416,7 +416,7 @@
         /*
          * The spectral Flot plot object
          */
-        var plot2 = $.plot("#Spectral", [ zeroSpectraFilled() ], {
+        var plotSpec = $.plot("#Spectral", [ zeroSpectraFilled() ], {
             series: {
                 shadowSize: 0,
                 lines: {lineWidth: 1}
@@ -508,27 +508,23 @@
          */
         last_spec_data=[];
         function onSpecFileData(thing) {
-			if ("Ref" in thing) {
-				specData[0] = thing.Sky.slice();
-				specData[1] = thing.Ref.slice();
-				nffts = 2;
-				specLabels = ["Sky", "Ref"];
-			}
-			else
-			{
-				var sndx = 0;
-				specLabels = [];
-				var keys = Object.keys(thing);
-				for(var i=0;i<keys.length;i++){
-					var key = keys[i];
-					if (key.match(/^Sky/)) {
-						specLabels.push(key)
-						specData[sndx] = thing[key].slice()
-						sndx = sndx + 1
-					}
+			dlabels=["Sky", "Ref", "Sky1", "Sky2", "Sky3", "Sky4"]
+			specData=[];
+			specLabels=[];
+			var sdx = 0;
+			nffts = 0;
+			for (var i = 0; i < dlabels.length; i++) {
+				dl = dlabels[i];
+				if (dl in thing) {
+					s = thing[dl].slice();
+					specData.push(s);
+					specLabels.push(dl);
+					nffts = nffts + 1;
 				}
 			}
-			nffts = sndx;
+			if (nffts > 5) {
+				nffts = 5
+			}
             frequency = thing.frequency;
             bandwidth = thing.bandwidth;
             fftsize = thing.fftsize;
@@ -579,9 +575,6 @@
              *   o Baseline subtraction
              *   o Doppler mode
              */
-            var res2 = [];
-            var res3 = [];
-            var res4 = [];
             
             /*
              * Fundamental parameters relating to frequency, so we can
@@ -591,78 +584,62 @@
             var start = frequency - (bandwidth/2);
             var end = frequency + (bandwidth/2);
             var v = 0;
-            var v2 = 0;
-            var v3 = 0;
 
-			y2axis = [[], [], [], []];
+			y2axis = [[], [], [], [], []];
+			rezes = [[], [], [], [], []];
 			xaxis = [];
             for (var i = 0; i < specData[0].length; ++i) {
                 var x = 0;
                 
-                /*
-                 * Deal with baselined data
-                 */
-                if (baseline_state == true) {
-                    v = specData[0][i] - baseline[0][i];
-                    v2 = specData[1][i]- baseline[1][i];
-                    if (nffts > 2) {
-						v3 = specdata[2][i] - baseline[2][i];
+                for (var j = 0; j < nffts; j++) {
+					/*
+					 * Deal with baselined data
+					 */
+					if (baseline_state == true) {
+						v = specData[j][i] - baseline[j][i];
 					}
-                }
-                else {
-                    v = specData[0][i];
-                    v2 = specData[1][i];
-                    if (nffts > 2) {
-						v3 = specData[2][i];
+					else {
+						v = specData[j][i];
 					}
-                }
-                y2axis[0].push(v);
-                y2axis[1].push(v2);
-                if (nffts > 2) {
-					y2axis[2].push(v3);
-				}
+					y2axis[j].push(v);
+			    }
 
                 /*
                  * Current x-axis value
                  */
                 x = start+(i*step);
-                
-                /*
-                 * If doing just regular frequency...
-                 */
+                var dv;
                 if (doppler != true) {
-                    
-                    /*
-                     * xaxis record in MHz
-                     */
-                    xaxis.push(x/1000000.0);
-                    res2.push([x/1000000.0, v]);
-                    res3.push([x/1000000.0, v2]);
-                    if (nffts > 2) {
-						res4.push([x/1000000.0, v3]);
+					/*
+					 * xaxis record in MHz
+					 */
+					xaxis.push(x/1000000.0);
+				}
+				else
+				{
+					/*
+					 * x contains current frequency value
+					 */
+					dv = x-frequency; // frequency offset from Fc
+					dv /= frequency; // as fraction of Fc
+					dv *= C  // Scaled to C in km/sec
+					
+					xaxis.push(dv);
+				}
+                for (var j = 0; j < nffts; j++) {
+					/*
+					 * If doing just regular frequency...
+					 */
+					if (doppler != true) {
+						rezes[j].push([x/1000000.0, y2axis[j][i]]);
 					}
-                    
-                }
-                /*
-                 * Doing doppler tics (km/sec)
-                 */
-                else {
-                    var dv;
-                    
-                    /*
-                     * x contains current frequency value
-                     */
-                    dv = x-frequency; // frequency offset from Fc
-                    dv /= frequency; // as fraction of Fc
-                    dv *= C  // Scaled to C in km/sec
-                    
-                    xaxis.push(dv);
-                    res2.push([dv, v]);
-                    res3.push([dv, v2]);
-                    if (nffts > 2) {
-						res4.push([dv, v3]);
+					/*
+					 * Doing doppler tics (km/sec)
+					 */
+					else {
+						rezes[j].push([dv, y2axis[j][i]]);
 					}
-                }
+				}
             }
             
             /*
@@ -679,14 +656,11 @@
                  * Check for new peak value at each position.
                  */
                 for (var i = 0; i < peak.length; i++) {
-                    if (y2axis[0][i] > peak[i]) {
-                        peak[i] = y2axis[0][i];
-                    }
-                    if (y2axis[1][i] > peak[i]) {
-						peak[i] = y2axis[1][i];
-					}
-					if (nffts > 2 && y2axis[2][i] > peak[i]) {
-						peak[i] = y2axis[2][i];
+                    for (var j = 0; j < nffts; j++) {
+						if (y2axis[j][i] > peak[i])
+						{
+							peak[i] = y2axis[j][i];
+						}
 					}
                 }
             }
@@ -695,6 +669,7 @@
              * If we're using peak hold mode, we need to create a 2nd
              *  dataset containing the peak-hold values.
              */
+            dics = [];
             if (peakholdmode == true) {
                 var peaky = [];
                 
@@ -709,55 +684,36 @@
                  * Call the plotter
                  */
                 
-                if (nfft == 2)
-                {
-					dic1 = {label : "Peak", data: peaky};
-					dic2 = {label : "Sky", data: res2};
-					dic3 = {label : "Ref", data: res3};
-					plot2.setData([dic2,dic3,dic1]);
+                dics.push({label : "Peak", data: peaky});
+				for (var j = 0; j < nfft; j++) {
+					dics.push({label : specLabels[j], data: rezes[j]);
 				}
-				else
-				{
-					dic1 = {label : "Peak", data: peaky};
-					dic2 = {label : specLabels[0], data: res2};
-					dic3 = {label : specLabels[1], data: res3};
-					dic4 = {label : specLabels[2], data: res4};
-				}
-					
+				plotSpec.setData(dics);	
             }
             /*
-             * Just plot 'res2/res3' -- no peak hold dataset
+             * Just plot the data sets without peak-hold data
              */
             else
             {
                 peak = y2axis[0].slice();
-                if (nffts == 2) {
-					dic1 = {label : "Sky", data: res2};
-					dic2 = {label : "Ref", data: res3};
-					plot2.setData([dic1,dic2]);
+                for (var j = 0; j < nffts; j++) {
+					dics.push({label : specLabels[j], data: rezes[j]);
 				}
-				else
-				{
-					dic2 = {label : specLabels[0], data: res2};
-					dic3 = {label : specLabels[1], data: res3};
-					dic4 = {label : specLabels[2], data: res4};
-					plot2.setData([dic2,dic3,dic4]);
-				}
-					
+				plotSpec.setData(dics);
             }
 
             /*
              * The label for the spectral plot X axis may have changed
              *   reset the grid on each plot.
              */
-            plot2.getOptions().xaxes[0].axisLabel = specXlabel;
-            plot2.setupGrid();
+            plotSpec.getOptions().xaxes[0].axisLabel = specXlabel;
+            plotSpec.setupGrid();
 
             /*
              * Finally draw the plots
              */
             plot.draw();
-            plot2.draw();
+            plotSpec.draw();
             plotCorr.draw();
             
             /*
