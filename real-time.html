@@ -686,7 +686,7 @@
                 
                 dics.push({label : "Peak", data: peaky});
 				for (var j = 0; j < nfft; j++) {
-					dics.push({label : specLabels[j], data: rezes[j]);
+					dics.push({label : specLabels[j], data: rezes[j]});
 				}
 				plotSpec.setData(dics);	
             }
@@ -697,7 +697,7 @@
             {
                 peak = y2axis[0].slice();
                 for (var j = 0; j < nffts; j++) {
-					dics.push({label : specLabels[j], data: rezes[j]);
+					dics.push({label : specLabels[j], data: rezes[j]});
 				}
 				plotSpec.setData(dics);
             }
