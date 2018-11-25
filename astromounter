@@ -9,7 +9,7 @@ then
 fi
 cifsmount=`echo $1|sed -e s/++//`
 rm -f $2
-mount.cifs $cifsmount /mnt/rdata $3 >/dev/null 2>&1
+mount.cifs $cifsmount /mnt/rdata $3 $4 >/dev/null 2>&1
 if [ $? == 0 ]
 then
 	ln -s /mnr/rdata $2
