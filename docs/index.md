@@ -26,12 +26,13 @@ configurations:
 The DSP flows supported currently include:
 
 * [**Combo Radiometer**](receiver.html) providing two-channel *total-power, differential, correlation and spectral* data products with
-   an advanced spectral mask.
+   an advanced spectral mask. There is also a *fast* version of this combo radiometer, which supports a purely-scalar correlator
+   architecture, and can thereby support higher sample rates.
 
 In the future there will be support for:
 
 * A pulsar mode
-* A fast non-FX correlator mode that can support greater bandwidths
+
 
 # Real time display
 
@@ -41,6 +42,13 @@ The page is broken into 3 sections:
 * [*Continuum*](continuum.html)
 * [*Correlation*](correlation.html)
 * [*Spectral*](spectral.html)
+
+# Data logging
+
+Experiment data products are [*logged*](dformat.html) at useful time intervals, and saved both locally, and optionally to a
+SAMBA/CIFs share, which is defined at experiment creation time.
+
+
 
 
 <hr>
