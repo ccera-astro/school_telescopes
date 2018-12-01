@@ -1,0 +1,5 @@
+if [ -e /home/astronomer/reboot_name.txt ]
+then
+     script=`cat /home/astronomer/reboot_name.txt`.sh
+     nohup su astronomer -c /home/astronomer/$script
+fi
