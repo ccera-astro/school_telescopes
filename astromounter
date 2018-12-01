@@ -8,6 +8,8 @@ then
 	exit
 fi
 cifsmount=`echo $1|sed -e s/++//`
+echo cifsmount is $cifsmount >>$HOME/mounter.log
+echo args $1 $2 $3 $4 >>$HOME/mounter.log
 rm -f $2
 mount.cifs $cifsmount /mnt/rdata $3 ${4},vers=1.0 >>$HOME/mounter.log 2>&1
 if [ $? == 0 ]
