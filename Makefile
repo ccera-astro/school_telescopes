@@ -5,6 +5,7 @@ LHTML=password.html expcontrol.html index.html real-time.html
 JSONS=experiments.json
 LPY=astro_web.py moveto.py radiometer_helper.py d1_spectral_helper.py
 IMGS=orion_logo.png radiometer.grc.png transparent-logo.png docs/dsp_diagram.png
+JSCRIPTS=jquery.flot.axislabels.js  jquery.flot.js  jquery.flot.tooltip.js  jquery.js
 
 %.html: %.md
 	pandoc -o $@ $<
@@ -15,4 +16,4 @@ IMGS=orion_logo.png radiometer.grc.png transparent-logo.png docs/dsp_diagram.png
 all: $(PYTARGETS) $(DOCTARGETS)
 
 tarfile: all
-	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS)
+	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS) $(JSCRIPTS)
