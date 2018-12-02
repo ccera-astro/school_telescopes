@@ -1,4 +1,5 @@
 #!/bin/sh
+echo astromounter start `date` >$HOME/mounter.log
 echo $* >>$HOME/mounter.log
 if [ $1 == "++" ]
 then
@@ -9,11 +10,12 @@ then
 	exit
 fi
 cifsmount=`echo $1|sed -e s/++//`
-echo cifsmount is $cifsmount >>$HOME/mounter.log
 echo args $1 $2 $3 $4 >>$HOME/mounter.log
+echo cifsmount is $cifsmount >>$HOME/mounter.log
 rm -f $2
 mount.cifs $cifsmount /mnt/rdata $3 ${4},vers=1.0 >>$HOME/mounter.log 2>&1
 if [ $? == 0 ]
 then
 	ln -s /mnt/rdata $2 >>$HOME/mounter.log 2>&1
 fi
+echo astromounter end `date` >>$HOME/mounter.log
