@@ -6,6 +6,7 @@ JSONS=experiments.json
 LPY=astro_web.py moveto.py radiometer_helper.py d1_spectral_helper.py
 IMGS=orion_logo.png radiometer.grc.png transparent-logo.png docs/dsp_diagram.png
 JSCRIPTS=jquery.flot.axislabels.js  jquery.flot.js  jquery.flot.tooltip.js  jquery.js
+SHSCRIPTS=rc.local
 
 %.html: %.md
 	pandoc -o $@ $<
@@ -16,4 +17,12 @@ JSCRIPTS=jquery.flot.axislabels.js  jquery.flot.js  jquery.flot.tooltip.js  jque
 all: $(PYTARGETS) $(DOCTARGETS)
 
 tarfile: all
-	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS) $(JSCRIPTS)
+	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS) $(JSCRIPTS) $(SHSCRIPTS)
+
+install: all
+	mkdir -p Documents
+	cp $(DOCTARGETS) Documents
+
+sysinstall:
+	cp rc.local /etc
+	chmod 755 /etc/rc.local
