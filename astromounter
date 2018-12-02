@@ -1,4 +1,5 @@
 #!/bin/sh
+echo $* >>$HOME/mounter.log
 if [ $1 == "++" ]
 then
 	if [ -e $2 ]

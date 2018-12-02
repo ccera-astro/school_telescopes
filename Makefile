@@ -1,6 +1,6 @@
 PYTARGETS=radiometer.py d1_spectral_logger.py
 DOCTARGETS=docs/index.html docs/dformat.html docs/continuum.html docs/correlation.html \
-docs/exclusions.html docs/spectral.html docs/receiver.html
+docs/exclusions.html docs/spectral.html docs/receiver.html docs/expcontrol.html
 LHTML=password.html expcontrol.html index.html real-time.html syscontrol.html
 JSONS=experiments.json
 LPY=astro_web.py moveto.py radiometer_helper.py d1_spectral_helper.py
