@@ -1013,20 +1013,29 @@ def main(args=None):
     exp = json.load(f)
     f.close()
     
-        
-    p = subprocess.Popen("lsusb", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    outs = p.communicate()
-    usblines = outs[0].split("\n")
-    
-    usbcount = 0
+      
+    #
+    # Because we may come up before all USB devices have
+    #  reported in
+    #
     usbtype = "Unknown"
-    for t in exp["usbtypes"]:
-        for l in usblines:
-            if t in l:
-                usbcount += 1
-                usbtype = exp["usbtypes"][t]
-        if (usbcount > 0):
-            break
+    count = 0
+    while usbtype == "Unknown" and count < 10:  
+        p = subprocess.Popen("lsusb", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs = p.communicate()
+        usblines = outs[0].split("\n")
+        count += 1
+        usbcount = 0
+        for t in exp["usbtypes"]:
+            for l in usblines:
+                if t in l:
+                    usbcount += 1
+                    usbtype = exp["usbtypes"][t]
+            if (usbcount > 0):
+                break
+
+        if (usbtype == "Unknown"):
+            time.sleep(3)
     
     hwtype = "%s-%d" % (usbtype, usbcount)
     
