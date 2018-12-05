@@ -1,3 +1,14 @@
+#!/bin/bash
+SHELL=/bin/bash
+export SHELL
+PATH=$PATH:/usr/bin:/usr/local/bin
+PYTHONPATH=/usr/local/lib/python2.7/site-packages
+export PATH
+export PYTHONPATH
+cd /home/astronomer
+(nohup su astronomer -c "sleep 15; python2 /home/astronomer/astro_web.py -p 8000" >>/home/astronomer/web.log 2>&1) &
+chown astronomer /home/astronomer/*
+chgrp astronomer /home/astronomer/*
 if [ -e /home/astronomer/reboot_name.txt ]
 then
      script=`cat /home/astronomer/reboot_name.txt`.sh
