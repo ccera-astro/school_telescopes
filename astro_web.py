@@ -41,13 +41,24 @@ def killit(pid):
     except:
         return(-1)
     
-    time.sleep(0.75)
-
-    try:
-        retval = -1
-        os.kill(pid, 0)
-    except:
-        retval = 0
+    time.sleep(0.5)
+    
+    #
+    # Loop for a bit watching for the process to die
+    # If it doesn't, then return a "can't seem to kill it"
+    #   return code.
+    #
+    retval = -1
+    trycnt = 0
+    while trycnt <= 10 and retval == -1:
+        try:
+            retval = -1
+            os.kill(pid, 0)
+            time.sleep(0.25)
+            trycnt += 1
+        except:
+            retval = 0
+            pass
         
     return(retval)
 
