@@ -14,10 +14,20 @@ SHSCRIPTS=rc.local
 %.py: %.grc
 	-grcc -d . $<
 
+
 all: $(PYTARGETS) $(DOCTARGETS)
 
+clean:
+	rm -f docs/*.html
+	rm -f $(PYTARGETS)
+
+docs: $(DOCTARGETS)
+
+apps: $(PYTARGETS)
+
+
 tarfile: all
-	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS) $(JSCRIPTS) $(SHSCRIPTS)
+	tar cvzf orion.tar.gz $(PYTARGETS) $(DOCTARGETS) $(LHTML) $(JSONS) $(LPY) $(IMGS) $(JSCRIPTS) $(SHSCRIPTS) Makefile
 
 install: all
 	mkdir -p Documents
