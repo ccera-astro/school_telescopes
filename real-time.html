@@ -38,6 +38,8 @@
         var HOUR = 3600;
         var UPDATE = 2;
         var C = 299792.0;  // Speed of light in the void...
+        var datavalid = 1;
+        var lasttime="";
         
         var contData = [[], [], []];  // The continuum data
         var corrData = [[], []]; // Correlation Data
@@ -498,6 +500,7 @@
             latitude = thing.latitude;
             longitude = thing.longitude;
             updated = thing.updated;
+            datavalid = 1;
             $("#PageTitle").html("<h3>" + "Experiment: " + expname + " DEC: " + dec + " LMST: " + lmst + "</h3>");
             $("#Subtitle").html("<h4>" + "Latitude: " + latitude + " Longitude: " + longitude + " Updated: " + updated+"</h4>");
             
@@ -712,13 +715,17 @@
             /*
              * Finally draw the plots
              */
-            plot.draw();
-            plotSpec.draw();
-            plotCorr.draw();
-            
+            if (datavalid > 0)
+            {
+				plot.draw();
+				plotSpec.draw();
+				plotCorr.draw();
+			}
+				
             /*
              * Schedule some AJAX data retrievals
              */
+            datavalid = 0;
             $.ajax(
                 {url: "astro_data/tpower.json",
                     type: "GET",

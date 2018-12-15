@@ -4,7 +4,6 @@ A custom server for back-of-the-dish CCERA Radio Telescope System
 
 """
 
-
 import os
 import signal
 import sys
@@ -162,7 +161,6 @@ class ExpControlHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
     SUPPORTED_METHODS = ['GET']
-    @tornado.web.authenticated
     def set_extra_headers(self, path):
         # Disable cache
 
@@ -239,7 +237,6 @@ class SysControlHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
     SUPPORTED_METHODS = ['GET']
-    @tornado.web.authenticated
     def set_extra_headers(self, path):
         # Disable cache
 
@@ -309,7 +306,6 @@ class IndexHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
     
-    @tornado.web.authenticated
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -370,7 +366,7 @@ class BaseHandler(tornado.web.RequestHandler):
 class Handler(tornado.web.StaticFileHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
-    @tornado.web.authenticated
+
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -392,7 +388,6 @@ class StartHandler(BaseHandler):
             x = x.replace("@@"+v, str(vl[v]))
         return x
 
-    @tornado.web.authenticated
     def get(self,path):
         try:
             fp = open(gethome()+"/"+"experiments.json", "r")
@@ -584,7 +579,7 @@ class StartHandler(BaseHandler):
         return
 
 class RebootHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         self.write("Rebooting...")
         time.sleep(5)
@@ -595,7 +590,7 @@ class RebootHandler(BaseHandler):
         return
 
 class HaltHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         self.write("Halting...")
         time.sleep(5)
@@ -606,7 +601,7 @@ class HaltHandler(BaseHandler):
         return
 
 class SysUpdateHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         newip = self.get_argument("newip", "")
         newmask = self.get_argument("newmask", "")
@@ -746,7 +741,7 @@ Gateway={newgateway}
         return
      
 class StopHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         pfn = gethome()+"/"+"experiment.pid"
         try:
@@ -776,7 +771,7 @@ class StopHandler(BaseHandler):
         return
 
 class ProfileHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         expname = self.get_argument("expname", "")
         action = self.get_argument("action", "none")
@@ -822,7 +817,7 @@ class ProfileHandler(BaseHandler):
 
         
 class RestartHandler(BaseHandler):
-    @tornado.web.authenticated
+
     def get(self,path):
         
         expname = self.get_argument("expname", "???")
@@ -835,7 +830,7 @@ class RestartHandler(BaseHandler):
         pidfile = False
         pfn = gethome()+"/"+"experiment.pid"
         try:
-            fp = open(pfn)
+            fp = open(pfn, "r")
             pidfile = True
         except:
             pass
@@ -951,7 +946,7 @@ def mkapp(cookie_secret):
     application = tornado.web.Application([
         (r"/index.html", TopLevelHandler),
         (r"/$", TopLevelHandler),
-        (r"/login", LoginHandler),
+#       (r"/login", LoginHandler),
         (r"/(Documents)$", IndexHandler),
         (r"/(astro_data)$", IndexHandler),
         (r"/(.*\.png)", Handler, {'path' : gethome()}),
@@ -967,7 +962,7 @@ def mkapp(cookie_secret):
         (r"/(start\.html)", StartHandler),
         (r"/(stop\.html)", StopHandler),
         (r"/(restart\.html)", RestartHandler),
-        (r"/(pwchange\.html)", PwChangeHandler),
+#       (r"/(pwchange\.html)", PwChangeHandler),
         (r"/(profiles\.html)", ProfileHandler),
         (r"/(sysupdate\.html)", SysUpdateHandler),
         (r"/(reboot\.html)", RebootHandler),
