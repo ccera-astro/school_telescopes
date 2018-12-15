@@ -500,7 +500,11 @@
             latitude = thing.latitude;
             longitude = thing.longitude;
             updated = thing.updated;
-            datavalid = 1;
+            if (updated != lasttime)
+            {
+				lasttime = updated;
+				datavalid = 1;
+			}
             $("#PageTitle").html("<h3>" + "Experiment: " + expname + " DEC: " + dec + " LMST: " + lmst + "</h3>");
             $("#Subtitle").html("<h4>" + "Latitude: " + latitude + " Longitude: " + longitude + " Updated: " + updated+"</h4>");
             
