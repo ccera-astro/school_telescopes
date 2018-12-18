@@ -120,7 +120,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl,fast,scalars):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl,fast,scalars,console):
     global then
     #
     # Protect against getting called too often
@@ -343,7 +343,11 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
         slogbuf += "\n"
         slogbufs.append(slogbuf)
     
-       
+    
+    if (console != 0):
+        if ((count % 5) == 0):
+            sys.stdout.write(tlogbuf)
+        
     if (local != "" and local != None):
         if (os.path.exists(local)):
             if ((count % 5) == 0):

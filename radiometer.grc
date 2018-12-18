@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.12'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Sat Feb 24 14:26:55 2018</timestamp>
   <block>
@@ -355,7 +355,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>value</key>
-      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination,speclog,excl,fast,[fcn_corr_probe,fcn_tp_probe1,fcn_tp_probe2])</value>
+      <value>radiometer_helper.log([probe_result,probe_result1,creal,cimag],longitude,latitude,lstore,rstore,expname,freq,samp_rate,alpha,declination,speclog,excl,fast,[fcn_corr_probe,fcn_tp_probe1,fcn_tp_probe2],console)</value>
     </param>
   </block>
   <block>
@@ -651,7 +651,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(368, 1232)</value>
+      <value>(368, 1248)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1856,6 +1856,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>value</key>
       <value>internal</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(536, 1240)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>console</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Console data logging</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0</value>
     </param>
   </block>
   <block>
@@ -4452,7 +4499,7 @@ curr_corr_real = -99.00
 curr_corr_imag = -99.00
 
 
-def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl,fast,scalars):
+def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,speclog,excl,fast,scalars,console):
     global then
     #
     # Protect against getting called too often
@@ -4675,7 +4722,11 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
         slogbuf += "\n"
         slogbufs.append(slogbuf)
     
-       
+    
+    if (console != 0):
+        if ((count % 5) == 0):
+            sys.stdout.write(tlogbuf)
+        
     if (local != "" and local != None):
         if (os.path.exists(local)):
             if ((count % 5) == 0):

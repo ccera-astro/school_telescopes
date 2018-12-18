@@ -13,7 +13,7 @@ cifsmount=`echo $1|sed -e s/++//`
 echo args $1 $2 $3 $4 >>$HOME/mounter.log
 echo cifsmount is $cifsmount >>$HOME/mounter.log
 rm -f $2
-sudo mount.cifs $cifsmount /mnt/rdata $3 ${4},vers=1.0 >>$HOME/mounter.log 2>&1
+sudo mount.cifs $cifsmount /mnt/rdata $3 ${4},vers=1.0,noperm >>$HOME/mounter.log 2>&1
 if [ $? == 0 ]
 then
 	ln -s /mnt/rdata $2 >>$HOME/mounter.log 2>&1

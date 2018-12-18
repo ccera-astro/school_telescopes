@@ -173,6 +173,79 @@ class ExpControlHandler(tornado.web.RequestHandler):
         except:
             host="Unknown"
         
+        profile = self.get_argument("exp", "default")
+        
+        try:
+            fp = open("/home/astronomer/"+profile+".json", "r")
+            expprofile = json.load(fp)
+            if "MAGIC" not in expprofile:
+				fp = open("/home/astronomer/default.json", "r")
+				expprofile = json.load(fp)
+        except:
+            fp = open("/home/astronomer/default.json", "r")
+            expprofile = json.load(fp)
+        
+        fp.close()
+        default_dict = { "rpassword": "",
+        "expname": "",
+        "srate": 1000000.0,
+        "excl": "",
+        "latitude": 44.9,
+        "rfgain": 60.0, 
+        "speclog": 1, 
+        "etype": "radiometer", 
+        "alpha": 1.0, 
+        "freq": 1420405800.0, 
+        "rmount": "",   
+        "longitude": -75.9, 
+        "declination": 41.0, 
+        "ruser": "" }
+
+
+        pdict = {"checked1" : "", "checked1_5" : "", "checked2" : "", 
+        "checked2_5" : "", "checked3" : "", "checked4" : "", 
+        "checked5" : "", "checked6" : "", "checked7" : "", "checked8" : "", 
+        "checked10" : "", "checked12" : "", "checked15" : "",
+        "checkedRadiometer" : "", "checkedFast" : "", "checkedD1" : "", 
+        "slogchecked" : "", "freq" : "", "rfgain" : "",
+        "expname" : "", "dec" : "", "longitude" : "", "latitude" : "",
+        "baseline" : "", "integration" : "", "exclusions" : "", "rmount" : "",
+        "rpassword" : "",
+        "rmount" : "" }
+        
+        ratemap = {"checked1" : 1.0e6, "checked1_5" : 1.5e6, "checked2" : 2.0e6,
+        "checked2_5" : 2.5e6, "checked3" : 3.0e6, "checked4" : 4.0e6,
+        "checked5" : 5.0e6, "checked6" : 6.0e6, "checked7" : 7.0e6,
+        "checked8" : 8.0e6, "checked10" : 10.e6, "checked12" : 12.0e6,
+        "checked15" : 15.0e6}
+        rate = float(expprofile["srate"])
+        
+        for k in ratemap:
+            if (abs(rate-ratemap[k]) < 0.05*ratemap[k]):
+                pdict[k]='checked="true"'
+                break
+        
+        typemap = {"radiometer" : "checkedRadiometer", 
+        "fast" : "checkedFast", "d1" : "checkedD1"}
+        
+        if expprofile["etype"] in typemap:
+			pdict[typemap[expprofile["etype"]]] = 'checked="true"'
+        
+        if int(expprofile["speclog"]) != 0:
+            pdict["slogchecked"] = 'checked="true"'
+        
+        kys = ["rfgain", "freq", "latitude", "longitude", "declination",
+        "rmount", "ruser", "rpassword", "baseline", "expname"]
+        
+        if expprofile["excl"] != "none":
+            pdict["excl"] = expprofile["excl"]
+        
+        for x in kys:
+            if x in expprofile:
+                pdict[x] = expprofile[x]
+        
+        pdict["integration"] = str(1.0 / float(expprofile["alpha"]))
+        
         running = "None"
         plist = ""
         pid = -1
@@ -230,7 +303,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
             running=running,
             plist=plist,
             startup=start_profile,
-            pid=str(pid), currlog=currlog)
+            pid=str(pid), currlog=currlog,pd=pdict)
 
 import re         
 class SysControlHandler(tornado.web.RequestHandler):
@@ -548,7 +621,7 @@ class StartHandler(BaseHandler):
         f.close()
         self.write ("Experiment %s started with PID %d\n<br>" % (varlist["expname"], pid))
         
-        
+        varlist["etype"] = etype
         if (self.get_argument("save", "off") == "on"):
             fn = "%s.sh" % varlist["expname"]
             f = open(fn, "w")
@@ -556,8 +629,12 @@ class StartHandler(BaseHandler):
             f.close()
             os.chmod(fn, 0755)
             self.write("Saved experiment profile %s\n<br>" % fn)
-            
-        
+            fn = "%s.json" % varlist["expname"]
+            f = open(fn, "w")
+            varlist["MAGIC"] = "EXPFILE0000"
+            f.write(json.dumps(varlist, indent=4))
+            f.close()
+                        
         if (self.get_argument("startup", "off") == "on"):
             f = open("reboot_name.txt", "w")
             f.write(varlist["expname"]+"\n")

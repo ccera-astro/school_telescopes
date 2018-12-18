@@ -1,0 +1,16 @@
+{
+    "rpassword": "", 
+    "expname": "", 
+    "srate": 1000000.0, 
+    "excl": "",   
+    "latitude": 44.9, 
+    "rfgain": 10.0, 
+    "speclog": 1, 
+    "etype": "radiometer", 
+    "alpha": 1.0, 
+    "freq": 1420405800.0, 
+    "rmount": "",   
+    "longitude": -75.9, 
+    "declination": 41.0, 
+    "ruser": ""
+}

@@ -135,74 +135,74 @@
 <br>
 
 <b>Sample Rate (Msps)</b>
-  <input id="srate1" type="radio" name="srate" value="1.0" disabled="true">1
-  <input id="srate1_5" type="radio" name="srate" value="1.5" disabled="true">1.5
-  <input id="srate2" type="radio" name="srate" value="2.0" disabled="true">2
-  <input id="srate2_5" type="radio" name="srate" value="2.5" disabled="true">2.5
-  <input id="srate3" type="radio" name="srate" value="3.0" disabled="true">3
-  <input id="srate4" type="radio" name="srate" value="4.0" disabled="true">4
-  <input id="srate5" type="radio" name="srate" value="5.0" disabled="true">5
-  <input id="srate6" type="radio" name="srate" value="6.0" disabled="true">6
-  <input id="srate7" type="radio" name="srate" value="7.0" disabled="true">7 
-  <input id="srate8" type="radio" name="srate" value="8.0" disabled="true">8
-  <input id="srate10" type="radio" name="srate" value="10.0" disabled="true">10
-  <input id="srate12" type="radio" name="srate" value="12.0" disabled="true">12
-  <input id="srate15" type="radio" name="srate" value="15.0" disabled="true">15<br>
+  <input id="srate1" type="radio" name="srate" value="1.0" disabled="true" {{pd['checked1']}}>1
+  <input id="srate1_5" type="radio" name="srate" value="1.5" disabled="true" {{pd['checked1_5']}}>1.5
+  <input id="srate2" type="radio" name="srate" value="2.0" disabled="true" {{pd['checked2']}}>2
+  <input id="srate2_5" type="radio" name="srate" value="2.5" disabled="true"{{pd['checked2_5']}}>2.5
+  <input id="srate3" type="radio" name="srate" value="3.0" disabled="true" {{pd['checked3']}}>3
+  <input id="srate4" type="radio" name="srate" value="4.0" disabled="true" {{pd['checked4']}}>4
+  <input id="srate5" type="radio" name="srate" value="5.0" disabled="true" {{pd['checked5']}}>5
+  <input id="srate6" type="radio" name="srate" value="6.0" disabled="true" {{pd['checked6']}}>6
+  <input id="srate7" type="radio" name="srate" value="7.0" disabled="true" {{pd['checked7']}}>7 
+  <input id="srate8" type="radio" name="srate" value="8.0" disabled="true" {{pd['checked8']}}>8
+  <input id="srate10" type="radio" name="srate" value="10.0" disabled="true" {{pd['checked10']}}>10
+  <input id="srate12" type="radio" name="srate" value="12.0" disabled="true" {{pd['checked12']}}>12
+  <input id="srate15" type="radio" name="srate" value="15.0" disabled="true" {{pd['checked15']}}>15<br>
 <div class="tooltip">
 	<span class="tooltiptext"><i>Currently, only combination radiometry and D1 spectrometry is supported</i></span>
 <b>Experiment Type</b>
 </div>
 <br>
-  <input id="etRadiometer" type="radio" name="etype" value="radiometer" checked>Combo Radiometer
+  <input id="etRadiometer" type="radio" name="etype" value="radiometer" {{pd['checkedRadiometer']}}>Combo Radiometer
   <i>(Two-channel total power, spectral, difference, and correlation)</i><br>
-  <input id="etFast" type="radio" name="etype" value="fast">Fast Combo Radiometer
+  <input id="etFast" type="radio" name="etype" value="fast" {{pd['checkedFast']}}>Fast Combo Radiometer
   <i>(Two-channel total power, spectral, difference and correlation, without FX)</i><br>
   <input id="etPulsar" type="radio" name="etype" value="pulsar" disabled="True">Pulsar Monitor
   <i>(Pulsar monitoring with dispersion compensation:NOT YET SUPPORTED)</i><br>
-  <input id="etD1" type="radio" name="etype" value="d1">D1 Spectrometer
+  <input id="etD1" type="radio" name="etype" value="d1" {{pd['checkedD1']}}>D1 Spectrometer
   <i>(3 or 2 channel Deuterium Spectrometer)</i>[sample rate and frequency are ignored]<br>
   <p style="margin-left:40px">DM<input type="text" name="dm" value="1.0" disabled="true"><br>
   Pulse rate (Hz)<input type="text" name="prate" value="1.0" disabled="true"><br></p>
-  <b>Spectral logging</b><input type="checkbox" id="splogging" name="speclog"><i>  (including spectral correlation
+  <b>Spectral logging</b><input type="checkbox" id="splogging" name="speclog" {{pd['slogchecked']}}><i>  (including spectral correlation
   components)</i><br>
    <br>
 <div class="tooltip">
   <span class="tooltiptext"><i>RF center frequency in Hz. Eg: 1420.405e6. Range depends on hardware</i></span> 
   <b>Tuner center frequency</b>
 </div>
- <input type="text" name="freq" required value="1420.4058e6">
+ <input type="text" name="freq" required value="{{pd['freq']}}">
 <div class="tooltip">
 	<span class="tooltiptext"><i>RF gain, usually in dB, depending on hardware</i></span>
   <b>Tuner RF Gain</b>   
 </div>   
-  <input type="number" id="rfgain" name="rfgain" min=0 max=40 value="0" step=0.5>                                           
+  <input type="number" id="rfgain" name="rfgain" min=0 max=40 value="{{pd['rfgain']}}" step=0.5>                                           
   <br>
   <hr>
 <a href="/Documents/expcontrol.html#experiment-name-and-other-information" target="_blank">Help</a>
 <br>
-  <b>Experiment Name</b><input type="text" name="expname" required maxlength=20><br>
-  <b>Remote Logging Share</b> <input type="text" name="rmount" maxlength=256 size=64><i>  (//nodename/sharename)</i><br>
-  <b>Remote Logging Username</b> <input type="text" name="ruser", maxlength=16><br>
-  <b>Remote Logging Password</b> <input type="password" name="rpassword" maxlength=32><br>
-  <b>Declination Target</b> <input type="text" name="declination" value=41 min=-90 max=90 step=0.1><br>
+  <b>Experiment Name</b><input type="text" name="expname" required maxlength=20 value="{{pd['expname']}}"><br>
+  <b>Remote Logging Share</b> <input type="text" name="rmount" maxlength=256 size=64 value="{{pd['rmount']}}"><i>  (//nodename/sharename)</i><br>
+  <b>Remote Logging Username</b> <input type="text" name="ruser", maxlength=16 value="{{pd['ruser']}}"><br>
+  <b>Remote Logging Password</b> <input type="password" name="rpassword" maxlength=32 value="{{pd['rpassword']}}"><br>
+  <b>Declination Target</b> <input type="text" name="declination" value="{{pd['dec']}}" min=-90 max=90 step=0.1><br>
 <div class="tooltip">
 	<span class="tooltiptext"><i>LMST is derived from longitude. Try to be accurate</i></span>
   <b>Local Longitude</b>
 </div>
-<input type="text" name="longitude" value="-75.9" min=-180 max=180 step=0.1>
-  <b>Local Latitude</b><input type="text" name="latitude" value="44.9" min=-90 max=90 step=0.25>
+<input type="text" name="longitude" value="{{pd['longitude']}}" min=-180 max=180 step=0.1>
+  <b>Local Latitude</b><input type="text" name="latitude" value="{{pd['latitude']}}" min=-90 max=90 step=0.25>
 <div class="tooltip">
 	<span class="tooltiptext"><i>Can be used to calculate high-pass filter for interferometer</i></span>
   <b>Baseline distance(m)</b>
 </div>
-<input type="text" name="baseline" value="1.0" min="1.0" max="5000">
+<input type="text" name="baseline" value="{{pd['baseline']}}" min="1.0" max="5000">
 <br>
 <br>
 <div class="tooltip">
   <span class="tooltiptext" style="width:200px"><i>Longer integration times improve sensitivity</i></span>
   <b>Integration time (secs)</b>
 </div>
-<input type="number" name="integration" value=1.0 min=1.0 max=100.0 step=1>
+<input type="number" name="integration" value="{{pd['integration']}}" min=1.0 max=100.0 step=1>
 <br>
 <br>
 <div class="tooltip">
@@ -210,7 +210,7 @@
   Example: <code>612.5e6:25e3,609.7e6:40e3</code></i><br></span>
   <b>Frequency exclusions</b>
 </div>
-<input type="text" name="excl" maxlength=128 size=50><br>
+<input type="text" name="excl" maxlength=128 size=50 value="{{pd['exclusions']}}"><br>
 <br>
 <hr>
   <b>Save profile</b><input type="checkbox" id="save" name="save">
@@ -234,7 +234,7 @@
 <hr style="height:10px;background-color:beige">
 <form action="/restart.html" method="get">
 <h3>Restart saved experiment profile</h3>
-<b>Experiment Name</b><input type="text" name="expname" maxlength=16><br>
+<b>Experiment Name</b><input type="text" name="expname" value="{{pd['expname']}}" maxlength=16><br>
 <p>
 <i>Available profiles: {{ plist }}</i>
 </p>
