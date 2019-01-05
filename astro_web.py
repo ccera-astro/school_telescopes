@@ -885,7 +885,7 @@ class ProfileHandler(BaseHandler):
             self.write ("Profile name must be blank for Remove from Startup")
             return
             
-        pfn = gethome() + "/" + expname + ".sh"
+        pfn = gethome() + "/" + expname + ".json"
         if expname != "":
             if action == "delete":
                 if (os.path.exists(pfn)):
