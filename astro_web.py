@@ -179,8 +179,8 @@ class ExpControlHandler(tornado.web.RequestHandler):
             fp = open("/home/astronomer/"+profile+".json", "r")
             expprofile = json.load(fp)
             if "MAGIC" not in expprofile:
-				fp = open("/home/astronomer/default.json", "r")
-				expprofile = json.load(fp)
+                fp = open("/home/astronomer/default.json", "r")
+                expprofile = json.load(fp)
         except:
             fp = open("/home/astronomer/default.json", "r")
             expprofile = json.load(fp)
@@ -208,7 +208,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
         "checked10" : "", "checked12" : "", "checked15" : "",
         "checkedRadiometer" : "", "checkedFast" : "", "checkedD1" : "", 
         "slogchecked" : "", "freq" : "", "rfgain" : "",
-        "expname" : "", "dec" : "", "longitude" : "", "latitude" : "",
+        "expname" : "", "declination" : "", "longitude" : "", "latitude" : "",
         "baseline" : "", "integration" : "", "exclusions" : "", "rmount" : "",
         "rpassword" : "",
         "rmount" : "" }
@@ -229,7 +229,7 @@ class ExpControlHandler(tornado.web.RequestHandler):
         "fast" : "checkedFast", "d1" : "checkedD1"}
         
         if expprofile["etype"] in typemap:
-			pdict[typemap[expprofile["etype"]]] = 'checked="true"'
+            pdict[typemap[expprofile["etype"]]] = 'checked="true"'
         
         if int(expprofile["speclog"]) != 0:
             pdict["slogchecked"] = 'checked="true"'
@@ -244,7 +244,8 @@ class ExpControlHandler(tornado.web.RequestHandler):
             if x in expprofile:
                 pdict[x] = expprofile[x]
         
-        pdict["integration"] = str(1.0 / float(expprofile["alpha"]))
+        pdict["integration"] = int(1.0 / float(expprofile["alpha"]))
+        pdict["integration"] = str(pdict["integration"])
         
         running = "None"
         plist = ""
@@ -276,8 +277,12 @@ class ExpControlHandler(tornado.web.RequestHandler):
         dls = os.listdir(gethome())
         
         for n in dls:
-            if (".sh" in n):
-                plist = plist + " " + n.replace(".sh", "")
+            if (".json" in n):
+                f = open(n,"r")
+                jd = json.load(f)
+                f.close()
+                if "MAGIC" in jd:
+                    plist = plist + " " + n.replace(".json", "")
         start_profile = "Not present"
         try:
             f = open(gethome()+"/"+"reboot_name.txt", "r")
@@ -368,7 +373,7 @@ class SysControlHandler(tornado.web.RequestHandler):
                     mask.append(struct.unpack('B', ml[2])[0])
                     mask.append(struct.unpack('B', ml[1])[0])
                     mask.append(struct.unpack('B', ml[0])[0])
-                    print mask[0]
+                    print (mask[0])
                     netmask = "%d.%d.%d.%d" % (mask[0], mask[1], mask[2], mask[3])
                         
 
@@ -447,8 +452,26 @@ class Handler(tornado.web.StaticFileHandler):
         if not url_path or url_path.endswith('/'):
             url_path = url_path + 'index.html'
         return url_path
-
+        
+default_str = {
+    "rpassword": "", 
+    "expname": "", 
+    "srate": 1000000.0, 
+    "excl": "",   
+    "latitude": 44.9, 
+    "rfgain": 10.0, 
+    "speclog": 1, 
+    "etype": "radiometer", 
+    "alpha": 1.0, 
+    "freq": 1420405800.0, 
+    "rmount": "",   
+    "longitude": -75.9, 
+    "declination": 41.0, 
+    "ruser": ""
+}
+import runexp
 class StartHandler(BaseHandler):
+    global default_str
     def float_vert(self,v):
         try:
             x = float(v)
@@ -596,44 +619,44 @@ class StartHandler(BaseHandler):
             time.sleep(1.0)
         except:
             pass
-            
-        cmdstr = ""
-        saved_commands = ""
-        for x in commands[softconfig]:
-            cmdstr = ""
-            cls = experiments[x]
-            for l in cls:
-                cmdstr = cmdstr + self.varsub(l,varlist) + " "
-              
-            p = subprocess.Popen (cmdstr, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            outs = p.communicate()
-            r = p.wait()
-            if (r != 0):
-                self.write ("Process failed to start correctly")
-                self.write (outs[0])
-                self.write (outs[1])
-            
-            saved_commands += cmdstr
-            saved_commands += "\n"
-            
-        f = open (gethome()+"/"+"experiment.pid", "r")
-        pid = int(f.readline().strip('\n'))
-        f.close()
-        self.write ("Experiment %s started with PID %d\n<br>" % (varlist["expname"], pid))
         
+        #
+        # We want to be guided by the default profile as to which
+        #  values from "varlist" to carry over into the experiment
+        #  profile
+        #
+        try:
+            f = open(gethome()+"/default.json", "r")
+            default = json.load(f)
+            f.close()
+        except:
+            default = default_str
+
         varlist["etype"] = etype
-        if (self.get_argument("save", "off") == "on"):
-            fn = "%s.sh" % varlist["expname"]
-            f = open(fn, "w")
-            f.write (saved_commands)
-            f.close()
-            os.chmod(fn, 0755)
-            self.write("Saved experiment profile %s\n<br>" % fn)
-            fn = "%s.json" % varlist["expname"]
-            f = open(fn, "w")
-            varlist["MAGIC"] = "EXPFILE0000"
-            f.write(json.dumps(varlist, indent=4))
-            f.close()
+        profile = {}
+        for k in default:
+            profile[k] = varlist[k]
+        profile["MAGIC"] = "EXPFILE0000"
+        
+        #
+        # Dumpeth the .json profile
+        #
+        varlist["etype"] = etype
+        fn = "%s.json" % varlist["expname"]
+        f = open(gethome()+"/"+fn, "w")
+        varlist["MAGIC"] = "EXPFILE0000"
+        f.write(json.dumps(profile, indent=4))
+        f.close()
+        
+        #
+        # Actually run it
+        #
+        runexp.runner(experiments, sysconfig, profile, self.write)
+        
+        if (self.get_argument("save", "off") == "off"):
+            os.remove(fn)
+        else:
+            self.write("Saved experiment profile %s\n<br>" % varlist["expname"])
                         
         if (self.get_argument("startup", "off") == "on"):
             f = open("reboot_name.txt", "w")
@@ -898,9 +921,9 @@ class RestartHandler(BaseHandler):
     def get(self,path):
         
         expname = self.get_argument("expname", "???")
-        fn = expname+".sh"
+        proffn = expname+".json"
         
-        if not os.path.exists(fn):
+        if not os.path.exists(proffn):
             self.write ("Could not find experiment profile %s" % expname)
             return
         
@@ -928,14 +951,31 @@ class RestartHandler(BaseHandler):
         
         if (rv != 0):
             self.write("Could not stop previous process %d\n" % pid)
-            
-        p = subprocess.Popen(gethome()+"/"+fn, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        outs = p.communicate()
-        r = p.wait()
-        if r != 0:
-            self.write(outs[0])
-            self.write(outs[1])
+         
+        try:
+            f = open(gethome()+"/experiments.json", "r")
+            experiments = json.load(f)
+        except:
+            self.write ("Could not load experiments.json")
             return
+        
+        try:
+            f = open(gethome()+"/sysconfig.json", "r")
+            sysconfig = json.load(f)
+        except:
+            self.write("Could not load sysconfig.json")
+            return
+        
+        try:
+            f = open(gethome()+"/"+proffn, "r")
+            profile = json.load(f)
+        except:
+            self.write("Could not load experiment profile %s" % proffn)
+            return
+        
+        
+        
+        runexp.runner(experiments, sysconfig, profile, self.write)
         
         f = open (gethome()+"/"+"experiment.pid", "r")
         pid = int(f.readline().strip('\n'))

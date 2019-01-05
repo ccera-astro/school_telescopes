@@ -2935,7 +2935,7 @@ sub-graph that computes just the scalars.</value>
     </param>
     <param>
       <key>dc_offset_mode0</key>
-      <value>0</value>
+      <value>2</value>
     </param>
     <param>
       <key>corr0</key>
@@ -3375,7 +3375,7 @@ sub-graph that computes just the scalars.</value>
     </param>
     <param>
       <key>dc_offset_mode1</key>
-      <value>0</value>
+      <value>2</value>
     </param>
     <param>
       <key>corr1</key>
