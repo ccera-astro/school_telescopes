@@ -343,6 +343,60 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
+      <value>(1056, 612)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fwidth</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>radiometer_helper.fringe_rate(declination,freq,baseline)*1.10</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(912, 932)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>int_alpha</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>radiometer_helper.derive_alpha(samp_rate,2.5)</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
       <value>(1088, 100)</value>
     </param>
     <param>
@@ -680,6 +734,53 @@ For much-wider bandwidth, upping to
     <param>
       <key>value</key>
       <value></value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(712, 1240)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>baseline</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Baseline Length(m)</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>5.0</value>
     </param>
   </block>
   <block>
@@ -1608,6 +1709,108 @@ For much-wider bandwidth, upping to
     </param>
   </block>
   <block>
+    <key>blocks_multiply_const_vxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>const</key>
+      <value>[hp]*fftsize</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1104, 524)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_multiply_const_vxx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fftsize</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_multiply_const_vxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>const</key>
+      <value>hp</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1200, 756)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_multiply_const_vxx_1</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>blocks_stream_to_vector</key>
     <param>
       <key>alias</key>
@@ -1780,7 +1983,7 @@ For much-wider bandwidth, upping to
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1240, 720)</value>
+      <value>(1368, 720)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2388,7 +2591,7 @@ the shift operation here.</value>
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(samp_rate*5)</value>
+      <value>int_alpha</value>
     </param>
     <param>
       <key>alias</key>
@@ -2498,6 +2701,53 @@ the shift operation here.</value>
     </param>
     <param>
       <key>_coordinate</key>
+      <value>(888, 1240)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>hp</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>High Pass Enable</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1.0</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
       <value>(120, 1152)</value>
     </param>
     <param>
@@ -2558,6 +2808,37 @@ the shift operation here.</value>
     <param>
       <key>import</key>
       <value>import numpy</value>
+    </param>
+  </block>
+  <block>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(16, 172)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_0_0</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>import math</value>
     </param>
   </block>
   <block>
@@ -4849,10 +5130,19 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     return True
     
     
+def fringe_rate(dec,freq,b):
+    C = 299792458.0
+    Lambda = C/freq
+    fwidth= (math.degrees(Lambda))/b
+    fwidth *= (4.0 * 60.0)
+    fwidth /= math.cos(math.radians(dec))
+    return fwidth
+
     
-    
-    
-    
+def derive_alpha(srate,seconds):
+    invterm = 1.0/(srate*seconds)
+    alpha = 1.0-math.pow(math.e,-2.0*invterm)
+    return alpha
 </value>
     </param>
     <param>
@@ -5079,7 +5369,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(frate*20)</value>
+      <value>radiometer_helper.derive_alpha(frate,2.5)</value>
     </param>
     <param>
       <key>alias</key>
@@ -5130,7 +5420,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(frate*20)</value>
+      <value>radiometer_helper.derive_alpha(frate,2.5)</value>
     </param>
     <param>
       <key>alias</key>
@@ -5181,7 +5471,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(frate*20)</value>
+      <value>radiometer_helper.derive_alpha(frate,2.5)</value>
     </param>
     <param>
       <key>alias</key>
@@ -5232,7 +5522,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/120</value>
+      <value>1.0-math.pow(math.e,-2.0*((1.0/fwidth)/0.4))</value>
     </param>
     <param>
       <key>alias</key>
@@ -5252,7 +5542,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1056, 548)</value>
+      <value>(920, 548)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -5283,7 +5573,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(samp_rate*5)</value>
+      <value>int_alpha</value>
     </param>
     <param>
       <key>alias</key>
@@ -5334,7 +5624,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/(samp_rate*5)</value>
+      <value>int_alpha</value>
     </param>
     <param>
       <key>alias</key>
@@ -5385,7 +5675,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <key>single_pole_iir_filter_xx</key>
     <param>
       <key>alpha</key>
-      <value>1.0/240.0</value>
+      <value>1.0-math.pow(math.e,-2.0*((1.0/fwidth)/2.0))</value>
     </param>
     <param>
       <key>alias</key>
@@ -5405,7 +5695,7 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1040, 764)</value>
+      <value>(992, 764)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -5809,6 +6099,18 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_multiply_const_vxx_0</source_block_id>
+    <sink_block_id>blocks_sub_xx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_multiply_const_vxx_1</source_block_id>
+    <sink_block_id>blocks_sub_xx_1</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_stream_to_vector_0</source_block_id>
     <sink_block_id>fft_vxx_0</sink_block_id>
     <source_key>0</source_key>
@@ -5906,9 +6208,9 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
   </connection>
   <connection>
     <source_block_id>single_pole_iir_filter_xx_1</source_block_id>
-    <sink_block_id>blocks_sub_xx_0</sink_block_id>
+    <sink_block_id>blocks_multiply_const_vxx_0</sink_block_id>
     <source_key>0</source_key>
-    <sink_key>1</sink_key>
+    <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>single_pole_iir_filter_xx_2</source_block_id>
@@ -5924,9 +6226,9 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
   </connection>
   <connection>
     <source_block_id>single_pole_iir_filter_xx_3</source_block_id>
-    <sink_block_id>blocks_sub_xx_1</sink_block_id>
+    <sink_block_id>blocks_multiply_const_vxx_1</sink_block_id>
     <source_key>0</source_key>
-    <sink_key>1</sink_key>
+    <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>virtual_source_0</source_block_id>

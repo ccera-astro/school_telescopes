@@ -470,7 +470,16 @@ def log(ffts,longitude,latitude,local,remote,expname,freq,bw,alpha,declination,s
     return True
     
     
+def fringe_rate(dec,freq,b):
+    C = 299792458.0
+    Lambda = C/freq
+    fwidth= (math.degrees(Lambda))/b
+    fwidth *= (4.0 * 60.0)
+    fwidth /= math.cos(math.radians(dec))
+    return fwidth
+
     
-    
-    
-    
+def derive_alpha(srate,seconds):
+    invterm = 1.0/(srate*seconds)
+    alpha = 1.0-math.pow(math.e,-2.0*invterm)
+    return alpha
